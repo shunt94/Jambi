@@ -1,54 +1,45 @@
 <!DOCTYPE html>
 
-<html>
+<html ng-app>
 <head>
     <title>Jambi</title>
-    <link href="static/css/main.css" rel="stylesheet">
+    <link href="public/css/projects.css" rel="stylesheet">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="public/js/nodeSetup.js"></script>
+    <script type="text/javascript" src="public/js/fileSystem.js"></script>
+    <script type="text/javascript" src="public/js/winstate.js"></script>
+    
+    
+    <script src="public/js/angular.min.js"></script>
+    <script>
+
+		
+    </script>
 </head>
 
 <body>
-    <div class="container">
-
-        <div class="topbar">
+    <div class="container project-container">
+		 <div class="topbar">
+	        <div class="topbar-tabs">
 	        
+	        </div>
         </div>
-        
-        
-        <!-- Line Counter -->
-        <div class="lc-container">
-            <div class="linecounter center">
-                1<br>
-                2<br>
-                3<br>
-                4<br>
-                5<br>
-                6<br>
-                7<br>
-                8<br>
-                9<br>
-                10<br>
-            </div>
+            
+        <div class="content">
+        <br>
+        <br>
+        <br>
+			<input type="text" ng-model="yourName" placeholder="Enter a name here">
+		      <hr>
+		      <h1>Hello {{yourName}}!</h1>
         </div>
-
-        <div class="editor-container">
-	        <div id="editor" class="editor" data-linecount="1" contenteditable="plaintext-only"></div>
-        </div>
-        
-        <div class="sidebar">
-        	<div class="sidebar-title center">
-        		Jambi
-        	</div>
-        </div>
-        
-        
-        
-        <div class="lowerbar">
-        
-        
-        </div>
-        
-        
         
     </div>
+    
+    
+    <!-- File Save,Load,Etc -->
+    <input style="display:none;" id="fileDialog" type="file" multiple />
+	<input style="display:none;" type="file" nwsaveas="filename.txt" id="saveDialog"/>
+	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
 </body>
 </html>
