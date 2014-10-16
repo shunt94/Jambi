@@ -27,20 +27,12 @@
         <div class="lc-container">
             <div class="linecounter center">
                 1<br>
-                2<br>
-                3<br>
-                4<br>
-                5<br>
-                6<br>
-                7<br>
-                8<br>
-                9<br>
-                10<br>
             </div>
         </div>
 
         <div class="editor-container">
-	        <div id="editor" class="editor" data-linecount="1" contenteditable="plaintext-only"></div>
+	        <!--<div id="editor" class="editor" data-linecount="1" contenteditable="plaintext-only"></div>-->
+	        <textarea class="editor" id="editor"></textarea>
         </div>
         
         <div class="sidebar">
@@ -61,7 +53,7 @@
         
         
         <div class="lowerbar">
-        
+        <button id="test">Test</button>
         
         </div>
         
@@ -83,6 +75,28 @@
 	        
     <script>
     	$('.sidebar-content').append('This platform is ' + process.platform + '<br');
+		
+		
+		var fs = require('fs');
+		
+		$('#test').click( function() {
+				var path = 'file.html',
+				buffer = new Buffer($('#editor').val());
+				
+				fs.open(path, 'w', function(err, fd) {
+				    if (err) {
+				        throw 'error opening file: ' + err;
+				    } else {
+				        fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+				            if (err) throw 'error writing file: ' + err;
+				            fs.close(fd, function() {
+				                console.log('file written');
+				            })
+				        });
+				    }
+				});
+					
+		});
 		
 		
 		  

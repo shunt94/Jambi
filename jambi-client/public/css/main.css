@@ -79,7 +79,7 @@ h1, h2, h3 {
 .editor {
   font-family: "Meslo";
   cursor: default;
-  padding-right: 230px;
+  padding-right: 10px;
   padding-left: 50px;
   padding-bottom: 50px;
   font-size: 14px;
@@ -88,7 +88,11 @@ h1, h2, h3 {
   height: -moz-calc(100% - 50px);
   height: calc(100% - 50px);
   line-height: 14px;
-  overflow-y: scroll; }
+  overflow-y: scroll;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff; }
   .editor:focus {
     outline: none; }
 
