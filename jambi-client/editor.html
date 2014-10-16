@@ -4,6 +4,8 @@
 <head>
     <title>Jambi</title>
     <link href="public/css/main.css" rel="stylesheet">
+    <link href="public/css/jambi_editor.css" rel="stylesheet">
+    
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="public/js/nodeSetup.js"></script>
     <script type="text/javascript" src="public/js/fileSystem.js"></script>
@@ -22,34 +24,34 @@
 	        </div>
         </div>
         
-        
-        <!-- Line Counter -->
-        <div class="lc-container">
-            <div class="linecounter center">
-                1<br>
-            </div>
-        </div>
-
-        <div class="editor-container">
-	        <!--<div id="editor" class="editor" data-linecount="1" contenteditable="plaintext-only"></div>-->
-	        <textarea class="editor" id="editor"></textarea>
-        </div>
-        
-        <div class="sidebar">
-        	<div class="sidebar-title center">
-        		Jambi
-        	</div>
-        	
-        	<div class="sidebar-content">
+        <div class="jambi-body">
+	        <!-- Line Counter -->
+	        <div class="lc-container">
+	            <div class="linecounter center">
+	                1<br>
+	            </div>
+	        </div>
+	
+	        <div class="editor-container">
 	        	
-	        	Console: <br>
-        	</div>
-        	
-        	<div class="sidebar-footer">
-    			
-			</div>
+				
+	        </div>
+	        
+	        <div class="sidebar">
+	        	<div class="sidebar-title center">
+	        		Jambi
+	        	</div>
+	        	
+	        	<div class="sidebar-content">
+		        	
+		        	Console: <br>
+	        	</div>
+	        	
+	        	<div class="sidebar-footer">
+	    			
+				</div>
+	        </div>
         </div>
-        
         
         
         <div class="lowerbar">
@@ -72,9 +74,13 @@
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
 	        
 	
-	        
+	<script type="text/javascript" src="public/js/jambi.js"></script>        
     <script>
+    
+	    var jambi = jambi();
+	    jambi.init();
     	$('.sidebar-content').append('This platform is ' + process.platform + '<br');
+		
 		
 		
 		var fs = require('fs');

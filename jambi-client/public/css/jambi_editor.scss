@@ -1,0 +1,43 @@
+.jambitextarea {
+	overflow: hidden;
+	position: absolute; 
+	padding: 0px; 
+	width: 1000px; 
+	height: 1em; 
+	outline: none;
+	display: none;
+}
+
+.cursor {
+	
+}
+
+
+ .string {
+    color:#A1E46D;
+}
+ .special {
+    color:#D6665D;
+}
+ .special-js {
+    color:#6DE4D1;
+}
+ .special-js-glob {
+    color:#A1E46D;
+    font-weight:bold;
+}
+ .special-comment{
+    color:#aaa;
+}
+ .special-js-meth {
+    color:#E46D8A;
+}
+ .special-html {
+    color:#e1a8ff;
+}
+ .special-sql {
+    color:#1D968C;
+}
+ .special-php{
+    color:#597EA7;
+}
