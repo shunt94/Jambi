@@ -89,7 +89,6 @@ h1, h2, h3 {
   height: calc(100% - 50px);
   line-height: 14px;
   overflow-y: scroll;
-  width: 100%;
   background: transparent;
   border: none;
   color: #fff; }
@@ -127,31 +126,3 @@ h1, h2, h3 {
   height: 15px;
   background-color: #727272;
   z-index: 10; }
-
-.string {
-  color: #A1E46D; }
-
-.special {
-  color: #D6665D; }
-
-.special-js {
-  color: #6DE4D1; }
-
-.special-js-glob {
-  color: #A1E46D;
-  font-weight: bold; }
-
-.special-comment {
-  color: #aaa; }
-
-.special-js-meth {
-  color: #E46D8A; }
-
-.special-html {
-  color: #e1a8ff; }
-
-.special-sql {
-  color: #1D968C; }
-
-.special-php {
-  color: #597EA7; }
