@@ -146,10 +146,10 @@ function chooseFile(name) {
 	chooser.trigger('click');  
 }
 
-		  //chooseFile('#fileDialog');
+//chooseFile('#fileDialog');
 		  
 // Set window options
 onload = function() {
-    //win.show();
-    //win.maximize();
+    win.show();
+    win.maximize();
 }

@@ -99,7 +99,7 @@ h1,h2,h3 { font-weight: 200;}
 .editor {
 	font-family: 'Meslo', ;
 	cursor: default;
-	padding-right: 230px;
+	padding-right: 10px;
 	padding-left: 50px;
 	padding-bottom: 50px;
 	font-size: $editor-fontsize;
@@ -109,6 +109,10 @@ h1,h2,h3 { font-weight: 200;}
     height: calc(100% - 50px);
 	line-height: $editor-fontsize;
 	overflow-y: scroll;
+	width: 100%;
+	background: transparent;
+	border:none;
+	color: #fff;
 	&:focus {
 		outline: none;
 	}
