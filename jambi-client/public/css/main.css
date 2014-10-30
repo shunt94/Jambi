@@ -33,15 +33,33 @@ h1, h2, h3 {
   width: 100%;
   height: 40px;
   position: fixed;
-  z-index: 11; }
+  z-index: 11;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  cursor: default; }
 
 .topbar-tabs {
   overflow: auto;
   overflow-y: hidden;
   height: 100%;
   white-space: nowrap;
-  padding-top: 2px;
-  padding-left: 15px; }
+  height: 100%; }
+
+.file-container, #openfiles {
+  background-color: #c2c2c2;
+  width: 150px;
+  height: 100%;
+  margin-left: -3px;
+  display: inline-block;
+  border-right: 1px solid #777777; }
+
+.file {
+  padding-top: 12px;
+  padding-left: 20px;
+  padding-bottom: 12px;
+  font-size: 13px;
+  height: 100%; }
 
 .lc-container {
   font-size: 14px;
@@ -50,9 +68,11 @@ h1, h2, h3 {
   min-width: 35px;
   line-height: 14px;
   padding-left: 5px;
-  margin-top: 20px;
-  padding-top: 26px;
-  z-index: 10; }
+  z-index: 10;
+  left: 0; }
+
+.linecounter {
+  position: relative; }
 
 .editor-container {
   padding-top: 25px;
@@ -68,15 +88,10 @@ h1, h2, h3 {
   position: absolute;
   margin-right: -230px;
   margin-top: 20px;
-  background-color: #28a1f7;
-  background: url("../img/bluebackground.jpg");
-  overflow: hidden;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover; }
+  background-color: #28a1f7; }
 
 .editor {
+  position: absolute;
   font-family: "Meslo";
   cursor: default;
   padding-right: 10px;
@@ -87,8 +102,14 @@ h1, h2, h3 {
   height: -webkit-calc(100% - 50px);
   height: -moz-calc(100% - 50px);
   height: calc(100% - 50px);
+  max-width: 100%;
+  width: 80%;
+  width: -webkit-calc(100% - 55px);
+  width: -moz-calc(100% - 55px);
+  width: calc(100% - 55px);
   line-height: 14px;
   overflow-y: scroll;
+  overflow-x: hidden;
   background: transparent;
   border: none;
   color: #fff; }

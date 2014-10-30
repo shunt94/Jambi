@@ -1,0 +1,57 @@
+.editor-container {
+  background: url("../img/bluebackground.jpg");
+  overflow: hidden;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover; }
+
+/* highlight styles */
+.ldt .comment {
+  color: silver; }
+
+.ldt .string {
+  color: #16df16; }
+
+.ldt .number {
+  color: navy; }
+
+/* setting inline-block and margin to avoid misalignment bug in windows */
+.ldt .keyword {
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: -1px; }
+
+.ldt .variable {
+  color: cyan; }
+
+.ldt .define {
+  color: white; }
+
+.ldt .op {
+  color: purple; }
+
+#layer {
+  white-space: pre-wrap;
+  /*to wrap words*/
+  word-wrap: break-word;
+  /*IE 5.5+*/ }
+
+/*colors*/
+.sc {
+  color: brown; }
+
+.keyword {
+  color: purple; }
+
+.inner_keyword {
+  color: #ca79ff; }
+
+.string {
+  color: darkgreen; }
+
+.comment {
+  color: #00ff3d; }
+
+.function {
+  color: red; }

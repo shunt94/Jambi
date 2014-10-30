@@ -1,36 +1,12 @@
-.jambitextarea {
-  overflow: hidden;
+#jambiCode {
+  font-family: "Meslo";
+  cursor: default;
   position: absolute;
-  padding: 0px;
-  width: 1000px;
-  height: 1em;
-  outline: none;
-  display: none; }
-
-.string {
-  color: #A1E46D; }
-
-.special {
-  color: #D6665D; }
-
-.special-js {
-  color: #6DE4D1; }
-
-.special-js-glob {
-  color: #A1E46D;
-  font-weight: bold; }
-
-.special-comment {
-  color: #aaa; }
-
-.special-js-meth {
-  color: #E46D8A; }
-
-.special-html {
-  color: #e1a8ff; }
-
-.special-sql {
-  color: #1D968C; }
-
-.special-php {
-  color: #597EA7; }
+  height: calc(100% - 50px);
+  max-width: 100%;
+  padding-right: 10px;
+  padding-left: 50px;
+  padding-bottom: 50px;
+  font-size: 14px;
+  margin: 0;
+  padding-top: 2px; }
