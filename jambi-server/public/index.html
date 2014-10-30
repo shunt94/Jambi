@@ -21,10 +21,9 @@
     <div class="jumbotron jambi-bg center">
       <div class="container ">
         <h1>Jambi</h1>
-        <div class="spacer"><br></div>
         <div class="col-md-12">
         <p>The free web development code editor for all front-end developers and designers</p>
-        <p><a class="btn btn-primary btn-lg" role="button">Download Now<br> (<span class="small">Mac OSX</span>)</a></p>
+        <p><a class="btn btn-primary btn-lg" role="button">Download Now<br> (<span class="small" id="downloadOS">Mac OSX</span>)</a></p>
         <div class="spacer"></div>
 	        <img class="img-responsive jambi-info" src="img/jambi1.png">
         </div>
@@ -119,5 +118,13 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	
+	<script type="text/javascript">
+		var OSName;
+		if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
+		if (navigator.appVersion.indexOf("Mac")!=-1) OSName="Mac OSX";
+		if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+		$('#downloadOS').text(OSName);
+	</script>
   </body>
 </html>

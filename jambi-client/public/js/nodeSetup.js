@@ -2,7 +2,7 @@ var gui = require('nw.gui');
 var win = gui.Window.get();
 var menuBar = new gui.Menu({ type: 'menubar' });
 
-
+var fs = require("fs");
 
 
 if(process.platform == "darwin") {
@@ -24,6 +24,7 @@ var help = new gui.Menu();
 var fileSubmenu = new gui.Menu();
 var newSubmenu = new gui.Menu();
 var newSubmenuFile = new gui.Menu();
+
 
 
 // File --> New --> File Submenus
@@ -90,7 +91,14 @@ fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
 fileSubmenu.append(new gui.MenuItem({ 
 	label: 'Save', 
 	click: function() {
-		$('.sidebar-content').append('<br>' + "Save Menu Click");
+			var textToWrite = $('#codeArea').val();
+			var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+			var fileNameToSaveAs = "untitled.html";
+		
+			var downloadLink = document.createElement("a");
+			downloadLink.download = fileNameToSaveAs;
+			downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+			downloadLink.click();
 	},
 	key: "s",
 	modifiers: "cmd",
@@ -99,8 +107,7 @@ fileSubmenu.append(new gui.MenuItem({
 fileSubmenu.append(new gui.MenuItem({ 
 	label: 'Save As...', 
 	click: function() {
-		chooseFile('#saveDialog');
-		$('.sidebar-content').append('<br>' + "Save As Menu Click");
+			//chooseFile('#saveDialog');
 	},
 	key: "s",
 	modifiers: "cmd-shift",
@@ -110,6 +117,10 @@ fileSubmenu.append(new gui.MenuItem({
 
 
 
+// Insert Submenu
+var insertSubmenu = new gui.Menu();
+
+insertSubmenu.append(new gui.MenuItem({ label: 'Bootstrap Imports' }));
 
 
 menuBar.insert(new gui.MenuItem({ label: 'File', submenu: fileSubmenu}), 1);
@@ -121,7 +132,7 @@ menuBar.insert( new gui.MenuItem({label: 'View', submenu: new gui.Menu() }), 3);
 menuBar.insert( new gui.MenuItem({label: 'Text', submenu: new gui.Menu() }), 4);
 
 
-menuBar.insert( new gui.MenuItem({label: 'Insert', submenu: new gui.Menu() }), 5);
+menuBar.insert( new gui.MenuItem({label: 'Insert', submenu: insertSubmenu }), 5);
 
 
 menuBar.insert( new gui.MenuItem({label: 'Instas', submenu: new gui.Menu() }), 6);
@@ -140,11 +151,14 @@ win.menu.append(new gui.MenuItem({ label: 'Help', submenu: help}));
 function chooseFile(name) {
 	var chooser = $(name);
 	chooser.change(function(evt) {
-	  $('.sidebar-content').append("File Location: " + $(this).val());
-	  //open($(this).val(), $('#editor').html());
+		fs.readFile($(this).val(), "utf8", function(error, data) {
+			$('#codeaArea').val('');
+		    $('#codeArea').val(data);
+		});
 	});
 	chooser.trigger('click');  
 }
+
 
 //chooseFile('#fileDialog');
 		  

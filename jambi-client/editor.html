@@ -5,37 +5,40 @@
     <title>Jambi</title>
     <link href="public/css/main.css" rel="stylesheet">
     <link href="public/css/jambi_editor.css" rel="stylesheet">
-    
-    <script type="text/javascript" src="jquery.js"></script>
-    <script type="text/javascript" src="public/js/nodeSetup.js"></script>
-    <script type="text/javascript" src="public/js/fileSystem.js"></script>
-    <script>
-
-		
-    </script>
 </head>
 
 <body>
     <div class="container">
-
         <div class="topbar">
 	        <div class="topbar-tabs">
-	        	
+	        	<div id="openfiles">
+	        		<div class="file-container">
+	        			<div class="file">
+		        			<span class="close">x</span>
+	        				<span class="filename">index.html</span>
+	        			</div>
+	        		</div>
+					<div class="file-container">
+	        			<div class="file">
+	        				<span class="close">x</span>
+	        				<span class="filename">projectindex.js</span>
+	        			</div>
+	        		</div>
+	        	</div>
 	        </div>
         </div>
         
         <div class="jambi-body">
-	        <!-- Line Counter -->
-	        <div class="lc-container">
-	            <div class="linecounter center">
-	                1<br>
-	            </div>
-	        </div>
-	
-	        <div class="editor-container">
-	        	
-				
-	        </div>
+	        <div class="editor-container" id="jambi-editor">
+	        	<div class="lc-container">
+	        		<div id="linecounter" class="linecounter center">
+	        			1<br>		
+	        		</div>
+	        	</div>
+	        	<label>
+					<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
+	        	</label>
+		    </div>
 	        
 	        <div class="sidebar">
 	        	<div class="sidebar-title center">
@@ -43,70 +46,44 @@
 	        	</div>
 	        	
 	        	<div class="sidebar-content">
-		        	
-		        	Console: <br>
+
 	        	</div>
 	        	
 	        	<div class="sidebar-footer">
-	    			
+					
 				</div>
 	        </div>
         </div>
         
         
         <div class="lowerbar">
-        <button id="test">Test</button>
-        
+        	
         </div>
-        
-        
-        
     </div>
     
-    
-    
-    
-    
     <!-- File Save,Load,Etc -->
-    
+    <script type="text/javascript" src="jquery.js"></script>
     <input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="filename.txt" id="saveDialog"/>
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
 	        
 	
-	<script type="text/javascript" src="public/js/jambi.js"></script>        
+		
+	<script type="text/javascript" src="public/js/jambi.js"></script>
+	
+    <script type="text/javascript" src="public/js/nodeSetup.js"></script>
+    <script type="text/javascript" src="public/js/fileSystem.js"></script>        
     <script>
-    
-	    var jambi = jambi();
-	    jambi.init();
-    	$('.sidebar-content').append('This platform is ' + process.platform + '<br');
+
 		
 		
-		
-		var fs = require('fs');
-		
-		$('#test').click( function() {
-				var path = 'file.html',
-				buffer = new Buffer($('#editor').val());
-				
-				fs.open(path, 'w', function(err, fd) {
-				    if (err) {
-				        throw 'error opening file: ' + err;
-				    } else {
-				        fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-				            if (err) throw 'error writing file: ' + err;
-				            fs.close(fd, function() {
-				                console.log('file written');
-				            })
-				        });
-				    }
-				});
-					
-		});
-		
-		
-		  
+	
+	
+		var jambi = new Jambi();
+		jambi.init();
+
     
     </script>
+
 </body>
 </html>
