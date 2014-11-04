@@ -73,7 +73,14 @@ fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
 fileSubmenu.append(new gui.MenuItem({ 
 	label: 'Open', 
 	click: function() {
-		chooseFile('#fileDialog');
+		$('#fileDialog').change(function(evt) {
+			console.log($(this).val().split(/(\\|\/)/g).pop());
+			fs.readFile($(this).val(), "utf8", function(error, data) {
+				$('#codeaArea').val('');
+			    $('#codeArea').val(data);
+			});
+		});
+		$('#fileDialog').trigger('click');  
 	},
 	key: "o",
 	modifiers: "cmd",
@@ -151,6 +158,7 @@ win.menu.append(new gui.MenuItem({ label: 'Help', submenu: help}));
 function chooseFile(name) {
 	var chooser = $(name);
 	chooser.change(function(evt) {
+		console.log($(this).val().split(/(\\|\/)/g).pop());
 		fs.readFile($(this).val(), "utf8", function(error, data) {
 			$('#codeaArea').val('');
 		    $('#codeArea').val(data);
