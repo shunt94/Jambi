@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-
 <html>
 <head>
     <title>Jambi</title>
-    <link href="public/css/main.css" rel="stylesheet">
-    <link href="public/css/jambi_editor.css" rel="stylesheet">
+    <link rel="stylesheet" href="public/css/main.css">
+    <link rel="stylesheet" href="public/css/jambi_editor.css">
+    <link rel="stylesheet" href="public/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -13,19 +13,22 @@
 	        <div class="topbar-tabs">
 	        	<div id="openfiles">
 	        		<div class="file-container">
-	        			<div class="file">
-		        			<span class="close">x</span>
+	        			<div class="file active">
+		        			<span class="close"><i class="fa fa-times-circle"></i></span>
 	        				<span class="filename">index.html</span>
 	        			</div>
 	        		</div>
 					<div class="file-container">
 	        			<div class="file">
-	        				<span class="close">x</span>
+	        				<span class="close"><i class="fa fa-times-circle"></i></span>
 	        				<span class="filename">projectindex.js</span>
 	        			</div>
 	        		</div>
 	        	</div>
 	        </div>
+	        <div class="newfile-tab">
+	        	<i class="fa fa-plus-square-o"></i>
+			</div>
         </div>
         
         <div class="jambi-body">
@@ -38,6 +41,9 @@
 	        	<label>
 					<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
 	        	</label>
+	        	<pre class="hightlight-code-container">
+	        		<div id="syntax-area" style="word-wrap: break-word;"></div>
+	        	</pre>
 		    </div>
 	        
 	        <div class="sidebar">
@@ -70,19 +76,11 @@
 	
 		
 	<script type="text/javascript" src="public/js/jambi.js"></script>
-	
-    <script type="text/javascript" src="public/js/nodeSetup.js"></script>
-    <script type="text/javascript" src="public/js/fileSystem.js"></script>        
-    <script>
-
-		
-		
-	
-	
+	<script type="text/javascript" src="public/js/syntax.js"></script>
+    <script type="text/javascript" src="public/js/nodeSetup.js"></script>     
+    <script type="text/javascript">
 		var jambi = new Jambi();
 		jambi.init();
-
-    
     </script>
 
 </body>
