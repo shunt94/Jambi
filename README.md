@@ -1,4 +1,4 @@
 Jambi
 =====
 
-Final Year Project - Website Development IDE
+Jambi is an open source text editor designed for HTML,CSS & JS - All languages of frontend web developers.
