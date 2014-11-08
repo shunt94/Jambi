@@ -135,7 +135,8 @@ h1, h2, h3 {
   overflow-x: hidden;
   background: transparent;
   border: none;
-  color: #fff; }
+  color: #fff;
+  opacity: 0.4; }
   .editor:focus {
     outline: none; }
 
@@ -149,9 +150,6 @@ h1, h2, h3 {
   padding-top: 2px;
   font-size: 14px;
   z-index: 1;
-  height: -webkit-calc(100% - 50px);
-  height: -moz-calc(100% - 50px);
-  height: calc(100% - 50px);
   max-width: 100%;
   width: 80%;
   width: -webkit-calc(100% - 55px);

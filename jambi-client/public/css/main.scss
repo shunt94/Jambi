@@ -171,6 +171,7 @@ h1,h2,h3 { font-weight: 200;}
 	background: transparent;
 	border:none;
 	color: #fff;
+	opacity: 0.4;
 	&:focus {
 		outline: none;
 	}
@@ -186,11 +187,8 @@ h1,h2,h3 { font-weight: 200;}
 	padding-top: 2px;
 	font-size: $editor-fontsize;
 	z-index: 1;
-	height: -webkit-calc(100% - 50px);
-    height: -moz-calc(100% - 50px);
-    height: calc(100% - 50px);
     max-width: 100%;
-    	width: 80%;
+	width: 80%;
     width: -webkit-calc(100% - 55px);
     width: -moz-calc(100% - 55px);
     width: calc(100% - 55px);
