@@ -85,20 +85,23 @@ h1, h2, h3 {
     color: #353535; }
 
 .lc-container {
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
   position: absolute;
   min-width: 35px;
-  line-height: 14px;
+  line-height: 13px;
   padding-left: 5px;
   z-index: 10;
-  left: 0; }
+  left: 0;
+  height: calc(100% - 15px); }
 
-.linecounter {
-  position: relative; }
+#linecounter {
+  overflow: hidden;
+  height: 100%;
+  position: absolute;
+  top: 0; }
 
 .editor-container {
-  padding-top: 25px;
   z-index: 1;
   width: 80%;
   width: -webkit-calc(100% - 220px);
@@ -110,8 +113,8 @@ h1, h2, h3 {
   height: calc(100% - 50px);
   position: absolute;
   margin-right: -230px;
-  margin-top: 20px;
-  background-color: #28a1f7; }
+  top: 40px;
+  overflow: hidden; }
 
 .editor {
   position: absolute;
@@ -119,23 +122,21 @@ h1, h2, h3 {
   cursor: default;
   padding-right: 10px;
   padding-left: 50px;
-  padding-bottom: 50px;
-  font-size: 14px;
+  font-size: 13px;
   z-index: 2;
-  height: -webkit-calc(100% - 50px);
-  height: -moz-calc(100% - 50px);
-  height: calc(100% - 50px);
+  height: calc(100% - 15px);
   max-width: 100%;
   width: 80%;
   width: -webkit-calc(100% - 55px);
   width: -moz-calc(100% - 55px);
   width: calc(100% - 55px);
-  line-height: 14px;
+  line-height: 13px;
   overflow-y: scroll;
   overflow-x: hidden;
   background: transparent;
   border: none;
-  color: #fff; }
+  color: #fff;
+  opacity: 0.2; }
   .editor:focus {
     outline: none; }
 
@@ -145,23 +146,28 @@ h1, h2, h3 {
   cursor: default;
   padding-right: 10px;
   padding-left: 50px;
-  padding-bottom: 50px;
-  padding-top: 2px;
-  font-size: 14px;
-  z-index: 1;
-  height: -webkit-calc(100% - 50px);
-  height: -moz-calc(100% - 50px);
-  height: calc(100% - 50px);
+  font-size: 13px;
+  height: calc(100% - 15px);
   max-width: 100%;
   width: 80%;
   width: -webkit-calc(100% - 55px);
   width: -moz-calc(100% - 55px);
   width: calc(100% - 55px);
-  line-height: 14px;
+  line-height: 13px;
   overflow-y: scroll;
   overflow-x: hidden;
+  border: none; }
+
+#syntax-area {
+  line-height: 13px;
   color: #fff;
-  margin-top: -14px; }
+  font-size: 13px;
+  font-family: "Meslo";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 2px; }
 
 .sidebar {
   right: 0;
