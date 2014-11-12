@@ -2,7 +2,8 @@ function Jambi() {
 
 	function initJambi() {
 		//setCursorBlink();
-		lineCounter();
+		setEventListeners();
+		initScrollers();
 		loadSettings();
 		Insta();
 		$('#codeArea').focus();
@@ -81,38 +82,56 @@ function Jambi() {
 	
 	 
 		
+	function initScrollers() {
+		$('#codeArea').on('scroll', function () {
+			updatePosition();
+		});
+	}	
 	
-	function lineCounter() {		  
-		  $('#codeArea').keydown(function(event) {
-		    var $t = $(this);
+
+	  // line numbers 
+	  function lineNumbers() {
+	  	  var rows = $('#codeArea').val().split("\n").length + 1;
+		  $('#linecounter').empty();
+		  if(rows <=1) {
+			  $('#linecounter').append('1<br>');
+		  }
+		  else {
+			  for(var k = 1; k<rows; k++) {
+				  $('#linecounter').append(k + '<br>');
+			  }
+		  }
+	  }
+	
+	
+	function updatePosition() {
+		var scrollPos = document.getElementById('codeArea').scrollTop;
+		$('#linecounter').scrollTop(scrollPos);
+		$('#syntax-area').scrollTop(scrollPos);
+	}
+	
+	
+	function setEventListeners() {
+		$('#codeArea').keydown(function(event) {
+		   
 		    // Tab
 		  	if(event.keyCode == 9) { 
 		 		event.preventDefault(); 	
 		 		insertAtCursor(this, '    ');
 		 	}
 			lineNumbers(); 
-		  });
-		  
-		  $('#codeArea').keyup(function() {
-			  lineNumbers(); 
-		  });
-		  
-		  // line numbers 
-		  function lineNumbers() {
-		  	  var rows = $('#codeArea').val().split("\n").length + 1;
-			  $('#linecounter').empty();
-			  if(rows <=1) {
-				  $('#linecounter').append('1<br>');
-			  }
-			  else {
-				  for(var k = 1; k<rows; k++) {
-					  $('#linecounter').append(k + '<br>');
-				  }
-			  }
-		  }
+			
+			$('#syntax-area').text($('#codeArea').val())
+			
+			updatePosition();
+			
+		});
+		 $('#codeArea').keyup(function(event) {
+			  lineNumbers();
+			  $('#syntax-area').text($('#codeArea').val()) 
+			  updatePosition();
+		 });
 	}
-	
-	
 	
 	
 	

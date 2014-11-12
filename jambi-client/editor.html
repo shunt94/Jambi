@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="public/css/main.css">
     <link rel="stylesheet" href="public/css/jambi_editor.css">
     <link rel="stylesheet" href="public/css/font-awesome.min.css">
-    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+
 </head>
 
 <body>
@@ -34,15 +34,15 @@
         
         <div class="jambi-body">
 	        <div class="editor-container" id="jambi-editor">
-<!--	        	<div class="lc-container">
-	        		<div id="linecounter" class="linecounter center">
+	        	<div class="lc-container">
+	        		<div id="linecounter" class="center">
 	        			1<br>		
 	        		</div>
-	        	</div>-->
-				<!--	<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
-	        	<pre class="hightlight-code-container regex">
-	        		<div id="syntax-area" style="word-wrap: break-word;"></div>
-	        	</pre>-->
+	        	</div>
+					<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
+	        	<div class="hightlight-code-container regex">
+	        		<pre id="syntax-area" style="word-wrap: break-word;"></pre>
+	        	</div>
 		    </div>
 	        
 	        <div class="sidebar">
@@ -73,7 +73,6 @@
     
     .CodeMirror {
 		background: none;
-		color: white;
 		height: 100%;    
     }
     </style>
@@ -86,26 +85,31 @@
 	        
 	
 		
-	<!--<script type="text/javascript" src="public/js/jambi.js"></script>-->
+	<script type="text/javascript" src="public/js/jambi.js"></script>
 	<script type="text/javascript" src="public/js/syntax.js"></script>
     <script type="text/javascript" src="public/js/nodeSetup.js"></script>   
     
+
     
-    <script src="codemirror/lib/codemirror.js"></script>
+   <!-- <script src="codemirror/lib/codemirror.js"></script>
 	<script src="codemirror/mode/css/css.js"></script>  
-    
+    -->
     
     <script type="text/javascript">
-		//var jambi = new Jambi();
-	//	jambi.init();
+		var jambi = new Jambi();
+		jambi.init();
 		
 		
-		var myCodeMirror = CodeMirror(document.getElementById('jambi-editor'), {
+		/*var myCodeMirror = CodeMirror(document.getElementById('jambi-editor'), {
 		  mode:  "css",
 		  lineWrapping: true,
 		  lineNumbers: true
-		});
+		}); */
+		
+	
+		
     </script>
+    
 
 </body>
 </html>

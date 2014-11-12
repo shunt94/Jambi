@@ -1,9 +1,9 @@
 $top-margin: 40px;
 $font-size: 13px;
-$linecounter-fontsize: 14px;
+$linecounter-fontsize: 13px;
 
-$editor-fontsize: 14px;
-$editor-paddingtop: 25px;
+$editor-fontsize: 13px;
+$editor-paddingtop: 20px;
 
 $linecounter-color: rgba(255,255,255,0.8);
 
@@ -120,16 +120,18 @@ h1,h2,h3 { font-weight: 200;}
 	//padding-top: $editor-paddingtop + 1px;
 	z-index: 10;
 	left: 0;
+	height: calc(100% - 15px);
 }
 
-
-.linecounter {
-	position: relative;
-
+#linecounter {
+	overflow: hidden;
+	height: 100%;
+    position: absolute;
+    top: 0;
 }
+
 
 .editor-container {
-	padding-top: $editor-paddingtop;
 	z-index: 1;
 	width: 80%;
     width: -webkit-calc(100% - 220px);
@@ -141,11 +143,11 @@ h1,h2,h3 { font-weight: 200;}
     height: -moz-calc(100% - 50px);
     height: calc(100% - 50px);
 
-    
 	position: absolute;
 	margin-right: -230px;
-	margin-top: 20px;
-	background-color: #28a1f7;
+	top:40px;
+	overflow: hidden;
+	//background-color: #28a1f7;
 }
 
 .editor {
@@ -154,12 +156,9 @@ h1,h2,h3 { font-weight: 200;}
 	cursor: default;
 	padding-right: 10px;
 	padding-left: 50px;
-	padding-bottom: 50px;
 	font-size: $editor-fontsize;
 	z-index: 2;
-	height: -webkit-calc(100% - 50px);
-    height: -moz-calc(100% - 50px);
-    height: calc(100% - 50px);
+	height: calc(100% - 15px);
     max-width: 100%;
     	width: 80%;
     width: -webkit-calc(100% - 55px);
@@ -171,7 +170,8 @@ h1,h2,h3 { font-weight: 200;}
 	background: transparent;
 	border:none;
 	color: #fff;
-	opacity: 0.4;
+	opacity: 0.2;
+	
 	&:focus {
 		outline: none;
 	}
@@ -183,22 +183,30 @@ h1,h2,h3 { font-weight: 200;}
 	cursor: default;
 	padding-right: 10px;
 	padding-left: 50px;
-	padding-bottom: 50px;
-	padding-top: 2px;
 	font-size: $editor-fontsize;
-	z-index: 1;
+	height: calc(100% - 15px);
     max-width: 100%;
-	width: 80%;
+    	width: 80%;
     width: -webkit-calc(100% - 55px);
     width: -moz-calc(100% - 55px);
     width: calc(100% - 55px);
 	line-height: $editor-fontsize;
 	overflow-y: scroll;
 	overflow-x: hidden;
+	border:none;
+}
+
+
+#syntax-area {
+	line-height: $editor-fontsize;
 	color: #fff;
-	margin-top: -14px;
-	
-	
+	font-size: $editor-fontsize;
+	font-family: 'Meslo', ;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	margin-top: 2px;
 }
 
 .sidebar {
