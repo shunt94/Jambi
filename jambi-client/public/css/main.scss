@@ -53,13 +53,12 @@ h1,h2,h3 { font-weight: 200;}
 	height: 100%;
 	white-space: nowrap;
 	height: 100%;
+	background: -webkit-linear-gradient(#ffffff 0%, #c2c2c2 100%);
 }
 
 .file-container, #openfiles {
-	background-color: #c2c2c2; 
 	width: 150px;
 	height: 100%;
-	margin-left: -3px;
 	display: inline-block;
 	border-right: 1px solid #777777;
 }
@@ -70,6 +69,44 @@ h1,h2,h3 { font-weight: 200;}
 	padding-bottom: 12px;
 	font-size: 13px;
 	height: 100%;
+	color: #333;
+	
+	
+	&:hover {
+		& .close {
+			opacity: 1;
+		}
+	}
+	
+	& .close {
+		color: #545454;
+		opacity: 0;
+		-webkit-transition:.3s;
+				transition: .3s;
+		
+		&:hover {
+			opacity: 1;
+			color: #353535;
+		}
+	}
+	
+	&.active {
+		background-color: rgba(85,85,85,0.53);
+	}
+}
+
+.newfile-tab {
+	font-size: 1.8em;
+	color: #7a7a7a;
+	right: 10px;
+	top: 6px;
+	position: absolute;
+	-webkit-transition:.3s;
+			transition: .3s;
+	
+	&:hover {
+		color: #353535;
+	}
 }
 
 .lc-container {
@@ -119,7 +156,7 @@ h1,h2,h3 { font-weight: 200;}
 	padding-left: 50px;
 	padding-bottom: 50px;
 	font-size: $editor-fontsize;
-	z-index: 1;
+	z-index: 2;
 	height: -webkit-calc(100% - 50px);
     height: -moz-calc(100% - 50px);
     height: calc(100% - 50px);
@@ -139,6 +176,33 @@ h1,h2,h3 { font-weight: 200;}
 	}
 }
 
+.hightlight-code-container {
+	position: absolute;
+	font-family: 'Meslo', ;
+	cursor: default;
+	padding-right: 10px;
+	padding-left: 50px;
+	padding-bottom: 50px;
+	padding-top: 2px;
+	font-size: $editor-fontsize;
+	z-index: 1;
+	height: -webkit-calc(100% - 50px);
+    height: -moz-calc(100% - 50px);
+    height: calc(100% - 50px);
+    max-width: 100%;
+    	width: 80%;
+    width: -webkit-calc(100% - 55px);
+    width: -moz-calc(100% - 55px);
+    width: calc(100% - 55px);
+	line-height: $editor-fontsize;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	color: #fff;
+	margin-top: -14px;
+	
+	
+}
+
 .sidebar {
 	right: 0;
 	width: 220px;
@@ -147,6 +211,7 @@ h1,h2,h3 { font-weight: 200;}
 	background-color: #f1f1f1;
 	z-index: 10;
 	padding-top: $top-margin;
+	margin-top: -5px;
 
 }
 
