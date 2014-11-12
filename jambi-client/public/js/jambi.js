@@ -5,6 +5,7 @@ function Jambi() {
 		lineCounter();
 		loadSettings();
 		Insta();
+		$('#codeArea').focus();
 	}
 	
 	// Get user settings
@@ -23,8 +24,8 @@ function Jambi() {
 		
 		
 		var checkCaps = function(e){
+		  
 		  if (e.keyCode != 13) return;
-		  //e.preventDefault();
 		  var prepend = "";
 		  var string = "";
 		  var pos = textarea.selectionStart;
@@ -54,24 +55,14 @@ function Jambi() {
 
 
 	}
-	
-	function loadInstas() {
-		
-	}
-	
-	function insertInsta() {
-
-	}
-	
 
 	
 	function setCursorBlink() {
-	    var elem = $('#jambi-cursor');
 	    setInterval(function() {
-	        if (elem.css('visibility') == 'hidden') {
-	            elem.css('visibility', 'visible');
+	        if ($('#jambi-cursor').css('visibility') == 'hidden') {
+	            $('#jambi-cursor').css('visibility', 'visible');
 	        } else {
-	            elem.css('visibility', 'hidden');
+	            $('#jambi-cursor').css('visibility', 'hidden');
 	        }    
 	    }, 500);
 	};
@@ -108,32 +99,18 @@ function Jambi() {
 		  
 		  // line numbers 
 		  function lineNumbers() {
-		  			  
 		  	  var rows = $('#codeArea').val().split("\n").length + 1;
-
-			  var i = rows;
 			  $('#linecounter').empty();
-			  if(i <=1) {
+			  if(rows <=1) {
 				  $('#linecounter').append('1<br>');
 			  }
 			  else {
-				  for(var k = 1; k<i; k++) {
+				  for(var k = 1; k<rows; k++) {
 					  $('#linecounter').append(k + '<br>');
 				  }
 			  }
 		  }
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
