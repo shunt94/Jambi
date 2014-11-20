@@ -201,3 +201,8 @@ h1, h2, h3 {
   height: 15px;
   background-color: #727272;
   z-index: 10; }
+
+.row-col {
+  position: absolute;
+  left: 20px;
+  font-size: 13px; }

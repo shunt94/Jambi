@@ -40,7 +40,7 @@
 	        			1<br>		
 	        		</div>
 	        	</div>
-				<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
+				<textarea id='jambiEditor' class="input editor" spellcheck='false'></textarea>	
 	        	<div class="hightlight-code-container regex">
 	        		<pre id="syntax-area" style="word-wrap: break-word;"></pre>
 	        	</div>
@@ -65,39 +65,37 @@
         
         
         <div class="lowerbar">
+        	<div class="row-col">
+        		Line: <span id="jambi-row">1</span>, Column: <span id="jambi-col">1</span>
         	
+        	</div>
         </div>
     </div>
     
 
     <!-- File Save,Load,Etc -->
-    <script type="text/javascript" src="jquery.js"></script>
     <input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="filename.txt" id="saveDialog"/>
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
-	        
 	
+	<script type="text/javascript" src="jquery.js"></script>
+		        
+	<script type="text/javascript" src="public/syntax/jambi_lexer.js"></script>
+    <script type="text/javascript" src="public/syntax/highlight.js"></script>
+    <script type="text/javascript" src="public/syntax/javascript.js"></script>
+    
 		
 	<script type="text/javascript" src="public/js/jambi.js"></script>
     <script type="text/javascript" src="public/js/nodeSetup.js"></script>   
     
-    <script type="text/javascript" src="public/syntax/jambi_lexer.js"></script>
-    <script type="text/javascript" src="public/syntax/highlight.js"></script>
-    <script type="text/javascript" src="public/syntax/javascript.js"></script>
+    <script type="text/javascript" src="public/js/editor.js"></script>
+    
+   
+
 
     <script type="text/javascript">
 		var jambi = new Jambi();
 		jambi.init();
-
-		
-		$('#codeArea').keyup(function() {
-			Highlighter.highlight(document.getElementById('syntax-area'));
-		});
-		
-		$('#codeArea').keydown(function() {
-			Highlighter.highlight(document.getElementById('syntax-area'));
-		});
-
     </script>
     
 
