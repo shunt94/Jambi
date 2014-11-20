@@ -77,7 +77,7 @@ fileSubmenu.append(new gui.MenuItem({
 			console.log($(this).val().split(/(\\|\/)/g).pop());
 			fs.readFile($(this).val(), "utf8", function(error, data) {
 				$('#codeaArea').val('');
-			    $('#jambiEditor').val(data);
+			    $('#codeArea').val(data);
 			});
 		});
 		$('#fileDialog').trigger('click');  
@@ -98,7 +98,7 @@ fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
 fileSubmenu.append(new gui.MenuItem({ 
 	label: 'Save', 
 	click: function() {
-			var textToWrite = $('#jambiEditor').val();
+			var textToWrite = $('#codeArea').val();
 			var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
 			var fileNameToSaveAs = "untitled.html";
 		
@@ -161,7 +161,7 @@ function chooseFile(name) {
 		console.log($(this).val().split(/(\\|\/)/g).pop());
 		fs.readFile($(this).val(), "utf8", function(error, data) {
 			$('#codeaArea').val('');
-		    $('#jambiEditor').val(data);
+		    $('#codeArea').val(data);
 		});
 	});
 	chooser.trigger('click');  

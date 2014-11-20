@@ -5,18 +5,69 @@ function Jambi() {
 		setEventListeners();
 		initScrollers();
 		loadSettings();
-		$('#jambiEditor').focus();
+		Insta();
+		$('#codeArea').focus();
 	}
 	
-	
-	// Load user settings
+	// Get user settings
 	function loadSettings() {
+		// ...
+		// ...
 		$('head').append( $('<link rel="stylesheet" type="text/css" />').attr('href', 'public/css/user.css') );
 	}
 	
+	// Instas - Change Code
+	function Insta() {
+		var textarea = document.getElementById("codeArea");
+		var snippets = {
+		    '$html': '<!DOCTYPE html>\n<html>\n<head>\n    <title></title>\n</head>\n<body>\n\n</body>\n</html>'
+		}
+		
+		
+		var checkCaps = function(e){
+		  
+		  if (e.keyCode != 13) return;
+		  var prepend = "";
+		  var string = "";
+		  var pos = textarea.selectionStart;
+		  var text = textarea.value.split("");
+		  while (pos) {
+		    char = text.splice(pos-1,1);
+		    
+		      if (char == " " || char == "\n") {
+		          prepend = char;
+		          break;
+		      }
+		    string += char 
+		    pos -= 1;
+		  }
+		  if (snippets[string.reverse()]) {
+		      var start = text.splice(0, pos);
+		      var end = text.splice(pos + string.length);
+		      
+		      textarea.value = start.join("") + prepend + snippets[string.reverse()] + prepend + text.join("") + end.join("");
+		  }
+		}
+		
+		
+		textarea.addEventListener("keydown", checkCaps, false);
+		    
+		String.prototype.reverse=function(){return this.split("").reverse().join("");}
+
+
+	}
 
 	
-	// Input text at cursor position
+	function setCursorBlink() {
+	    setInterval(function() {
+	        if ($('#jambi-cursor').css('visibility') == 'hidden') {
+	            $('#jambi-cursor').css('visibility', 'visible');
+	        } else {
+	            $('#jambi-cursor').css('visibility', 'hidden');
+	        }    
+	    }, 500);
+	};
+	
 	function insertAtCursor(texteditor, textInsert) {
 	    if (texteditor.selectionStart || texteditor.selectionStart == '0') {
 	        var startPos = texteditor.selectionStart;
@@ -30,9 +81,9 @@ function Jambi() {
 	}
 	
 	 
-	// Work around for scrollers	
+		
 	function initScrollers() {
-		$('#jambiEditor').on('scroll', function () {
+		$('#codeArea').on('scroll', function () {
 			updatePosition();
 		});
 	}	
@@ -40,7 +91,7 @@ function Jambi() {
 
 	  // line numbers 
 	  function lineNumbers() {
-	  	  var rows = $('#jambiEditor').val().split("\n").length + 1;
+	  	  var rows = $('#codeArea').val().split("\n").length + 1;
 		  $('#linecounter').empty();
 		  if(rows <=1) {
 			  $('#linecounter').append('1<br>');
@@ -52,66 +103,37 @@ function Jambi() {
 		  }
 	  }
 	
-	// Update positions of document
+	
 	function updatePosition() {
-		var scrollPos = document.getElementById('jambiEditor').scrollTop;
+		var scrollPos = document.getElementById('codeArea').scrollTop;
 		$('#linecounter').scrollTop(scrollPos);
 		$('#syntax-area').scrollTop(scrollPos);
 	}
 	
 	
-	// Set event listeners, all events should go in here
 	function setEventListeners() {
-		$('#jambiEditor').keydown(function(event) {
+		$('#codeArea').keydown(function(event) {
 		   
 		    // Tab
 		  	if(event.keyCode == 9) { 
 		 		event.preventDefault(); 	
 		 		insertAtCursor(this, '    ');
 		 	}
-			lineNumbers(); 			
-			updatePosition()
-			getRowandCol();
+			lineNumbers(); 
+			
+			$('#syntax-area').text($('#codeArea').val())
+			
+			updatePosition();
 			
 		});
-		 $('#jambiEditor').keyup(function(event) {
+		 $('#codeArea').keyup(function(event) {
 			  lineNumbers();
+			  $('#syntax-area').text($('#codeArea').val()) 
 			  updatePosition();
-			  getRowandCol();
-			  
-			  $('#syntax-area').text($('#jambiEditor').val()) 
-			  Highlighter.highlight(document.getElementById('syntax-area'));
-			  
 		 });
 	}
 	
 	
-	
-	// Row and Col
-	function getRowandCol() {
-		var editor = document.getElementById('jambiEditor');
-	    var pos = 0;
-	    if (editor.selectionStart) {
-	        pos = editor.selectionStart;
-	    } else if (document.selection) {
-	        editor.focus();
-	
-	        var r = document.selection.createRange();
-	        if (r == null) {
-	            pos = 0;
-	        } else {
-	
-	            var re = editor.createTextRange(),
-	            rc = re.duplicate();
-	            re.moveToBookmark(r.getBookmark());
-	            rc.setEndPoint('EndToStart', re);
-	
-	            pos = rc.text.length;
-	        }
-	    }
-	    $('#jambi-row').html(editor.value.substr(0, pos).split("\n").length);
-	}
-
 	
 	
 	

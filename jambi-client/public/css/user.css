@@ -12,3 +12,7 @@
 
 .lc-container {
   color: #fff; }
+
+.CodeMirror-gutters {
+  background-color: transparent;
+  border-right: none; }

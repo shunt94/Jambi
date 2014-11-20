@@ -5,8 +5,8 @@
     <link rel="stylesheet" href="public/css/main.css">
     <link rel="stylesheet" href="public/css/jambi_editor.css">
     <link rel="stylesheet" href="public/css/font-awesome.min.css">
-    <link rel="stylesheet" href="public/syntax/javascript.css">
-
+	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
+	<link rel="stylesheet" type="text/css" href="public/css/user.css">
 </head>
 
 <body>
@@ -35,15 +35,15 @@
         
         <div class="jambi-body">
 	        <div class="editor-container" id="jambi-editor">
-	        	<div class="lc-container">
+	        <!--	<div class="lc-container">
 	        		<div id="linecounter" class="center">
 	        			1<br>		
 	        		</div>
 	        	</div>
-				<textarea id='jambiEditor' class="input editor" spellcheck='false'></textarea>	
+					<textarea id='codeArea' class="input editor" spellcheck='false'></textarea>	
 	        	<div class="hightlight-code-container regex">
 	        		<pre id="syntax-area" style="word-wrap: break-word;"></pre>
-	        	</div>
+	        	</div> -->
 		    </div>
 	        
 	        <div class="sidebar">
@@ -65,37 +65,49 @@
         
         
         <div class="lowerbar">
-        	<div class="row-col">
-        		Line: <span id="jambi-row">1</span>, Column: <span id="jambi-col">1</span>
         	
-        	</div>
         </div>
     </div>
     
-
+    
+    <style type="text/css">
+	    .CodeMirror {
+			background: none;
+			height: 100%;    
+	    }
+    </style>
+    
     <!-- File Save,Load,Etc -->
+    <script type="text/javascript" src="jquery.js"></script>
     <input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="filename.txt" id="saveDialog"/>
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
+	        
 	
-	<script type="text/javascript" src="jquery.js"></script>
-		        
-	<script type="text/javascript" src="public/syntax/jambi_lexer.js"></script>
-    <script type="text/javascript" src="public/syntax/highlight.js"></script>
-    <script type="text/javascript" src="public/syntax/javascript.js"></script>
-    
 		
-	<script type="text/javascript" src="public/js/jambi.js"></script>
+	<!--<script type="text/javascript" src="public/js/jambi.js"></script>
+	<script type="text/javascript" src="public/js/syntax.js"></script>-->
     <script type="text/javascript" src="public/js/nodeSetup.js"></script>   
     
-    <script type="text/javascript" src="public/js/editor.js"></script>
+
     
-   
-
-
+    <script src="codemirror/lib/codemirror.js"></script>
+	<script src="codemirror/mode/css/css.js"></script>
+    
+    
     <script type="text/javascript">
-		var jambi = new Jambi();
-		jambi.init();
+		//var jambi = new Jambi();
+		//jambi.init();
+		
+		
+		var myCodeMirror = CodeMirror(document.getElementById('jambi-editor'), {
+		  mode:  "css",
+		  lineWrapping: true,
+		  lineNumbers: true
+		});
+		
+	
+		
     </script>
     
 
