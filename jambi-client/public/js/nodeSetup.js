@@ -176,4 +176,4 @@ onload = function() {
     win.maximize();
 }
 
-gui.Shell.openExternal("https://www.google.co.uk/?gws_rd=ssl#q=searchitemhere%20site%3Astackoverflow.com")
+//gui.Shell.openExternal("https://www.google.co.uk/?gws_rd=ssl#q=searchitemhere%20site%3Astackoverflow.com")

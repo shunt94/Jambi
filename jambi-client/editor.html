@@ -92,8 +92,17 @@
     <script type="text/javascript" src="public/js/nodeSetup.js"></script>   
     
     <script type="text/javascript">
+		
+		var mixedMode = {
+	        name: "htmlmixed",
+	        scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+	                       mode: null},
+	                      {matches: /(text|application)\/(x-)?vb(a|script)/i,
+	                       mode: "vbscript"}]
+	      };
+		
 		var myCodeMirror = CodeMirror(document.getElementById('jambi-editor'), {
-		  mode:  "text/html",
+		  mode:  mixedMode,
 		  theme: "monokai",
 		  lineWrapping: true,
 		  lineNumbers: true,
