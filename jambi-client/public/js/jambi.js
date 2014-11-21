@@ -1,150 +1,62 @@
-function Jambi() {
-
-	function initJambi() {
-		//setCursorBlink();
-		setEventListeners();
-		initScrollers();
-		loadSettings();
-		Insta();
-		$('#codeArea').focus();
-	}
-	
-	// Get user settings
-	function loadSettings() {
-		// ...
-		// ...
-		$('head').append( $('<link rel="stylesheet" type="text/css" />').attr('href', 'public/css/user.css') );
-	}
-	
-	// Instas - Change Code
-	function Insta() {
-		var textarea = document.getElementById("codeArea");
-		var snippets = {
-		    '$html': '<!DOCTYPE html>\n<html>\n<head>\n    <title></title>\n</head>\n<body>\n\n</body>\n</html>'
-		}
+var Jambi = function() {
 		
-		
-		var checkCaps = function(e){
-		  
-		  if (e.keyCode != 13) return;
-		  var prepend = "";
-		  var string = "";
-		  var pos = textarea.selectionStart;
-		  var text = textarea.value.split("");
-		  while (pos) {
-		    char = text.splice(pos-1,1);
-		    
-		      if (char == " " || char == "\n") {
-		          prepend = char;
-		          break;
-		      }
-		    string += char 
-		    pos -= 1;
-		  }
-		  if (snippets[string.reverse()]) {
-		      var start = text.splice(0, pos);
-		      var end = text.splice(pos + string.length);
-		      
-		      textarea.value = start.join("") + prepend + snippets[string.reverse()] + prepend + text.join("") + end.join("");
-		  }
-		}
-		
-		
-		textarea.addEventListener("keydown", checkCaps, false);
-		    
-		String.prototype.reverse=function(){return this.split("").reverse().join("");}
-
-
-	}
-
-	
-	function setCursorBlink() {
-	    setInterval(function() {
-	        if ($('#jambi-cursor').css('visibility') == 'hidden') {
-	            $('#jambi-cursor').css('visibility', 'visible');
-	        } else {
-	            $('#jambi-cursor').css('visibility', 'hidden');
-	        }    
-	    }, 500);
-	};
-	
-	function insertAtCursor(texteditor, textInsert) {
-	    if (texteditor.selectionStart || texteditor.selectionStart == '0') {
-	        var startPos = texteditor.selectionStart;
-	        var endPos = texteditor.selectionEnd;
-	        texteditor.value = texteditor.value.substring(0, startPos)+ textInsert + texteditor.value.substring(endPos, texteditor.value.length);
-	        texteditor.selectionStart = startPos + textInsert.length;
-	        texteditor.selectionEnd = startPos + textInsert.length;
-	    } else {
-	        texteditor.value += textInsert;
-	    }
-	}
-	
-	 
-		
-	function initScrollers() {
-		$('#codeArea').on('scroll', function () {
-			updatePosition();
-		});
-	}	
-	
-
-	  // line numbers 
-	  function lineNumbers() {
-	  	  var rows = $('#codeArea').val().split("\n").length + 1;
-		  $('#linecounter').empty();
-		  if(rows <=1) {
-			  $('#linecounter').append('1<br>');
-		  }
-		  else {
-			  for(var k = 1; k<rows; k++) {
-				  $('#linecounter').append(k + '<br>');
-			  }
-		  }
-	  }
-	
-	
-	function updatePosition() {
-		var scrollPos = document.getElementById('codeArea').scrollTop;
-		$('#linecounter').scrollTop(scrollPos);
-		$('#syntax-area').scrollTop(scrollPos);
-	}
-	
-	
-	function setEventListeners() {
-		$('#codeArea').keydown(function(event) {
-		   
-		    // Tab
-		  	if(event.keyCode == 9) { 
-		 		event.preventDefault(); 	
-		 		insertAtCursor(this, '    ');
-		 	}
-			lineNumbers(); 
-			
-			$('#syntax-area').text($('#codeArea').val())
-			
-			updatePosition();
-			
-		});
-		 $('#codeArea').keyup(function(event) {
-			  lineNumbers();
-			  $('#syntax-area').text($('#codeArea').val()) 
-			  updatePosition();
-		 });
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	return {
-		init: function() {
-			initJambi();
-		}
-	}
-	
 }
+
+Jambi.prototype.init = function() {
+
+
+
+	// Create code mirror
+	var mixedMode = {
+	    name: "htmlmixed",
+	    scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+	       mode: null},
+	      {matches: /(text|application)\/(x-)?vb(a|script)/i,
+	       mode: "vbscript"}]
+	  };
+	
+	var jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
+	  mode:  mixedMode,
+	  theme: "monokai",
+	  lineWrapping: true,
+	  lineNumbers: true,
+	  tabSize: 4,
+	  indentUnit: 4,
+	  indentWithTabs: true,
+	  autoCloseTags: true
+	});
+	
+	jambiEditor.focus();
+}
+
+Jambi.prototype.newFile = function() {
+	console.log("Adding new file");
+	
+	// Create new instance of Editor
+	
+
+	
+	// Set Editor to visible and others to hidden
+	
+
+	
+	// Add new file tab to top bar
+	
+	
+			
+}
+
+
+
+Jambi.prototype.saveFile = function() {
+	var textToWrite = $('#jambiEditor').val();
+	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+	var fileNameToSaveAs = "untitled.html";
+
+	var downloadLink = document.createElement("a");
+	downloadLink.download = fileNameToSaveAs;
+	downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+	downloadLink.click();
+}
+
+

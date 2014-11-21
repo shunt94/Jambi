@@ -1,8 +1,8 @@
-html, body {
+html, body, h1 {
 	font-family: 'Lato', sans-serif;
 }
 
-.jumbotron h1, .jumbotron .h1 {
+h1 {
 	font-weight: 300;
 	font-size: 6em;
 }
@@ -46,6 +46,11 @@ html, body {
 body {
   padding-bottom: 40px;
   color: #5a5a5a;
+}
+
+.navbar {
+  border-radius: 0;
+  margin-bottom: 0; 
 }
 
 

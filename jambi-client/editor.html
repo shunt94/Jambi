@@ -10,12 +10,7 @@
 	
 	<link rel="stylesheet" href="codemirror/theme/monokai.css">
 	
-	<script src="codemirror/lib/codemirror.js"></script>
-	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
-	<script src="codemirror/mode/xml/xml.js"></script>
-	<script src="codemirror/mode/javascript/javascript.js"></script>
-	<script src="codemirror/mode/css/css.js"></script>
-	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
 </head>
 
 <body>
@@ -42,29 +37,14 @@
 			</div>
         </div>
         
-        <div class="jambi-body">
-	        <div class="editor-container" id="jambi-editor"></div>
-	        
-	        <div class="sidebar">
-	        	<div class="sidebar-title center">
-	        		Jambi
-	        	</div>
-	        	
-	        	<div class="sidebar-content">
-
-	        	</div>
-	        	
-	        	<div class="sidebar-footer">
-					<div id="stackoverflow-search">
-						<input type="text" placeholder="Search Stackoverflow.com"/>
-					</div>
-				</div>
-	        </div>
-        </div>
+        <div class="jambi-body" id="jambi-body">
+	    
+	    </div>
         
         
         <div class="lowerbar">
-        	
+        	<a href='#/project' class="btn btn-primary">Projects</a>
+        	<a href='' class="btn btn-primary">Editor</a>
         </div>
     </div>
     
@@ -83,34 +63,127 @@
     </style>
     
     <!-- File Save,Load,Etc -->
-    <script type="text/javascript" src="jquery.js"></script>
     <input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="filename.txt" id="saveDialog"/>
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
-	        
 	
-    <script type="text/javascript" src="public/js/nodeSetup.js"></script>   
+	
+	<script type="text/javascript" src="jquery.js"></script>
+	
+	<script src="codemirror/lib/codemirror.js"></script>
+	
+	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<script src="codemirror/mode/xml/xml.js"></script>
+	<script src="codemirror/mode/javascript/javascript.js"></script>
+	<script src="codemirror/mode/css/css.js"></script>
+	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script> 
+	
+	<script src="public/js/jambi.js"></script>   
+	
+	<script src="public/js/underscore-min.js"></script>   
+	<script src="public/js/backbone-min.js"></script>
+	 
+	
+    <script type="text/javascript" src="public/js/jambiSetup.js"></script>   
+    <!--<script type="text/javascript" src="public/js/winstate.js"></script>-->
+    
+    <script type="text/template" id="user-edit-template">
+     
+     	<div class="editor-container" id="jambi-editor"></div>
+	        
+        <div class="sidebar">
+        	<div class="sidebar-title center">
+        		Jambi
+        	</div>
+        	
+        	<div class="sidebar-content">
+
+        	</div>
+        	
+        	<div class="sidebar-footer">
+				<div id="stackoverflow-search">
+					<input type="text" placeholder="Search Stackoverflow.com"/>
+				</div>
+			</div>
+        </div>
+
+    </script>
+    
+    <script type="text/template" id="projects-template">
+	        
+
+
+    
+    </script>
     
     <script type="text/javascript">
 		
-		var mixedMode = {
-	        name: "htmlmixed",
-	        scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
-	                       mode: null},
-	                      {matches: /(text|application)\/(x-)?vb(a|script)/i,
-	                       mode: "vbscript"}]
-	      };
+		var nSetup = new jambiSetup();
+		var jambi = new Jambi();
 		
-		var myCodeMirror = CodeMirror(document.getElementById('jambi-editor'), {
-		  mode:  mixedMode,
-		  theme: "monokai",
-		  lineWrapping: true,
-		  lineNumbers: true,
-		  tabSize: 4,
-		  indentUnit: 4,
-		  indentWithTabs: true,
-		  autoCloseTags: true
+		
+		// Backbone
+		var User = Backbone.Model.extend({
+			urlRoot: '/users'
 		});
+	
+
+	
+
+	
+	
+		var EditorView = Backbone.View.extend({
+			el: '#jambi-body',
+			render: function(){
+				var template = _.template($('#user-edit-template').html(), {});
+				this.$el.html(template);
+			}
+		});
+		
+		var ProjectView = Backbone.View.extend({
+			el: '#jambi-body',
+			render: function(){
+				var template = _.template($('#projects-template').html(), {});
+				this.$el.html(template);
+			}
+		});
+	
+		var Router = Backbone.Router.extend({
+			routes: {
+				'': 'home',
+				'project': 'projects'
+			}
+		});
+		
+		var editorView = new EditorView();
+		var projectView = new ProjectView();
+	
+		var router = new Router();
+		router.on('route:home', function() {
+			editorView.render();
+		});
+		
+		router.on('route:projects', function() {
+			projectView.render();
+		});
+	
+	
+		Backbone.history.start();
+		
+		
+		
+		jambi.init();
+		
+		
+		/*
+nSetup.gui.Window.get().menu.items[1].submenu.items[9].click = function() {
+			jambi.saveFile();
+		}
+*/
+		
+		
+		
+				
     </script>
     
 
