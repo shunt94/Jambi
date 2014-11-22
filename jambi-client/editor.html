@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="public/css/jambi_editor.css">
     <link rel="stylesheet" href="public/css/font-awesome.min.css">
 	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
+	
 	<link rel="stylesheet" type="text/css" href="public/css/user.css">
 	
 	<link rel="stylesheet" href="codemirror/theme/monokai.css">
@@ -44,7 +45,7 @@
         
         <div class="lowerbar">
         	<a href='#/project' class="btn btn-primary">Projects</a>
-        	<a href='' class="btn btn-primary">Editor</a>
+        	<a href='#/home' class="btn btn-primary">Editor</a>
         </div>
     </div>
     
@@ -85,7 +86,7 @@
 	 
 	
     <script type="text/javascript" src="public/js/jambiSetup.js"></script>   
-    <script type="text/javascript" src="public/js/winstate.js"></script>
+    <!--<script type="text/javascript" src="public/js/winstate.js"></script>-->
     
     <script type="text/template" id="user-edit-template">
      
@@ -118,8 +119,12 @@
     
     <script type="text/javascript">
 		
-		var nSetup = new jambiSetup();
+		
+		
 		var jambi = new Jambi();
+		jambi.menuSetup();
+		
+		var firstLoad = true;
 		
 		
 		// Backbone
@@ -145,7 +150,7 @@
 	
 		var Router = Backbone.Router.extend({
 			routes: {
-				'': 'home',
+				'home': 'home',
 				'project': 'projects'
 			}
 		});
@@ -157,6 +162,11 @@
 		var router = new Router();
 		router.on('route:home', function() {
 			editorView.render();
+			if(firstLoad) {
+				jambi.initCodeMirror();
+				firstLoad = false;
+			}
+			
 		});
 		
 		router.on('route:projects', function() {
@@ -166,18 +176,18 @@
 	
 		Backbone.history.start();
 		
-		jambi.init();
+		window.location.replace("#/home");
 		
 		
 		
 		
-		/*
-nSetup.gui.Window.get().menu.items[1].submenu.items[9].click = function() {
-			jambi.saveFile();
-		}
-*/
 		
 		
+		
+		
+
+		
+		console.log(jambi);
 		
 				
     </script>

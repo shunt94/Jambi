@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>node-webkit</string>
+	<string>Jambi</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
