@@ -12,6 +12,7 @@
     "width": 1000,
     "height": 600,
     "min_width": 400,
+    "show": false,
     "min_height": 350
   }
 }
