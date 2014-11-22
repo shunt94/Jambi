@@ -1,11 +1,22 @@
 var Jambi = function() {
 	
+	var jSetup = new jambiSetup();
+	var jambiEditor;
+	
+	var currentFileDir;
+	
+	var fs = require('fs');
 	
 	Jambi.prototype.menuSetup = function() {
-		var jSetup = new jambiSetup();	
 		jSetup.jambiMenu.file.fileSave.click = function() {
 			jambi.saveFile();
 		}
+		jSetup.jambiMenu.file.fileSaveAs.click = function() {
+			jambi.saveFileAs();
+		}	
+		jSetup.jambiMenu.file.fileOpen.click = function() {
+			jambi.openFile();
+		}		
 	}
 	
 	
@@ -23,7 +34,7 @@ var Jambi = function() {
 		       mode: "vbscript"}]
 		  };
 		
-		var jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
+		jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
 		  mode:  mixedMode,
 		  theme: "monokai",
 		  lineWrapping: true,
@@ -55,15 +66,48 @@ var Jambi = function() {
 	}
 	
 	
+	Jambi.prototype.openFile = function() {
+		$('#fileDialog').change(function(evt) {
+			fs.readFile($(this).val(), "utf8", function(error, data) {
+				if(error) {
+					alert(error);
+				}
+				else{ 
+					jambiEditor.doc.setValue(data);
+				}
+			});
+		});
+		$('#fileDialog').trigger('click'); 	
+	}
 	
-	Jambi.prototype.saveFile = function() {
-		var textToWrite = $('#jambiEditor').val();
+	Jambi.prototype.saveFile = function(fileName) {
+		if(currentFileDir) {
+			fileName = currentFileDir;
+			fs.writeFile(fileName, jambiEditor.doc.getValue(), function(err) {
+			    if(err) {
+			        alert(err);
+			    } else {
+			        console.log("The file was saved!");
+			    }
+			}); 
+		}
+		else {
+			this.saveFileAs();
+		}
+	}
+	
+	Jambi.prototype.saveFileAs = function() {
+		var textToWrite = jambiEditor.doc.getValue();
 		var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+		
+		// If file already has a name, use that, else use untitled
 		var fileNameToSaveAs = "untitled.html";
 	
 		var downloadLink = document.createElement("a");
 		downloadLink.download = fileNameToSaveAs;
+//		currentFileDir = fileNameToSaveAs;
 		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+		console.log(downloadLink);
 		downloadLink.click();
 	}
 
