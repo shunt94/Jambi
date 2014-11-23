@@ -1,18 +1,29 @@
 {
-  "name": "Jambi",
-  "description": "Web Development IDE",
-  "version": "1",
-  "main": "editor.html",
-  "window": {
-    "title": "Jambi",
-    "icon": "public/icons/icon.png",
-    "toolbar": true,
-    "frame": true,
-    "position": "mouse",
-    "width": 1000,
-    "height": 600,
-    "min_width": 400,
-    //"show": false,
-    "min_height": 350
-  }
+	"name": "Jambi",
+	"description": "Web Development IDE",
+	"version": "0.1.0",
+	"main": "editor.html",
+	"window": {
+		"title": "Jambi",
+		"icon": "public/icons/icon.png",
+		"toolbar": true,
+		"frame": true,
+		"position": "mouse",
+		"width": 1000,
+		"height": 600,
+		"min_width": 400,
+		"min_height": 350
+	},
+	"licenses": [{
+			"type": "GPLv2",
+			"url": "http://www.example.com/licenses/gpl.html"
+	}],
+	"maintainers": [{
+		"name": "Simon Hunt",
+		"email": "shunt94@hotmail.co.uk",
+		"web": "http://www.bradingsoftware.co.uk"
+	}],
+	"devDependencies": {
+		"mocha": "^2.0.1"
+	}
 }
