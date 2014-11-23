@@ -7,6 +7,7 @@ var Jambi = function() {
 	
 	var fs = require('fs');
 	
+	
 	Jambi.prototype.menuSetup = function() {
 		jSetup.jambiMenu.file.fileSave.click = function() {
 			jambi.saveFile();
@@ -16,13 +17,35 @@ var Jambi = function() {
 		}	
 		jSetup.jambiMenu.file.fileOpen.click = function() {
 			jambi.openFile();
+		}
+		jSetup.jambiMenu.file.fileNewSubmenu[0].value.click = function() {
+			jambi.newFile();
+		}
+		jSetup.jambiMenu.file.fileClearSettings.click = function() {
+			storedb('userSettings').remove()
 		}		
 	}
 	
 	
 	Jambi.prototype.initCodeMirror = function() {
-	
+		// User Settings
+		var codeMirrortheme;
+		var currentProject;
 		
+		
+		// Find user settings using storeDB
+		storedb('userSettings').find({"setting":"theme"},function(err,result){
+		  if(err){
+		  	console.log("Could not find theme");
+		  	codeMirrortheme = "ambiance";
+		  } else {
+			  codeMirrortheme = result[0].setTo;
+			  var newTheme = eval(' result[0].setTo '); // CHANGE THIS ASAP - IT's HORRIBLE!!!!
+			  $("#themeselector option").filter(function() {
+				    return $(this).text() == newTheme; 
+			  }).prop('selected', true);
+		  }
+		})
 	
 		
 		// Create code mirror
@@ -36,7 +59,7 @@ var Jambi = function() {
 		
 		jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
 		  mode:  mixedMode,
-		  theme: "monokai",
+		  theme: codeMirrortheme,
 		  lineWrapping: true,
 		  lineNumbers: true,
 		  tabSize: 4,
@@ -46,6 +69,34 @@ var Jambi = function() {
 		});
 		
 		jambiEditor.focus();
+		
+		
+		
+		
+		
+		
+		$('#themeselector').on('change', function() {
+			var theme = $('#themeselector option:selected').text();
+			jambiEditor.setOption("theme", theme);
+			
+			storedb('userSettings').remove({"setting":"theme"},function(err){});
+			
+			storedb('userSettings').insert({"setting":"theme","setTo": theme},function(err,result){
+			  if(err){
+			    console.log("User Settings could not be saved..");
+			    console.log(err);
+			  } else {
+				console.log("User Settings Saved.. Deleting old data");  
+			  }
+			});
+			
+		});
+		
+		
+		$('#modeSelector').on('change', function() {
+			var mode = $( "#modeSelector option:selected" ).attr('data-mode');
+			jambiEditor.setOption("mode", mode);
+		});
 	}
 	
 	Jambi.prototype.newFile = function() {
@@ -61,8 +112,6 @@ var Jambi = function() {
 		
 		// Add new file tab to top bar
 		
-		
-				
 	}
 	
 	
@@ -109,6 +158,10 @@ var Jambi = function() {
 		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
 		console.log(downloadLink);
 		downloadLink.click();
+	}
+	
+	Jambi.prototype.saveUserSetting = function(setting, value) {
+			
 	}
 
 }

@@ -51,7 +51,8 @@ var jambiSetup = function() {
 			fileClose:			new gui.MenuItem({ label: 'Close' }),
 			fileCloseAll:		new gui.MenuItem({ label: 'Close All' }),
 			fileSave:			new gui.MenuItem({ label: 'Save', key: "s", modifiers: "cmd" }),
-			fileSaveAs:			new gui.MenuItem({ label: 'Save As...', key: "s",modifiers: "cmd-shift" })
+			fileSaveAs:			new gui.MenuItem({ label: 'Save As...', key: "s",modifiers: "cmd-shift" }),
+			fileClearSettings:	new gui.MenuItem({ label: 'Clear Settings' })
 		},
 		view: {
 			
@@ -93,6 +94,8 @@ var jambiSetup = function() {
 		fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
 		fileSubmenu.append(jambiMenu.file.fileSave);
 		fileSubmenu.append(jambiMenu.file.fileSaveAs);
+		fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
+		fileSubmenu.append(jambiMenu.file.fileClearSettings);
 	})();
 	
 

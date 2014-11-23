@@ -1,12 +1,30 @@
-#jambiCode {
-  font-family: "Meslo";
-  cursor: default;
+.theme-selector select {
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  font-size: 12px; }
+  .theme-selector select:focus {
+    outline: none; }
+
+.theme-selector {
+  overflow: hidden;
+  display: inline-block;
   position: absolute;
-  height: calc(100% - 50px);
-  max-width: 100%;
-  padding-right: 10px;
-  padding-left: 50px;
-  padding-bottom: 50px;
-  font-size: 14px;
-  margin: 0;
+  right: 220px;
+  color: #d0d0d0;
+  font-size: 12px;
   padding-top: 2px; }
+
+.editor-info {
+  position: absolute;
+  left: 40%;
+  display: inline-block;
+  font-size: 12px;
+  padding-top: 2px; }
+
+@media screen and (max-width: 900px) {
+  .theme-selector {
+    right: 10px; }
+
+  .editor-info {
+    left: 30%; } }
