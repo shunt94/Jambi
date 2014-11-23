@@ -8,6 +8,17 @@ app.get('/', function(req,res) {
   res.sendfile('public/index.html');
 });
 
+app.get('/api', function(req,res) {
+	res.json({
+		"cdns": {
+			"bootstrap-css": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css",
+			"bootstrap-js": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js",
+			"bootstrap-theme": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css",
+			"jquery": "https://code.jquery.com/jquery-2.1.1.min.js"
+		}
+	});
+});
+
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 })

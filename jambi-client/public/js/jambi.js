@@ -71,7 +71,20 @@ var Jambi = function() {
 		jambiEditor.focus();
 		
 		
-		
+		$.ajax({
+			type: 'GET',
+			url: "jambi.herokuapp.com/api",
+			async: false,
+			contentType: "application/json",
+			dataType: 'json',
+			success: function(data) {
+				console.log(data);
+			},
+			error: function(e) {
+				alert("Error: " + e);
+			}
+		});
+
 		
 		
 		
