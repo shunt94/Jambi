@@ -73,12 +73,13 @@ var Jambi = function() {
 		
 		$.ajax({
 			type: 'GET',
-			url: "jambi.herokuapp.com/api",
+			url: "http://jambi.herokuapp.com/api",
 			async: false,
 			contentType: "application/json",
 			dataType: 'json',
 			success: function(data) {
 				console.log(data);
+				jambiEditor.setValue(data.cdns.bootstrap_css);
 			},
 			error: function(e) {
 				alert("Error: " + e);
