@@ -79,7 +79,7 @@ var Jambi = function() {
 			dataType: 'json',
 			success: function(data) {
 				console.log(data);
-				jambiEditor.setValue(data.cdns.bootstrap_css);
+				jambiEditor.setValue('<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_css + '"> \n' +'<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_theme + '"> \n' + '<script type="text/javascript" src="' + data.cdns.jquery + '"></script> \n' + '<script type="text/javascript" src="' + data.cdns.bootstrap_js + '"></script> \n');
 			},
 			error: function(e) {
 				alert("Error: " + e);
