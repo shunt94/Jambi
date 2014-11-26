@@ -32,18 +32,33 @@
         <div class="topbar">
 	        <div class="topbar-tabs">
 	        	<div id="openfiles">
-	        		<div class="file-container">
-	        			<div class="file active">
-		        			<span class="close"><i class="fa fa-times-circle"></i></span>
-	        				<span class="filename">index.html</span>
-	        			</div>
-	        		</div>
-					<div class="file-container">
-	        			<div class="file">
-	        				<span class="close"><i class="fa fa-times-circle"></i></span>
-	        				<span class="filename">projectindex.js</span>
-	        			</div>
-	        		</div>
+	        		<ul class="file-ul">
+		        		<li class="file-container">
+		        			<a href="#tab1">
+			        			<div class="file active">
+				        			<span class="close"><i class="fa fa-times-circle"></i></span>
+			        				<span class="filename">index.html</span>
+			        			</div>
+		        			</a>
+		        		</li>
+						<li class="file-container">
+							<a href="#tab2">
+			        			<div class="file">
+			        				<span class="close"><i class="fa fa-times-circle"></i></span>
+			        				<span class="filename">projectindex.js</span>
+			        			</div>
+							</a>
+		        		</li>
+		        		<li class="file-container">
+							<a href="#tab3">
+			        			<div class="file">
+			        				<span class="close"><i class="fa fa-times-circle"></i></span>
+			        				<span class="filename">asd.js</span>
+			        			</div>
+							</a>
+		        		</li>
+
+					</ul>
 	        	</div>
 	        </div>
 	        <div class="newfile-tab">
@@ -157,21 +172,28 @@
     <script type="text/javascript" src="public/js/jambiSetup.js"></script>   
     <script type="text/javascript" src="public/js/winstate.js"></script>
     
-    
+    <script type="text/javascript" src="public/js/jquery-ui.min.js"></script>
     
     
     
     <script type="text/template" id="user-edit-template">
-     
-     	<div class="editor-container" id="jambi-editor"></div>
-	        
+     	<div id="tab1">
+	     	<div class="editor-container" id="jambi-editor"></div>
+     	</div>
+     	<div id="tab2">
+     		<div class="editor-container" id="jambi-editor2"></div>
+     	</div>
+     	<div id="tab3">
+     		<div class="editor-container" id="jambi-editor3"></div>
+     	</div>
+
         <div class="sidebar">
         	<div class="sidebar-title center">
         		Jambi
         	</div>
         	
         	<div class="sidebar-content">
-
+				<h4>Timer</h4>
         	</div>
         	
         	<div class="sidebar-footer">
@@ -191,7 +213,12 @@
     
     <script type="text/javascript">
 		var jambi = new Jambi();
-		jambi.menuSetup();				
+		jambi.menuSetup();	
+		
+		
+		$( ".container" ).tabs();
+		
+					
     </script>
     
     <script type="text/javascript" src="public/js/jambi/models.js"></script>

@@ -22,7 +22,7 @@ var Jambi = function() {
 			jambi.newFile();
 		}
 		jSetup.jambiMenu.file.fileClearSettings.click = function() {
-			storedb('userSettings').remove()
+			storedb('userSettings').remove();
 		}		
 	}
 	
@@ -45,7 +45,7 @@ var Jambi = function() {
 				    return $(this).text() == newTheme; 
 			  }).prop('selected', true);
 		  }
-		})
+		});
 	
 		
 		// Create code mirror
@@ -68,13 +68,37 @@ var Jambi = function() {
 		  autoCloseTags: true
 		});
 		
+		var jambiEditor2 = CodeMirror(document.getElementById('jambi-editor2'), {
+		  mode:  mixedMode,
+		  theme: codeMirrortheme,
+		  lineWrapping: true,
+		  lineNumbers: true,
+		  tabSize: 4,
+		  indentUnit: 4,
+		  indentWithTabs: true,
+		  autoCloseTags: true
+		});
+		var jambiEditor3 = CodeMirror(document.getElementById('jambi-editor3'), {
+		  mode:  mixedMode,
+		  theme: codeMirrortheme,
+		  lineWrapping: true,
+		  lineNumbers: true,
+		  tabSize: 4,
+		  indentUnit: 4,
+		  indentWithTabs: true,
+		  autoCloseTags: true
+		});
+
+		
+		
+		
 		jambiEditor.focus();
 		
 		
 		$.ajax({
 			type: 'GET',
 			url: "http://jambi.herokuapp.com/api",
-			async: false,
+			async: true,
 			contentType: "application/json",
 			dataType: 'json',
 			success: function(data) {
