@@ -1,3 +1,5 @@
+(function() {
+	
 var Project = Backbone.Model.extend({
 	projectLocation: "/",
 	files: []
@@ -27,6 +29,14 @@ var ProjectView = Backbone.View.extend({
 	}
 });
 
+var ShowcaseView = Backbone.View.extend({
+	el: '#jambi-body',
+	render: function(){
+		var template = _.template($('#showcase-template').html(), {});
+		this.$el.html(template);
+	}
+});
+
 var firstLoad = true;
 		
 		
@@ -38,13 +48,15 @@ var firstLoad = true;
 var Router = Backbone.Router.extend({
 	routes: {
 		'home': 'home',
-		'project': 'projects'
+		'project': 'projects',
+		'showcase': 'showcase'
 	}
 });
 
 
 var editorView = new EditorView();
 var projectView = new ProjectView();
+var showcaseView = new ShowcaseView();
 
 var router = new Router();
 router.on('route:home', function() {
@@ -59,7 +71,13 @@ router.on('route:projects', function() {
 	projectView.render();
 });
 
+router.on('route:showcase', function() {
+	showcaseView.render();
+});
 
 Backbone.history.start();
 
 window.location.replace("#/home");
+
+
+})();
