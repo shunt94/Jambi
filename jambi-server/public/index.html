@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Jambi - The free web development code editor">
+    <meta name="author" content="Simon Hunt">
     <link rel="icon" href="../../favicon.ico">
 
     <title>Jambi - The free web development code editor</title>
@@ -34,12 +34,12 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li class="active">
-						<a href="#">Link
+						<a href="#">Home
 							<span class="sr-only">(current)</span>
 						</a>
 					</li>
 					<li>
-						<a href="#">Link</a>
+						<a href="#">About</a>
 					</li>
 				</ul>
 			</div>
@@ -50,7 +50,8 @@
       <div class="container ">
         <h1>Jambi</h1>
         <div class="col-md-12">
-        <p>The free web development code editor for all front-end developers and designers</p>
+        <p>The free web development code editor for <br><strong>Web Developers</strong> and <strong>Designers</strong></p>
+        <br>
         <p><a class="btn btn-primary btn-lg" role="button">Download Now<br> (<span class="small" id="downloadOS">Mac OSX</span>)</a></p>
         <div class="spacer"></div>
 	        <img class="img-responsive jambi-info" src="img/jambi1.png">
@@ -63,11 +64,13 @@
 	<script src="js/bootstrap.min.js"></script>
 	
 	<script type="text/javascript">
-		var OSName;
-		if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
-		if (navigator.appVersion.indexOf("Mac")!=-1) OSName="Mac OSX";
-		if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
-		$('#downloadOS').text(OSName);
+		(function() {
+			var OSName;
+			if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
+			if (navigator.appVersion.indexOf("Mac")!=-1) OSName="Mac OSX";
+			if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+			$('#downloadOS').text(OSName);
+		})();
 	</script>
   </body>
 </html>
