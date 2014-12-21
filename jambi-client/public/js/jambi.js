@@ -56,7 +56,8 @@ var Jambi = function() {
 		      {matches: /(text|application)\/(x-)?vb(a|script)/i,
 		       mode: "vbscript"}]
 		  };
-		
+		  
+		var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
 		jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
 		  mode:  mixedMode,
 		  theme: codeMirrortheme,
@@ -65,34 +66,40 @@ var Jambi = function() {
 		  tabSize: 4,
 		  indentUnit: 4,
 		  indentWithTabs: true,
-		  autoCloseTags: true
+		  autoCloseTags: true,
+		  matchBrackets: true,
+		  autoCloseBrackets: true,
+		  matchTags: true,
+		  foldGutter: true,
+		  highlightSelectionMatches: true,
+		  styleActiveLine: true
 		});
 		
-		var jambiEditor2 = CodeMirror(document.getElementById('jambi-editor2'), {
-		  mode:  mixedMode,
-		  theme: codeMirrortheme,
-		  lineWrapping: true,
-		  lineNumbers: true,
-		  tabSize: 4,
-		  indentUnit: 4,
-		  indentWithTabs: true,
-		  autoCloseTags: true
+		jambiEditor.on("gutterClick", foldLine);
+		jambiEditor.on("keyup", function(e){
+//			jambiEditor.showHint(e);
 		});
-		var jambiEditor3 = CodeMirror(document.getElementById('jambi-editor3'), {
-		  mode:  mixedMode,
-		  theme: codeMirrortheme,
-		  lineWrapping: true,
-		  lineNumbers: true,
-		  tabSize: 4,
-		  indentUnit: 4,
-		  indentWithTabs: true,
-		  autoCloseTags: true
-		});
+		jambiEditor.focus();
+		
 
 		
+		// Instas
+		
+		// if $ is detected then init Insta
+		
+
+
+		
+		function insertAtCursor(text) {
+			jambiEditor.replaceSelection(text);
+		}
 		
 		
-		jambiEditor.focus();
+		
+		
+		
+		
+		
 		
 		
 		$.ajax({
@@ -109,7 +116,6 @@ var Jambi = function() {
 				alert("Error: " + e);
 			}
 		});
-
 		
 		
 		

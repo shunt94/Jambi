@@ -11,6 +11,11 @@ var File = Backbone.Model.extend({
 	fileLoc: "/"
 });
 
+var JambiDocument = Backbone.Model.extend({
+	text: "",
+	type: ""
+});
+
 
 
 var EditorView = Backbone.View.extend({

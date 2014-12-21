@@ -28,6 +28,47 @@
 </head>
 
 <body>
+<style>
+.CodeMirror-hints {
+  position: absolute;
+  z-index: 10;
+  overflow: hidden;
+  list-style: none;
+
+  margin: 0;
+  padding: 2px;
+
+  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  border-radius: 3px;
+  border: 1px solid silver;
+
+  background: white;
+  font-size: 90%;
+  font-family: monospace;
+
+  max-height: 20em;
+  overflow-y: auto;
+}
+
+.CodeMirror-hint {
+  margin: 0;
+  padding: 0 4px;
+  border-radius: 2px;
+  max-width: 19em;
+  overflow: hidden;
+  white-space: pre;
+  color: black;
+  cursor: pointer;
+}
+
+li.CodeMirror-hint-active {
+  background: #08f;
+  color: white;
+}
+</style>
+
     <div class="container">
         <div class="topbar">
 	        <div class="topbar-tabs">
@@ -163,6 +204,29 @@
 	<script src="codemirror/mode/sass/sass.js"></script>
 	<script src="codemirror/mode/python/python.js"></script>
 	
+	<!-- CodeMirror Addons -->
+	<script src="codemirror/addon/edit/closebrackets.js"></script>
+	<script src="codemirror/addon/edit/closetag.js"></script>
+	<script src="codemirror/addon/edit/matchbrackets.js"></script>
+	<script src="codemirror/addon/edit/matchtags.js"></script>
+	
+	<script src="codemirror/addon/hint/show-hint.js"></script>
+	<script src="codemirror/addon/hint/xml-hint.js"></script>
+	<script src="codemirror/addon/hint/anyword-hint.js"></script>
+	<script src="codemirror/addon/hint/html-hint.js"></script>
+	<script src="codemirror/addon/hint/javascript-hint.js"></script>
+	
+	<script src="codemirror/addon/fold/foldgutter.js"></script>
+	<script src="codemirror/addon/fold/foldcode.js"></script>
+	<script src="codemirror/addon/fold/comment-fold.js"></script>
+	<script src="codemirror/addon/fold/brace-fold.js"></script>
+	<script src="codemirror/addon/fold/xml-fold.js"></script>
+	
+	<script src="codemirror/addon/selection/active-line.js"></script>
+
+	
+	
+	
 	
 	<script src="public/js/jambi.js"></script>   
 	
@@ -173,19 +237,12 @@
     <script type="text/javascript" src="public/js/jambiSetup.js"></script>   
     <script type="text/javascript" src="public/js/winstate.js"></script>
     
-    <script type="text/javascript" src="public/js/jquery-ui.min.js"></script>
     
     
     
     <script type="text/template" id="user-edit-template">
      	<div id="tab1">
 	     	<div class="editor-container" id="jambi-editor"></div>
-     	</div>
-     	<div id="tab2">
-     		<div class="editor-container" id="jambi-editor2"></div>
-     	</div>
-     	<div id="tab3">
-     		<div class="editor-container" id="jambi-editor3"></div>
      	</div>
 
         <div class="sidebar">
@@ -239,7 +296,7 @@
 		jambi.menuSetup();	
 		
 		
-		$( ".container" ).tabs();
+//		$( ".container" ).tabs();
 		
 					
     </script>

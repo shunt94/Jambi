@@ -61,6 +61,10 @@ h1,h2,h3 { font-weight: 200;}
 	height: 100%;
 	display: inline-block;
 	border-right: 1px solid #777777;
+	
+	& a {
+		text-decoration: none;
+	}
 }
 
 .file {

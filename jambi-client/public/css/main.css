@@ -52,6 +52,8 @@ h1, h2, h3 {
   height: 100%;
   display: inline-block;
   border-right: 1px solid #777777; }
+  .file-container a, #openfiles a {
+    text-decoration: none; }
 
 .file {
   padding-top: 12px;
