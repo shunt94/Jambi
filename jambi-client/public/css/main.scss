@@ -9,11 +9,7 @@ $linecounter-color: rgba(255,255,255,0.8);
 
 @font-face {
     font-family:"Meslo";
-    src: url("MesloLGL-Regular.ttf") /* EOT file for IE */
-}
-@font-face {
-    font-family:"Meslo";
-    src: url("MesloLGL-Regular.ttf") /* TTF file for CSS3 browsers */
+    src: url("MesloLGL-Regular.ttf");
 }
 
 body,html, .container {
@@ -21,6 +17,10 @@ body,html, .container {
 	height: 100%;
 	margin: 0;
 	color: #fff;
+	user-select: none;
+	-webkit-touch-callout: none;
+      -webkit-user-select: none;
+    cursor: default;
 }
 
 
@@ -113,27 +113,6 @@ h1,h2,h3 { font-weight: 200;}
 	}
 }
 
-.lc-container {
-	font-size: $linecounter-fontsize;
-	color: $linecounter-color;
-	position: absolute;
-	min-width: 35px;
-	line-height: $editor-fontsize;
-	padding-left: 5px;
-	//margin-top: 20px;
-	//padding-top: $editor-paddingtop + 1px;
-	z-index: 10;
-	left: 0;
-	height: calc(100% - 15px);
-}
-
-#linecounter {
-	overflow: hidden;
-	height: 100%;
-    position: absolute;
-    top: 0;
-}
-
 
 .editor-container {
 	z-index: 1;
@@ -154,65 +133,6 @@ h1,h2,h3 { font-weight: 200;}
 	//background-color: #28a1f7;
 }
 
-.editor {
-	position: absolute;
-	font-family: 'Meslo', ;
-	cursor: default;
-	padding-right: 10px;
-	padding-left: 50px;
-	font-size: $editor-fontsize;
-	z-index: 2;
-	height: calc(100% - 15px);
-    max-width: 100%;
-    	width: 80%;
-    width: -webkit-calc(100% - 55px);
-    width: -moz-calc(100% - 55px);
-    width: calc(100% - 55px);
-	line-height: $editor-fontsize;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	background: transparent;
-	border:none;
-	color: #fff;
-	opacity: 0.2;
-	
-	&:focus {
-		outline: none;
-	}
-}
-
-.hightlight-code-container {
-	position: absolute;
-	font-family: 'Meslo', ;
-	cursor: default;
-	padding-right: 10px;
-	padding-left: 50px;
-	font-size: $editor-fontsize;
-	height: calc(100% - 15px);
-    max-width: 100%;
-    	width: 80%;
-    width: -webkit-calc(100% - 55px);
-    width: -moz-calc(100% - 55px);
-    width: calc(100% - 55px);
-	line-height: $editor-fontsize;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	border:none;
-}
-
-
-#syntax-area {
-	line-height: $editor-fontsize;
-	color: #fff;
-	font-size: $editor-fontsize;
-	font-family: 'Meslo', ;
-	position: absolute;
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
-	margin-top: 2px;
-}
-
 .sidebar {
 	right: 0;
 	width: 220px;
@@ -222,7 +142,7 @@ h1,h2,h3 { font-weight: 200;}
 	z-index: 10;
 	padding-top: $top-margin;
 	margin-top: -5px;
-
+	font-family: "Source Sans Pro", Calibri, Candara, Arial, sans-serif;
 }
 
 .sidebar-title {
@@ -357,9 +277,14 @@ h1,h2,h3 { font-weight: 200;}
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	font-family: "Source Sans Pro", Calibri, Candara, Arial, sans-serif;
+	
 }
-
+.btn-mini {
+	padding: 1px 5px;
+	font-size: 13px;
+	line-height: 1.5;
+	border-radius: 0;
+}
 .btn-blue {
 	color: #ffffff;
 	background-color: #2780e3;

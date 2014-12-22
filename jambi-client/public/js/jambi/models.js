@@ -1,5 +1,5 @@
 (function() {
-	
+var jTimer = new jambiTimer();
 var Project = Backbone.Model.extend({
 	projectLocation: "/",
 	files: []
@@ -44,7 +44,7 @@ var EditorView = Backbone.View.extend({
 		this.$el.html(template);
 		
 		
-		var jTimer = new jambiTimer();
+		
 	
 		$('#jambiStartTimer').click(function(){
 			jTimer.startTimer();
@@ -53,22 +53,6 @@ var EditorView = Backbone.View.extend({
 		$('#jambiStopTimer').click(function(){
 			jTimer.stopTimer();
 		});
-		
-		function startTime() {
-		    var today=new Date();
-		    var h=today.getHours();
-		    var m=today.getMinutes();
-		    m = checkTime(m);
-		    $('#jambiClock').html(h+"<span id='jambiClockColon'>:</span>"+m);
-		    var t = setTimeout(function(){startTime()},6000);
-		}
-		
-		function checkTime(i) {
-		    if (i<10) {i = "0" + i};  // add zero in front of numbers < 10
-		    return i;
-		}
-		
-		startTime();
 		connectToServer();
 		
 		
