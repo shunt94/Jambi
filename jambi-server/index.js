@@ -8,6 +8,14 @@ app.get('/', function(req,res) {
   res.sendfile('public/index.html');
 });
 
+app.get('/api/jambi',function(req, res) {
+	res.json({
+		"jambi": {
+			"status": "connected to server"
+		}
+	});
+});
+
 app.get('/api', function(req,res) {
 	res.json({
 		"cdns": {

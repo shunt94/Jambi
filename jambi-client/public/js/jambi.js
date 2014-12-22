@@ -101,7 +101,7 @@ var Jambi = function() {
 		
 		
 		
-		
+		/*
 		$.ajax({
 			type: 'GET',
 			url: "http://jambi.herokuapp.com/api",
@@ -116,6 +116,10 @@ var Jambi = function() {
 				alert("Error: " + e);
 			}
 		});
+		*/
+		
+		
+
 		
 		
 		
@@ -157,6 +161,8 @@ var Jambi = function() {
 		// Add new file tab to top bar
 		
 	}
+	
+	
 	
 	
 	Jambi.prototype.openFile = function() {
