@@ -72,7 +72,8 @@ li.CodeMirror-hint-active {
 }
 
 
-
+      .lint-error {font-family: arial; font-size: 70%; background: #ffa; color: #a00; padding: 2px 5px 3px; }
+      .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
 </style>
 
     <div class="container">
@@ -156,7 +157,7 @@ li.CodeMirror-hint-active {
 			        <option data-mode="sass">Sass</option>
 			        <option data-mode="sass">Scss</option>
 			        <option data-mode="css">Less</option>
-			        <option data-mode="javascript">Js</option>
+			        <option data-mode="javascript">Javascript</option>
 			        <option data-mode="python">Python</option>
 			        <option data-mode="django">Django</option>
 			        <option data-mode="haskell">Haskell</option>
@@ -293,7 +294,11 @@ li.CodeMirror-hint-active {
 					Status: <span id="jambiStatus"></span>
 				</div>
 				
-				<a draggable="false" href="#jambiModal">Open Modal</a>
+				<button id="jshintcode" class="btn btn-blue hidden">JSHint</button>
+				<div class="jsErrors" id="jsErrors">
+				
+				
+				</div>
         	</div>
         	
         	<div class="sidebar-footer">
@@ -335,11 +340,14 @@ li.CodeMirror-hint-active {
     	</div>
     </script>
     
-    
+    <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
     
     <script type="text/javascript">
 		var jambi = new Jambi();
 		jambi.menuSetup();
+		
+		
+		
     </script>
     
     <script type="text/javascript" src="public/js/jambi/models.js"></script>

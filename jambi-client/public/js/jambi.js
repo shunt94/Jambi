@@ -5,7 +5,7 @@ var Jambi = function () {
 	var jambiEditor;
 	var currentFileDir;
 	var version;
-	
+
 
 	readJambiSettings();
 
@@ -25,19 +25,19 @@ var Jambi = function () {
 
 	Jambi.prototype.menuSetup = function () {
 		var jSetup = new jambiSetup();
-		
+
 		jSetup.jambiMenu.file.fileSave.click = function () {
 			jambi.saveFile();
-		}
+		};
 		jSetup.jambiMenu.file.fileSaveAs.click = function () {
 			jambi.saveFileAs();
-		}
+		};
 		jSetup.jambiMenu.file.fileOpen.click = function () {
 			jambi.openFile();
-		}
+		};
 		jSetup.jambiMenu.file.fileNewSubmenu[0].value.click = function () {
 			jambi.newFile();
-		}
+		};
 		jSetup.jambiMenu.file.fileClearSettings.click = function () {
 			function modalFunction() {
 				storedb('userSettings').remove();
@@ -46,13 +46,13 @@ var Jambi = function () {
 				"Are you sure you want to remove user settings?",
 				"This will delete all custom settings you may have made",
 				"Remove Settings",
-				modalFunction)
-		}
-	}
+				modalFunction);
+		};
+	};
 
 	Jambi.prototype.getVersion = function () {
 		return version;
-	}
+	};
 
 	Jambi.prototype.initCodeMirror = function () {
 		// User Settings
@@ -62,10 +62,10 @@ var Jambi = function () {
 		storedb('userSettings').find({ "setting": "theme" }, function (err, result) {
 			if (err) {
 				console.log("Could not find theme");
-			} else if (result[0] != null) {
-					codeMirrortheme = result[0].setTo;
+			} else if (result[0] !== null) {
+				codeMirrortheme = result[0].setTo;
 			}
-			
+
 			$("#themeselector option").filter(function () {
 				return $(this).text() == codeMirrortheme;
 			}).prop('selected', true);
@@ -76,13 +76,13 @@ var Jambi = function () {
 		var mixedMode = {
 			name: "htmlmixed",
 			scriptTypes: [{
-					matches: /\/x-handlebars-template|\/x-mustache/i,
-					mode: null
-				},
-				{
-					matches: /(text|application)\/(x-)?vb(a|script)/i,
-					mode: "vbscript"
-				}]
+				matches: /\/x-handlebars-template|\/x-mustache/i,
+				mode: null
+			},
+			{
+				matches: /(text|application)\/(x-)?vb(a|script)/i,
+				mode: "vbscript"
+			}]
 		};
 
 		var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
@@ -107,23 +107,23 @@ var Jambi = function () {
 		jambiEditor.on("keyup", function (e) {
 			//			jambiEditor.showHint(e);
 		});
-		
+
 		jambiEditor.on("change", function(e) {
 			updateCursorPosition();
 		});
-		
+
 		jambiEditor.on("cursorActivity", function(e) {
 			updateCursorPosition();
 		});
-		
-		
-		
+
+
+
 		function updateCursorPosition() {
 			var cursorPos = jambiEditor.getCursor();
 			$('#jambiLine').text(cursorPos.line + 1);
 			$('#jambiColumn').text(cursorPos.ch + 1);
 		}
-		
+
 		jambiEditor.focus();
 
 
@@ -141,12 +141,10 @@ var Jambi = function () {
 
 
 
-
-
-
-
-
 		
+
+
+
 
 
 
@@ -179,11 +177,51 @@ var Jambi = function () {
 		$('#modeSelector').on('change', function () {
 			var mode = $("#modeSelector option:selected").attr('data-mode');
 			jambiEditor.setOption("mode", mode);
+			if(mode === "javascript") {
+				jambi.jsHint();
+				$('#jshintcode').removeClass("hidden");
+			}
+			else {
+				jambi.stopJSHint();
+				$('#jshintcode').addClass("hidden");
+			}
 		});
-	}
+	};
 	
+	var widgets = [];
+	Jambi.prototype.jsHint = function () {
+		
+
+		function updateHints() {
+			jambiEditor.operation(function(){
+				for (var i = 0; i < widgets.length; ++i)
+					jambiEditor.removeLineWidget(widgets[i]);
+				while (widgets.length) { widgets.pop(); }
+
+				JSHINT(jambiEditor.getValue());
+				$('#jsErrors').empty();
+				for (var x = 0; x < JSHINT.errors.length; ++x) {
+					var err = JSHINT.errors[x];
+					if (!err) continue;
+					
+					console.log("Error at line: " + err.line + " - " + err.reason);
+					$('#jsErrors').append("Error at line: " + err.line + " - " + err.reason);
+				}
+			});
+		}
+
+
+		var waiting;
+		updateHints();
+
+	};
+	
+	Jambi.prototype.stopJSHint = function () {
+		
+	};
+
 	Jambi.prototype.updateJambi = function () {
-	
+
 		$.ajax({
 			type: 'GET',
 			url: "http://jambi.herokuapp.com/api",
@@ -198,8 +236,8 @@ var Jambi = function () {
 				alert("Error: " + e);
 			}
 		});
-		
-	}
+
+	};
 
 	Jambi.prototype.newFile = function () {
 		console.log("Adding new file");
@@ -214,7 +252,7 @@ var Jambi = function () {
 
 		// Add new file tab to top bar
 
-	}
+	};
 
 
 
@@ -230,7 +268,7 @@ var Jambi = function () {
 			});
 		});
 		$('#fileDialog').trigger('click');
-	}
+	};
 
 	Jambi.prototype.saveFile = function (fileName) {
 		if (currentFileDir) {
@@ -245,7 +283,7 @@ var Jambi = function () {
 		} else {
 			this.saveFileAs();
 		}
-	}
+	};
 
 	Jambi.prototype.saveFileAs = function () {
 		var textToWrite = jambiEditor.doc.getValue();
@@ -262,11 +300,11 @@ var Jambi = function () {
 		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
 		console.log(downloadLink);
 		downloadLink.click();
-	}
+	};
 
 	Jambi.prototype.saveUserSetting = function (setting, value) {
 
-	}
+	};
 
 	Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc) {
 		if (modalType === undefined || modalType === null) {
@@ -275,14 +313,14 @@ var Jambi = function () {
 		if (modalFunc === undefined || modalFunc === null) {
 			modalFunc = function () {
 				alert("Modal has no function");
-			}
+			};
 		}
-		
+
 		$('#modalButtonRight').html(modalType);
 		$('#modalTitle').html(modalTitle);
 		$('#modalSubtitle').html(modalSubtitle);
 		$('#modalContent').html(modalContent);
-		
+
 
 		location.href = "#jambiModal";
 
@@ -290,5 +328,5 @@ var Jambi = function () {
 			modalFunc();
 		});
 
-	}
-}
+	};
+};

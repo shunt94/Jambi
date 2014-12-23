@@ -56,6 +56,11 @@ var EditorView = Backbone.View.extend({
 		$('#jambiStopTimer').click(function(){
 			jTimer.stopTimer();
 		});
+		
+		
+		$('#jshintcode').click(function() {
+			jambi.jsHint();
+		})
 		connectToServer();
 		
 		
