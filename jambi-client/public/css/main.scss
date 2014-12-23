@@ -7,6 +7,8 @@ $editor-paddingtop: 20px;
 
 $linecounter-color: rgba(255,255,255,0.8);
 
+$modal-border-radius: 3px;
+
 @font-face {
     font-family:"Meslo";
     src: url("MesloLGL-Regular.ttf");
@@ -23,6 +25,9 @@ body,html, .container {
     cursor: default;
 }
 
+a {
+	text-decoration: none;
+}
 
 h1,h2,h3 { font-weight: 200;}
 
@@ -61,10 +66,6 @@ h1,h2,h3 { font-weight: 200;}
 	height: 100%;
 	display: inline-block;
 	border-right: 1px solid #777777;
-	
-	& a {
-		text-decoration: none;
-	}
 }
 
 .file {
@@ -269,7 +270,7 @@ h1,h2,h3 { font-weight: 200;}
 	background-image: none;
 	border: 1px solid transparent;
 	white-space: nowrap;
-	padding: 10px 18px;
+	padding: 7px 15px;
 	font-size: 15px;
 	line-height: 1.42857143;
 	border-radius: 0;
@@ -289,4 +290,71 @@ h1,h2,h3 { font-weight: 200;}
 	color: #ffffff;
 	background-color: #2780e3;
 	border-color: #2780e3;
+	
+	&:hover {
+		background-color: #2a69b7;
+		border-color: #2a69b7;
+	}
 }
+
+// Modal Stuff
+	.jambiModal {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background: rgba(0,0,0,0.8);
+		z-index: 99999;
+		opacity:0;
+		-webkit-transition: opacity 400ms ease-in;
+		transition: opacity 400ms ease-in;
+		pointer-events: none;
+	}
+
+	.jambiModal:target {
+		opacity:1;
+		pointer-events: auto;
+	}
+
+	.jambiModal > .jambiModal-modal {
+		width: 500px;
+		position: relative;
+		margin: 10% auto;
+		border-radius: $modal-border-radius;
+		background: #ffffff;
+		color: #333;
+		word-wrap: break-word;
+	}
+
+	.jambiModalClose {
+		color: #333;
+		line-height: 25px;
+		position: absolute;
+		right: 0;
+		text-align: center;
+		top: 0px;
+		width: 24px;
+	}
+
+	.jambiModalClose:hover { color: #8a8a8a; }
+	
+	.jambiModal-head {
+		background-color: #eaeaea;
+		border-top-left-radius: $modal-border-radius;
+		border-top-right-radius: $modal-border-radius;
+		padding: 2px;
+		padding-top: 2px;
+		padding-bottom: 2px;
+		font-size: 24px;
+	}
+	
+	.jambiModal-body {
+		padding: 5px;
+		padding-bottom: 40px;
+		
+	}
+	
+	.jambiModal-footer {
+		float: right;
+	}

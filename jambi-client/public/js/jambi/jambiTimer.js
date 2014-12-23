@@ -56,4 +56,4 @@ var jambiTimer = function(){
 		startTimer: function() { start(); },
 		stopTimer: function() { stop(); }
 	};
-}
+};

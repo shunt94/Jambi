@@ -27,6 +27,9 @@ function connectToServer() {
 		dataType: 'json',
 		success: function(data) {
 			$('#jambiStatus').html(data.jambi.status);
+			if(data.jambi.version !== jambi.getVersion()) {
+				alert("Your version of Jambi is Out of Date");
+			}
 		},
 		error: function(e) {
 			$('#jambiStatus').html("Failed to connect to Jambi Server");

@@ -11,7 +11,8 @@ app.get('/', function(req,res) {
 app.get('/api/jambi',function(req, res) {
 	res.json({
 		"jambi": {
-			"status": "connected to server"
+			"status": "Connected",
+			"version": "1.0"
 		}
 	});
 });

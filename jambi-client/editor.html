@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="public/css/font-awesome.min.css">
 	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
 	
-	<link rel="stylesheet" type="text/css" href="public/css/user.css">
-	
 	<link rel="stylesheet" href="codemirror/theme/3024-day.css">
 	<link rel="stylesheet" href="codemirror/theme/3024-night.css">
 	<link rel="stylesheet" href="codemirror/theme/ambiance.css">
@@ -72,6 +70,9 @@ li.CodeMirror-hint-active {
 	border: 1px solid rgba(255,255,255,0.5);
 	border-radius: 3px;
 }
+
+
+
 </style>
 
     <div class="container">
@@ -123,7 +124,7 @@ li.CodeMirror-hint-active {
         	<a draggable="false" href='#/showcase'>Showcase</a>
         	
         	<div class="editor-info">
-        	<span class="jambi-linenumber">1</span>:<span class="jambi-column">1</span> 
+        		<span class="jambi-linenumber" id="jambiLine">1</span>:<span class="jambi-column" id="jambiColumn">1</span> 
         	
         	</div>
         	
@@ -175,9 +176,29 @@ li.CodeMirror-hint-active {
     </div>
     
     
+    <div id="jambiModal" class="jambiModal">
+    	<div class="jambiModal-modal">
+	    	<div class="jambiModal-head" id="modalTitle">
+				
+	    	</div>
+			<div class="jambiModal-body">
+				<a draggable="false" href="#" title="Close" class="jambiModalClose"><i class="fa fa-times"></i></a>
+				<h3 id="modalSubtitle"></h3>
+				<p id="modalContent"></p>
+				
+				<div class="jambiModal-footer">
+					<div class="jambiModal-buttons">
+						<a href="#" class="btn btn-blue" id="modalButtonLeft">Close</a> <a href="#" class="btn btn-blue" id="modalButtonRight">Save</a>
+					</div>
+				</div>
+			</div>
+    	</div>
+	</div>
+
+    
+    
     <style type="text/css">
 	    .CodeMirror {
-			background: none;
 			height: 100%;    
 	    }
 	    .cm-s-monokai span.cm-error {
@@ -271,6 +292,8 @@ li.CodeMirror-hint-active {
 				<div class="jambiStatusBar">
 					Status: <span id="jambiStatus"></span>
 				</div>
+				
+				<a draggable="false" href="#jambiModal">Open Modal</a>
         	</div>
         	
         	<div class="sidebar-footer">
@@ -279,7 +302,11 @@ li.CodeMirror-hint-active {
 				</div>
 			</div>
         </div>
+        
+        
+        
 
+		
     </script>
     
     <script type="text/template" id="projects-template">
@@ -312,12 +339,7 @@ li.CodeMirror-hint-active {
     
     <script type="text/javascript">
 		var jambi = new Jambi();
-		jambi.menuSetup();	
-		
-		
-//		$( ".container" ).tabs();
-		
-					
+		jambi.menuSetup();
     </script>
     
     <script type="text/javascript" src="public/js/jambi/models.js"></script>
