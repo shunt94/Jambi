@@ -3,12 +3,14 @@ var Jambi = function () {
 	var fs = require('fs');
 	var json = require('json-update');
 	var jambiEditor;
+	var jambiEditorConfig;
 	var currentFileDir;
 	var version;
-
+	var widgets = [];
+	var jSetup = new jambiSetup();
 
 	readJambiSettings();
-
+	
 
 	function readJambiSettings() {
 		json.load('jambi.json', function(err, data) {
@@ -22,10 +24,14 @@ var Jambi = function () {
 		});
 	}
 
-
+	/*
+		Function used to setup all of the menu bar - Action listeners and populators
+	*/
 	Jambi.prototype.menuSetup = function () {
-		var jSetup = new jambiSetup();
-
+	
+	    jSetup.jambiMenu.file.fileNewSubmenu[0].click = function () {
+    	      
+	    };
 		jSetup.jambiMenu.file.fileSave.click = function () {
 			jambi.saveFile();
 		};
@@ -54,6 +60,11 @@ var Jambi = function () {
 		return version;
 	};
 
+
+	Jambi.prototype.getJambiEditor = function () {
+		return jambiEditor;	
+	};
+	
 	Jambi.prototype.initCodeMirror = function () {
 		// User Settings
 		var codeMirrortheme = "ambiance";
@@ -86,7 +97,7 @@ var Jambi = function () {
 		};
 
 		var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
-		jambiEditor = CodeMirror(document.getElementById('jambi-editor'), {
+		jambiEditorConfig = {
 			mode: mixedMode,
 			theme: codeMirrortheme,
 			lineWrapping: true,
@@ -101,11 +112,24 @@ var Jambi = function () {
 			foldGutter: true,
 			highlightSelectionMatches: true,
 			styleActiveLine: true
-		});
+		}
+		
+		jambi.renderEditor();
 
 		jambiEditor.on("gutterClick", foldLine);
-		jambiEditor.on("keyup", function (e) {
-			//			jambiEditor.showHint(e);
+		
+		jambiEditor.on("keyup", function (e, s) {
+            /*
+		    if(s.keyCode === 37 || s.keyCode === 38 || s.keyCode === 39 || s.keyCode === 40 ){
+		        return false;
+            }
+            else {
+                setTimeout(function() {
+                    jambiEditor.showHint(e);
+                }, 3000)
+                
+            }
+            */
 		});
 
 		jambiEditor.on("change", function(e) {
@@ -124,33 +148,22 @@ var Jambi = function () {
 			$('#jambiColumn').text(cursorPos.ch + 1);
 		}
 
-		jambiEditor.focus();
-
 
 
 		// Instas
 
 		// if $ is detected then init Insta
-
-
-
-
 		function insertAtCursor(text) {
 			jambiEditor.replaceSelection(text);
 		}
 
-
-
+		jambi.setListeners();
 		
-
-
-
-
-
-
-
-
-
+	};
+	
+	
+	Jambi.prototype.setListeners = function () {
+		// Changed the theme of the editor
 		$('#themeselector').on('change', function () {
 			var theme = $('#themeselector option:selected').text();
 			jambiEditor.setOption("theme", theme);
@@ -173,7 +186,7 @@ var Jambi = function () {
 
 		});
 
-
+		// Activates the JSHint-ing button on Javascript mode
 		$('#modeSelector').on('change', function () {
 			var mode = $("#modeSelector option:selected").attr('data-mode');
 			jambiEditor.setOption("mode", mode);
@@ -185,13 +198,22 @@ var Jambi = function () {
 				jambi.stopJSHint();
 				$('#jshintcode').addClass("hidden");
 			}
-		});
+		});	
 	};
 	
-	var widgets = [];
-	Jambi.prototype.jsHint = function () {
+	/* 
+		Renders the same editor when the editor view is called - Used when the editor view is called and when the initial editor is made
 		
-
+	*/
+	Jambi.prototype.renderEditor = function () {
+		jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
+		jambiEditor.focus();
+	};
+	
+	/*
+		Handler for the JSHint function for the Javascript mode in the editor
+	*/
+	Jambi.prototype.jsHint = function () {
 		function updateHints() {
 			jambiEditor.operation(function(){
 				for (var i = 0; i < widgets.length; ++i)
@@ -219,7 +241,7 @@ var Jambi = function () {
 	Jambi.prototype.stopJSHint = function () {
 		
 	};
-
+	
 	Jambi.prototype.updateJambi = function () {
 
 		$.ajax({
@@ -298,35 +320,73 @@ var Jambi = function () {
 		downloadLink.download = fileNameToSaveAs;
 		//		currentFileDir = fileNameToSaveAs;
 		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-		console.log(downloadLink);
 		downloadLink.click();
 	};
 
 	Jambi.prototype.saveUserSetting = function (setting, value) {
 
 	};
-
-	Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc) {
+	
+	/*
+		Function to handle the web (stackoverflow.com) search box
+	*/
+	Jambi.prototype.searchWeb = function () {
+		$("#stackoverflow_search").keyup(function(event){
+		    if(event.keyCode === 13){		    	
+		    	var searchTerm = $("#stackoverflow_search").val().split(' ').join('+');
+		    	var searchURL = 'https://www.google.co.uk/webhp?sourceid=chrome-instant&rlz=1C5CHFA_enGB558GB558&ion=1&espv=2&ie=UTF-8#q=' +
+		    		searchTerm + 
+		    		'%20site%3Astackoverflow.com';
+				jSetup.gui.Shell.openExternal(searchURL);
+				$('#stackoverflow_search').val("");
+		    }
+		});
+		
+	}
+	
+	/*
+		Function made to populate the modal in Jambi
+		There is one modal markup that gets populated via this function
+	*/
+	Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc, modalWidth) {
+		// If there is no modal type defined then we set the default button name - 'Save'
 		if (modalType === undefined || modalType === null) {
 			modalType = "Save";
 		}
+		
+		// Check if the function of the modal is defined, if not there is no point in the modal - so we let the programmer know this with an alert
 		if (modalFunc === undefined || modalFunc === null) {
 			modalFunc = function () {
 				alert("Modal has no function");
 			};
 		}
-
+		
+		// If the width is defined then we set the css width of the modal - default is set in main.scss - 500px
+		if(modalWidth) {
+			$('.jambiModal-modal').css('width', modalWidth);
+		}
+		
+		// Set values of the modal
 		$('#modalButtonRight').html(modalType);
 		$('#modalTitle').html(modalTitle);
 		$('#modalSubtitle').html(modalSubtitle);
 		$('#modalContent').html(modalContent);
 
-
-		location.href = "#jambiModal";
-
+		// Open the modal
+		jambi.openModal();
+		
+		// Set the click function of the modal to the function given in the parameters
 		$('#modalButtonRight').click(function () {
 			modalFunc();
 		});
 
 	};
+	
+	/*
+		Function used to open modal
+	*/
+	Jambi.prototype.openModal = function () {
+		// Open the modal using a 'href' javascript emulator
+		location.href = "#jambiModal";
+	}
 };

@@ -41,15 +41,11 @@ h1,h2,h3 { font-weight: 200;}
 
 
 .topbar {
-	background-color: #c5c5c5;
+	background-color: #333;
 	width: 100%;
 	height: $top-margin;
 	position: fixed;
 	z-index: 11;
-	user-select: none;
-	-webkit-touch-callout: none;
-      -webkit-user-select: none;
-    cursor: default;
 }
 
 .topbar-tabs {
@@ -58,24 +54,24 @@ h1,h2,h3 { font-weight: 200;}
 	height: 100%;
 	white-space: nowrap;
 	height: 100%;
-	background: -webkit-linear-gradient(#ffffff 0%, #c2c2c2 100%);
 }
 
-.file-container, #openfiles {
-	width: 150px;
+.file-container {
+	width: 155px;
 	height: 100%;
 	display: inline-block;
-	border-right: 1px solid #777777;
+    cursor: pointer;
+    margin-right: -3px;
 }
 
 .file {
-	padding-top: 12px;
+	padding-top: 13px;
 	padding-left: 20px;
 	padding-bottom: 12px;
 	font-size: 13px;
 	height: 100%;
-	color: #333;
-	
+	color: #fff;
+	position: relative;
 	
 	&:hover {
 		& .close {
@@ -84,20 +80,26 @@ h1,h2,h3 { font-weight: 200;}
 	}
 	
 	& .close {
-		color: #545454;
+	    position: absolute;
+		color: #bcbcbc;
 		opacity: 0;
+		right: 10px;
 		-webkit-transition:.3s;
 				transition: .3s;
 		
 		&:hover {
 			opacity: 1;
-			color: #353535;
+			color: #ffffff;
 		}
 	}
 	
 	&.active {
-		background-color: rgba(85,85,85,0.53);
+		background-color: rgba(0,107,255,0.66);
 	}
+}
+
+.file:not(:first-child) { 
+    margin-left: 20px;
 }
 
 .newfile-tab {
@@ -362,3 +364,5 @@ h1,h2,h3 { font-weight: 200;}
 .hidden {
 	display: none;
 }
+
+

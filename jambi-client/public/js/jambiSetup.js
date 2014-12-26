@@ -37,7 +37,7 @@ var jambiSetup = function() {
 		file: {
 			fileNew: 			new gui.MenuItem({ label: 'New', submenu: fileNewSub }),
 			fileNewSubmenu: [
-				{key: 'new_html', 		value: new gui.MenuItem({ label: 'Html' })},
+				{key: 'new_html', 		value: new gui.MenuItem({ label: 'Html', key: "t", modifiers: "cmd" })},
 				{key: 'new_css',		value: new gui.MenuItem({ label: 'Css' })},
 				{key: 'new_js',			value: new gui.MenuItem({ label: 'Js' })},
 				{key: 'new_scss',		value: new gui.MenuItem({ label: 'Scss' })},

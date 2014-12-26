@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jambi</title>
-    <link rel="stylesheet" href="public/css/main.css">
-    <link rel="stylesheet" href="public/css/jambi_editor.css">
-    <link rel="stylesheet" href="public/css/font-awesome.min.css">
+	<title>Jambi</title>
+	<link rel="stylesheet" href="public/css/main.css">
+	<link rel="stylesheet" href="public/css/jambi_editor.css">
+	<link rel="stylesheet" href="public/css/font-awesome.min.css">
 	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
-	
+
 	<link rel="stylesheet" href="codemirror/theme/3024-day.css">
 	<link rel="stylesheet" href="codemirror/theme/3024-night.css">
 	<link rel="stylesheet" href="codemirror/theme/ambiance.css">
@@ -21,120 +21,99 @@
 	<link rel="stylesheet" href="codemirror/theme/midnight.css">
 	<link rel="stylesheet" href="codemirror/theme/monokai.css">
 	<link rel="stylesheet" href="codemirror/theme/neat.css">
-	
+
 
 </head>
 
 <body>
-<style>
-.CodeMirror-hints {
-  position: absolute;
-  z-index: 10;
-  overflow: hidden;
-  list-style: none;
+	<style>
+		.CodeMirror-hints {
+			position: absolute;
+			z-index: 10;
+			overflow: hidden;
+			list-style: none;
 
-  margin: 0;
-  padding: 2px;
+			margin: 0;
+			padding: 2px;
 
-  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-  border-radius: 3px;
-  border: 1px solid silver;
+			-webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+			-moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+			box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+			border-radius: 3px;
+			border: 1px solid silver;
 
-  background: white;
-  font-size: 90%;
-  font-family: monospace;
+			background: white;
+			font-size: 90%;
+			font-family: monospace;
 
-  max-height: 20em;
-  overflow-y: auto;
-}
+			max-height: 20em;
+			overflow-y: auto;
+		}
 
-.CodeMirror-hint {
-  margin: 0;
-  padding: 0 4px;
-  border-radius: 2px;
-  max-width: 19em;
-  overflow: hidden;
-  white-space: pre;
-  color: black;
-  cursor: pointer;
-}
+		.CodeMirror-hint {
+			margin: 0;
+			padding: 0 4px;
+			border-radius: 2px;
+			max-width: 19em;
+			overflow: hidden;
+			white-space: pre;
+			color: black;
+			cursor: pointer;
+		}
 
-li.CodeMirror-hint-active {
-  background: #08f;
-  color: white;
-}
+		li.CodeMirror-hint-active {
+			background: #08f;
+			color: white;
+		}
 
-.CodeMirror-focused .cm-matchhighlight {
-	border: 1px solid rgba(255,255,255,0.5);
-	border-radius: 3px;
-}
+		.CodeMirror-focused .cm-matchhighlight {
+			border: 1px solid rgba(255,255,255,0.5);
+			border-radius: 3px;
+		}
+		
+        .CodeMirror {
+        	height: 100%;    
+        }
+        .cm-s-monokai span.cm-error {
+        	background-color: transparent;
+        }	    
+        cm-keyword, .cm-atom {
+        	font-weight: bold;
+        }
+	</style>
 
-
-      .lint-error {font-family: arial; font-size: 70%; background: #ffa; color: #a00; padding: 2px 5px 3px; }
-      .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
-</style>
-
-    <div class="container">
-        <div class="topbar">
-	        <div class="topbar-tabs">
-	        	<div id="openfiles">
-	        		<ul class="file-ul">
-		        		<li class="file-container">
-		        			<a href="#tab1">
-			        			<div class="file active">
-				        			<span class="close"><i class="fa fa-times-circle"></i></span>
-			        				<span class="filename">index.html</span>
-			        			</div>
-		        			</a>
-		        		</li>
-						<li class="file-container">
-							<a href="#tab2">
-			        			<div class="file">
-			        				<span class="close"><i class="fa fa-times-circle"></i></span>
-			        				<span class="filename">projectindex.js</span>
-			        			</div>
-							</a>
-		        		</li>
-		        		<li class="file-container">
-							<a href="#tab3">
-			        			<div class="file">
-			        				<span class="close"><i class="fa fa-times-circle"></i></span>
-			        				<span class="filename">asd.js</span>
-			        			</div>
-							</a>
-		        		</li>
-
-					</ul>
-	        	</div>
-	        </div>
-	        <div class="newfile-tab">
-	        	<i class="fa fa-plus-square-o"></i>
+	<div class="container">
+		<div class="topbar">
+			<div class="topbar-tabs">
+				<ul class="file-ul" id="file_ul">
+				</ul>
 			</div>
-        </div>
-        
-        <div class="jambi-body" id="jambi-body">
-        
-	    </div>
-        
-        
-        <div class="lowerbar">
-        	<a draggable="false" href='#/project' class="btn btn-primary">Projects</a>
-        	<a draggable="false" href='#/home' class="btn btn-primary">Editor</a>
-        	<a draggable="false" href='#/showcase'>Showcase</a>
-        	
-        	<div class="editor-info">
-        		<span class="jambi-linenumber" id="jambiLine">1</span>:<span class="jambi-column" id="jambiColumn">1</span> 
-        	
-        	</div>
-        	
+			<div class="newfile-tab" id="newfile_tab">
+				<i class="fa fa-plus-square-o"></i>
+			</div>
+		</div>
+
+		<div class="jambi-body" id="jambi-body">
+
+		</div>
+
+
+		<div class="lowerbar">
+			<a draggable="false" href='#/project' class="btn btn-primary">Projects</a>
+			<a draggable="false" href='#/home' class="btn btn-primary">Editor</a>
+			<a draggable="false" href='#/showcase'>Showcase</a>
+
+			<div class="editor-info">
+				<span class="jambi-linenumber" id="jambiLine">1</span>:<span class="jambi-column" id="jambiColumn">1</span> 
+
+			</div>
+
 			<div class="theme-selector">
-			   Theme: 
-			   <select id="themeselector">
-			      	<option selected>default</option>
-			      	<option>ambiance</option>
-			      	<option>monokai</option>
+				Theme: 
+				<select id="themeselector">
+					<option selected>default</option>
+					<option>ambiance</option>
+					<option>monokai</option>
 					<option>3024-day</option>
 					<option>3024-night</option>
 					<option>base16-light</option>
@@ -148,210 +127,122 @@ li.CodeMirror-hint-active {
 					<option>cobalt</option>
 					<option>night</option>
 					<option>blackboard</option>
-			   </select>
-			   
-			   SyntaxMode:
-			   <select id="modeSelector">
-			      	<option selected data-mode="htmlmixed">Html</option>
-			        <option data-mode="css">Css</option>
-			        <option data-mode="sass">Sass</option>
-			        <option data-mode="sass">Scss</option>
-			        <option data-mode="css">Less</option>
-			        <option data-mode="javascript">Javascript</option>
-			        <option data-mode="python">Python</option>
-			        <option data-mode="django">Django</option>
-			        <option data-mode="haskell">Haskell</option>
-			        <option data-mode="haml">Haml</option>
-			        <option data-mode="jade">Jade</option>
-			        <option data-mode="php">Php</option>
-			        <option data-mode="lua">Lua</option>
-			        <option data-mode="perl">Perl</option>
-			        <option data-mode="ruby">Ruby</option>
-			        <option data-mode="sql">SQL</option>
-			        <option data-mode="xml">XML</option>
-			        <option data-mode="yaml">Yaml</option>
-			        <option data-mode="xquery">XQuery</option>
-			   </select>
+				</select>
+
+				SyntaxMode:
+				<select id="modeSelector">
+					<option selected data-mode="htmlmixed">Html</option>
+					<option data-mode="css">Css</option>
+					<option data-mode="sass">Sass</option>
+					<option data-mode="sass">Scss</option>
+					<option data-mode="css">Less</option>
+					<option data-mode="javascript">Javascript</option>
+					<option data-mode="python">Python</option>
+					<option data-mode="django">Django</option>
+					<option data-mode="haskell">Haskell</option>
+					<option data-mode="haml">Haml</option>
+					<option data-mode="jade">Jade</option>
+					<option data-mode="php">Php</option>
+					<option data-mode="lua">Lua</option>
+					<option data-mode="perl">Perl</option>
+					<option data-mode="ruby">Ruby</option>
+					<option data-mode="sql">SQL</option>
+					<option data-mode="xml">XML</option>
+					<option data-mode="yaml">Yaml</option>
+					<option data-mode="xquery">XQuery</option>
+				</select>
 			</div>
-        </div>
-    </div>
-    
-    
-    <div id="jambiModal" class="jambiModal">
-    	<div class="jambiModal-modal">
-	    	<div class="jambiModal-head" id="modalTitle">
-				
-	    	</div>
+		</div>
+	</div>
+
+
+	<div id="jambiModal" class="jambiModal">
+		<div class="jambiModal-modal">
+			<div class="jambiModal-head" id="modalTitle">
+
+			</div>
 			<div class="jambiModal-body">
 				<a draggable="false" href="#" title="Close" class="jambiModalClose"><i class="fa fa-times"></i></a>
 				<h3 id="modalSubtitle"></h3>
 				<p id="modalContent"></p>
-				
+
 				<div class="jambiModal-footer">
 					<div class="jambiModal-buttons">
 						<a href="#" class="btn btn-blue" id="modalButtonLeft">Close</a> <a href="#" class="btn btn-blue" id="modalButtonRight">Save</a>
 					</div>
 				</div>
 			</div>
-    	</div>
+		</div>
 	</div>
 
-    
-    
-    <style type="text/css">
-	    .CodeMirror {
-			height: 100%;    
-	    }
-	    .cm-s-monokai span.cm-error {
-		    background-color: transparent;
-	    }	    
-	    cm-keyword, .cm-atom {
-			font-weight: bold;
-		}
-    </style>
-    
-    <!-- File Save,Load,Etc -->
-    <input style="display:none;" id="fileDialog" type="file" multiple />
+	<!-- File Save,Load,Etc -->
+	<input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="untitled.html" id="saveDialog"/>
 	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
-	
-	
-	
-	
+
+
+
+	<!-- jQuery -->
 	<script type="text/javascript" src="jquery.js"></script>
-	
-	<script src="codemirror/lib/codemirror.js"></script>
-	
+
+	<!-- Local Storage -->
 	<script type="text/javascript" src="public/js/storedb.js"></script>
 	
-	<script src="public/js/jambi/jambiTimer.js"></script>
+	<!-- Codemirror main -->
+	<script src="codemirror/lib/codemirror.js"></script>
 	
+	<!-- Codemirror Modes -->
+	<!-- TODO: Add these in dynamically -->
 	<script src="codemirror/mode/xml/xml.js"></script>
 	<script src="codemirror/mode/javascript/javascript.js"></script>
 	<script src="codemirror/mode/css/css.js"></script>
 	<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
 	<script src="codemirror/mode/sass/sass.js"></script>
 	<script src="codemirror/mode/python/python.js"></script>
-	
+
 	<!-- CodeMirror Addons -->
 	<script src="codemirror/addon/edit/closebrackets.js"></script>
 	<script src="codemirror/addon/edit/closetag.js"></script>
 	<script src="codemirror/addon/edit/matchbrackets.js"></script>
 	<script src="codemirror/addon/edit/matchtags.js"></script>
-	
+
 	<script src="codemirror/addon/hint/show-hint.js"></script>
 	<script src="codemirror/addon/hint/xml-hint.js"></script>
 	<script src="codemirror/addon/hint/anyword-hint.js"></script>
 	<script src="codemirror/addon/hint/html-hint.js"></script>
 	<script src="codemirror/addon/hint/javascript-hint.js"></script>
-	
+
 	<script src="codemirror/addon/fold/foldgutter.js"></script>
 	<script src="codemirror/addon/fold/foldcode.js"></script>
 	<script src="codemirror/addon/fold/comment-fold.js"></script>
 	<script src="codemirror/addon/fold/brace-fold.js"></script>
 	<script src="codemirror/addon/fold/xml-fold.js"></script>
-	
+
 	<script src="codemirror/addon/selection/active-line.js"></script>
-	
 	<script src="codemirror/addon/search/match-highlighter.js"></script>
 
-	
-	
-	
-	
+	<!-- Jambi Files -->
+	<script src="public/js/jambi/jambiTimer.js"></script>
+	<script type="text/javascript" src="public/js/jambiSetup.js"></script>   
 	<script src="public/js/jambi.js"></script>   
-	
+
+	<!-- MVC Files -->
 	<script src="public/js/underscore-min.js"></script>   
 	<script src="public/js/backbone-min.js"></script>
-	 
+
 	
-    <script type="text/javascript" src="public/js/jambiSetup.js"></script>   
-    <script type="text/javascript" src="public/js/winstate.js"></script>
-    
-    
-    
-    
-    <script type="text/template" id="user-edit-template">
-     	<div id="tab1">
-	     	<div class="editor-container" id="jambi-editor"></div>
-     	</div>
+	<script type="text/javascript" src="public/js/winstate.js"></script>
 
-        <div class="sidebar">
-        	<div class="sidebar-title center">
-        		Jambi
-        	</div>
-        	
-        	<div class="sidebar-content">
-				<h4>Timer</h4>
-				<div class="timer">
-					<button class="btn btn-mini btn-blue" id="jambiStartTimer">Start Timer</button>
-					<button class="btn btn-mini btn-blue" id="jambiStopTimer">Stop Timer</button>
-					<br>
-					<span id="jambi_timer_hours">00</span>:<span id="jambi_timer_mins">00</span>:<span id="jambi_timer_secs">00</span>
-				</div>
-				
-				<div class="jambiStatusBar">
-					Status: <span id="jambiStatus"></span>
-				</div>
-				
-				<button id="jshintcode" class="btn btn-blue hidden">JSHint</button>
-				<div class="jsErrors" id="jsErrors">
-				
-				
-				</div>
-        	</div>
-        	
-        	<div class="sidebar-footer">
-				<div id="stackoverflow-search">
-					<input type="text" style="width:90%;" placeholder="Search Stackoverflow.com"/>
-				</div>
-			</div>
-        </div>
-        
-        
-        
 
-		
-    </script>
-    
-    <script type="text/template" id="projects-template">
-	        
-    </script>
-    
-    <script type="text/template" id="showcase-template">
-    	<div class="showcase-body">
-    		<ul class="showcase">
-				<li class="showcase-item">
-					<div class="showcase-watch"></div>
-				</li>
-				<li class="showcase-item">
-					<div class="showcase-phone"></div>
-				</li>
-				<li class="showcase-item">
-					<div class="showcase-tablet"></div>
-				</li>
-				<li class="showcase-item">
-					<div class="showcase-laptop"></div>
-				</li>
-				<li class="showcase-item">
-					<div class="showcase-pc"></div>
-				</li>
-    		</ul>
-    	</div>
-    </script>
-    
-    <script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
-    
-    <script type="text/javascript">
+	<script src="http://ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
+
+	<script type="text/javascript">
 		var jambi = new Jambi();
 		jambi.menuSetup();
-		
-		
-		
-    </script>
-    
-    <script type="text/javascript" src="public/js/jambi/models.js"></script>
-    
+	</script>
+
+	<script type="text/javascript" src="public/js/jambi/models.js"></script>
+
 
 </body>
 </html>

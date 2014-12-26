@@ -33,49 +33,51 @@ h1, h2, h3 {
   text-align: right; }
 
 .topbar {
-  background-color: #c5c5c5;
+  background-color: #333;
   width: 100%;
   height: 40px;
   position: fixed;
-  z-index: 11;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  cursor: default; }
+  z-index: 11; }
 
 .topbar-tabs {
   overflow: auto;
   overflow-y: hidden;
   height: 100%;
   white-space: nowrap;
-  height: 100%;
-  background: -webkit-linear-gradient(#ffffff 0%, #c2c2c2 100%); }
+  height: 100%; }
 
-.file-container, #openfiles {
-  width: 150px;
+.file-container {
+  width: 155px;
   height: 100%;
   display: inline-block;
-  border-right: 1px solid #777777; }
+  cursor: pointer;
+  margin-right: -3px; }
 
 .file {
-  padding-top: 12px;
+  padding-top: 13px;
   padding-left: 20px;
   padding-bottom: 12px;
   font-size: 13px;
   height: 100%;
-  color: #333; }
+  color: #fff;
+  position: relative; }
   .file:hover .close {
     opacity: 1; }
   .file .close {
-    color: #545454;
+    position: absolute;
+    color: #bcbcbc;
     opacity: 0;
+    right: 10px;
     -webkit-transition: .3s;
     transition: .3s; }
     .file .close:hover {
       opacity: 1;
-      color: #353535; }
+      color: #ffffff; }
   .file.active {
-    background-color: rgba(85, 85, 85, 0.53); }
+    background-color: rgba(0, 107, 255, 0.66); }
+
+.file:not(:first-child) {
+  margin-left: 20px; }
 
 .newfile-tab {
   font-size: 1.8em;
