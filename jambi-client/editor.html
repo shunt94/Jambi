@@ -3,6 +3,7 @@
 <head>
 	<title>Jambi</title>
 	<link rel="stylesheet" href="public/css/main.css">
+	<link rel="stylesheet" href="public/css/projects.css">
 	<link rel="stylesheet" href="public/css/jambi_editor.css">
 	<link rel="stylesheet" href="public/css/font-awesome.min.css">
 	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
@@ -91,6 +92,11 @@
 			<div class="newfile-tab" id="newfile_tab">
 				<i class="fa fa-plus-square-o"></i>
 			</div>
+			<div class="sidebar-toggle" id="sidebar_toggle">
+				<i class="fa fa-indent"></i>
+			</div>
+			
+			
 		</div>
 
 		<div class="jambi-body" id="jambi-body">
@@ -188,6 +194,8 @@
 	<!-- Local Storage -->
 	<script type="text/javascript" src="public/js/storedb.js"></script>
 	
+	<!-- Blur JS -->
+	<script type="text/javascript" src="public/js/blur.min.js"></script>
 	<!-- Codemirror main -->
 	<script src="codemirror/lib/codemirror.js"></script>
 	
@@ -239,6 +247,11 @@
 	<script type="text/javascript">
 		var jambi = new Jambi();
 		jambi.menuSetup();
+		
+		$('.sidebar').blurjs({
+        	source: '.editor-container',
+        	radius: 5
+        });
 	</script>
 
 	<script type="text/javascript" src="public/js/jambi/models.js"></script>

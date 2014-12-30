@@ -95,6 +95,16 @@ var Jambi = function () {
 				mode: "vbscript"
 			}]
 		};
+		
+		function betterTab(cm) {
+          if (cm.somethingSelected()) {
+            cm.indentSelection("add");
+          } else {
+            cm.replaceSelection(cm.getOption("indentWithTabs")? "\t":
+              Array(cm.getOption("indentUnit") + 1).join(" "), "end", "+input");
+          }
+        }
+
 
 		var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
 		jambiEditorConfig = {
@@ -111,7 +121,8 @@ var Jambi = function () {
 			matchTags: true,
 			foldGutter: true,
 			highlightSelectionMatches: true,
-			styleActiveLine: true
+			styleActiveLine: true,
+            extraKeys: { Tab: betterTab }
 		}
 		
 		jambi.renderEditor();
@@ -158,7 +169,6 @@ var Jambi = function () {
 		}
 
 		jambi.setListeners();
-		
 	};
 	
 	
@@ -321,6 +331,8 @@ var Jambi = function () {
 		//		currentFileDir = fileNameToSaveAs;
 		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
 		downloadLink.click();
+		
+
 	};
 
 	Jambi.prototype.saveUserSetting = function (setting, value) {
@@ -379,7 +391,6 @@ var Jambi = function () {
 		$('#modalButtonRight').click(function () {
 			modalFunc();
 		});
-
 	};
 	
 	/*
@@ -389,4 +400,28 @@ var Jambi = function () {
 		// Open the modal using a 'href' javascript emulator
 		location.href = "#jambiModal";
 	}
+	
+	
+	// Jambi Animations
+	/*
+	    Function that toggles the sideMenu in Jambi
+	*/
+	Jambi.prototype.toggleSideMenu = function () {
+        if($('.sidebar').hasClass("inView")) {
+            $('.sidebar').animate({"margin-right": '-=250px'}, 200);
+            $('.editor-container').animate({ "width": "+=250px" }, 200);
+            $('.sidebar').removeClass("inView");
+            $('#sidebar_toggle i').removeClass('fa-indent');
+            $('#sidebar_toggle i').addClass('fa-outdent');
+            jambiEditor.refresh();
+        } 
+        else {
+            $('.sidebar').animate({"margin-right": '+=250px'}, 200);
+            $('.editor-container').animate({ "width": "-=250px" }, 200);
+            $('.sidebar').addClass("inView");
+            $('#sidebar_toggle i').removeClass('fa-outdent');
+            $('#sidebar_toggle i').addClass('fa-indent');
+            jambiEditor.refresh();
+        }
+	};
 };

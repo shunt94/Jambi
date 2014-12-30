@@ -4,15 +4,10 @@
 var jTimer = new jambiTimer();
 var currentDocid;
 var globalCounter = 1;
+
 var Project = Backbone.Model.extend({
 	projectLocation: "/",
 	files: []
-});
-
-var File = Backbone.Model.extend({
-	fileName: "untitled",
-	fileType: ".test",
-	fileLoc: "/"
 });
 
 var JambiDocument = Backbone.Model.extend({
@@ -23,6 +18,7 @@ var JambiDocument = Backbone.Model.extend({
 	col: 1,
 	mode: "",
 	title: "untitlted",
+	fileLocation: "",
 	
 	initialize: function () {
         this.set('id', globalCounter);
@@ -35,6 +31,11 @@ var AllDocuments = Backbone.Collection.extend({
      model: JambiDocument
 });
 
+var Projects = Backbone.Collection.extend({
+   model: Project 
+});
+
+var documentToBeRendered;
 var document1 = new JambiDocument();
 var openDocuments = new AllDocuments();
 openDocuments.add(document1);
@@ -100,7 +101,20 @@ function newDocument () {
 function closeDocument(fileToClose) {
     openDocuments.remove(openDocuments.get(fileToClose.parents(".file-container").data('modelid')));
     fileToClose.parents(".file-container").remove();
-    fileEventHandlers();
+    
+    if($('.file-container').length !== 0) {
+        var fileToChange = $('.file-ul .file-container').last();
+        fileToChange.find('.file').addClass('active');
+        var currentDoc = openDocuments.get(openDocuments.get(fileToChange.data('modelid')));
+        jambi.getJambiEditor().setValue(currentDoc.text);
+        jambi.getJambiEditor().focus();
+        setDocOptions(currentDoc);
+        fileEventHandlers();
+    }
+    else {
+        window.location.replace('#/project');
+    }
+
 }
 
 function changeFile(fileToChange) {
@@ -113,7 +127,6 @@ function changeFile(fileToChange) {
     jambi.getJambiEditor().setValue(currentDoc.text);
     jambi.getJambiEditor().focus();
     setDocOptions(currentDoc);
-    
 }
 
 
@@ -135,7 +148,7 @@ function connectToServer() {
 			}
 		},
 		error: function(e) {
-			$('#jambiStatus').html("Failed to connect to Jambi Server");
+			$('#jambiStatus').html("Failed to connect to Jambi Server" + e);
 		}
 	});
 	setTimeout(function(){connectToServer();},3600000);
@@ -146,7 +159,7 @@ function populateTopBar() {
     var modelCount = openDocuments.length;
     var first = true;
     for(var i = 0; i < modelCount; i++) {
-        var active = ""
+        var active = "";
         if(first) {
             active = "active";
             first = false;
@@ -165,20 +178,27 @@ function populateTopBar() {
 
 function fileEventHandlers() {
     $('#newfile_tab').unbind('click');
+    $('#sidebar_toggle').unbind('click');
     $('.file-container').unbind('click');
     $('.close').unbind('click');
+    
+    $('#sidebar_toggle').click(function() {
+        jambi.toggleSideMenu();  
+    });
 
     $('#newfile_tab').click(function() {
         newDocument();
-    })
+    });
     
     $('.file-container').click(function() {
-        changeFile($(this));
-    })
+        window.location.replace('#/home');
+        documentToBeRendered = $(this);
+        changeFile(documentToBeRendered);
+    });
     
     $('.close').click(function() {
         closeDocument($(this));
-    })
+    });
 }
 
 var EditorView = Backbone.View.extend({
@@ -199,9 +219,7 @@ var EditorView = Backbone.View.extend({
 			jambi.jsHint();
 		});
 		connectToServer();
-		
-		
-		
+
 	}
 });
 
@@ -261,13 +279,13 @@ router.on('route:home', function() {
 });
 
 router.on('route:projects', function() {
-	projectView.render();
 	saveCurrentDocument(document1);
+	projectView.render();
 });
 
 router.on('route:showcase', function() {
-	showcaseView.render();
 	saveCurrentDocument(document1);
+	showcaseView.render();
 });
 
 Backbone.history.start();

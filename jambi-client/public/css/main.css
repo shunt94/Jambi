@@ -42,9 +42,10 @@ h1, h2, h3 {
 .topbar-tabs {
   overflow: auto;
   overflow-y: hidden;
+  width: calc(100% - 250px);
+  width: -webkit-calc(100% - 250px);
   height: 100%;
-  white-space: nowrap;
-  height: 100%; }
+  white-space: nowrap; }
 
 .file-container {
   width: 155px;
@@ -79,26 +80,28 @@ h1, h2, h3 {
 .file:not(:first-child) {
   margin-left: 20px; }
 
-.newfile-tab {
+.newfile-tab,
+.sidebar-toggle {
   font-size: 1.8em;
   color: #7a7a7a;
-  right: 10px;
+  right: 50px;
   top: 6px;
   position: absolute;
   -webkit-transition: .3s;
   transition: .3s; }
-  .newfile-tab:hover {
-    color: #353535; }
+  .newfile-tab:hover,
+  .sidebar-toggle:hover {
+    color: #fff; }
+
+.sidebar-toggle {
+  right: 10px; }
 
 .editor-container {
   z-index: 1;
-  width: 80%;
-  width: -webkit-calc(100% - 220px);
-  width: -moz-calc(100% - 220px);
-  width: calc(100% - 220px);
+  width: -webkit-calc(100% - 250px);
+  width: calc(100% - 250px);
   height: 100%;
   height: -webkit-calc(100% - 50px);
-  height: -moz-calc(100% - 50px);
   height: calc(100% - 50px);
   position: absolute;
   margin-right: -230px;
@@ -107,7 +110,7 @@ h1, h2, h3 {
 
 .sidebar {
   right: 0;
-  width: 220px;
+  width: 250px;
   height: 100%;
   position: fixed;
   background-color: #f1f1f1;
@@ -147,7 +150,7 @@ h1, h2, h3 {
   padding: 0; }
 
 .jambi-body {
-  background-color: #e3e3e3;
+  background-color: #444;
   height: 100%; }
 
 .showcase-body {
