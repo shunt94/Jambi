@@ -148,7 +148,7 @@ function connectToServer() {
 			}
 		},
 		error: function(e) {
-			$('#jambiStatus').html("Failed to connect to Jambi Server" + e);
+			$('#jambiStatus').html("Failed to connect to Jambi Server - " + e.statusText);
 		}
 	});
 	setTimeout(function(){connectToServer();},3600000);
