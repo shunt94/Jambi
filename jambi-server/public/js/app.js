@@ -30,6 +30,7 @@ function setActiveMenu(menuitem) {
     $('.navbar-nav li').removeClass('active');
     var newItem = '#menuItem_' + menuitem; 
     $(newItem).addClass('active');
+    window.scrollTo(0,0);
 }
 
 
@@ -54,6 +55,27 @@ var FeaturesView = Backbone.View.extend({
     }
 });
 
+var APIView = Backbone.View.extend({
+    el: '#content',
+    render: function(){
+        this.$el.html(render('api', {}));
+    }
+});
+
+var DocsView = Backbone.View.extend({
+    el: '#content',
+    render: function(){
+        this.$el.html(render('docs', {}));
+    }
+});
+
+var ContactView = Backbone.View.extend({
+    el: '#content',
+    render: function(){
+        this.$el.html(render('contact', {}));
+    }
+});
+
 
 var NotFoundView = Backbone.View.extend({
     el: '#content',
@@ -68,6 +90,9 @@ var Router = Backbone.Router.extend({
         'home': 'home',
         'about': 'about',
         'features': 'feautres',
+        'docs': 'docs',
+        'api': 'api',
+        'contact': 'contact',
         '*path':  'defaultRoute'
     }
 });
@@ -76,6 +101,9 @@ var Router = Backbone.Router.extend({
 var home = new Home();
 var aboutView = new AboutView();
 var featuresView = new FeaturesView();
+var docsView = new DocsView();
+var apiView = new APIView();
+var contactView = new ContactView();
 var notFoundView = new NotFoundView();
 
 var router = new Router();
@@ -92,6 +120,21 @@ router.on('route:about', function() {
 router.on('route:feautres', function() {
     featuresView.render();
     setActiveMenu('features');
+});
+
+router.on('route:docs', function() {
+    docsView.render();
+    setActiveMenu('docs');
+});
+
+router.on('route:contact', function() {
+    contactView.render();
+    setActiveMenu('contact');
+});
+
+router.on('route:api', function() {
+    apiView.render();
+    setActiveMenu('api');
 });
 
 router.on('route:defaultRoute', function() {

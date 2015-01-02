@@ -18,17 +18,18 @@ var jambiSetup = function() {
 	// View Menus 
 	var viewSubmenu = new gui.Menu();
 	
-	// Text Menus
-	var textSubmenu = new gui.Menu();
 	
-	// Insert Menus
-	var insertSubmenu = new gui.Menu();
+	// tools Menus
+	var toolsSubmenu = new gui.Menu();
 	
 	// Instas Menus 
 	var instasSubmenu = new gui.Menu();
 	
 	// Version Control Menus
 	var vcSubmenu = new gui.Menu();
+	
+	// Settings Menus
+	var settingsSubmenu = new gui.Menu();
 	
 	
 	
@@ -55,19 +56,28 @@ var jambiSetup = function() {
 			fileClearSettings:	new gui.MenuItem({ label: 'Clear Settings' })
 		},
 		view: {
-			
-		},
-		text: {
-			
-		},
-		insert: {
-			
+		    viewProjects:  new gui.MenuItem({ label: 'Projects' }),
+			viewShowcase:  new gui.MenuItem({ label: 'Showcase' }),
+			viewEditor:    new gui.MenuItem({ label: 'Editor' })
 		},
 		instas: {
-			
+			instasMenu:     new gui.MenuItem({ label: 'Instas'}),
+			instasNew:      new gui.MenuItem({ label: 'Add New Insta..'})
+		},
+		tools: {
+			toolsAddons:    new gui.MenuItem({ label: 'Addons' })
 		},
 		vc: {
+		    vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
+		    vcPull:   new gui.MenuItem({ label: 'Pull'}),
+		    vcCommit: new gui.MenuItem({ label: 'Commit..'}),
+		    vcPush:   new gui.MenuItem({ label: 'Push'})
 			
+		},
+		settings: {
+		    settingsFont:       new gui.MenuItem({ label: 'Font Options'}),
+		    settingsSyntax:     new gui.MenuItem({ label: 'Syntax Mode'}),
+		    settingsTheme:      new gui.MenuItem({ label: 'Theme'})
 		}
 	}
 	
@@ -98,17 +108,49 @@ var jambiSetup = function() {
 		fileSubmenu.append(jambiMenu.file.fileClearSettings);
 	})();
 	
+	var generateViewMenu = (function() {
+    	viewSubmenu.append(jambiMenu.view.viewProjects);
+    	viewSubmenu.append(new gui.MenuItem({ type: 'separator' }));
+    	viewSubmenu.append(jambiMenu.view.viewShowcase);
+    	viewSubmenu.append(new gui.MenuItem({ type: 'separator' }));
+    	viewSubmenu.append(jambiMenu.view.viewEditor);
+	})();
+	
+	
+	var generateInstasMenu = (function(){
+    	instasSubmenu.append(jambiMenu.instas.instasMenu);
+    	instasSubmenu.append(jambiMenu.instas.instasNew);
+	})();
+	
+	var generateToolsMenu = (function(){
+    	toolsSubmenu.append(jambiMenu.tools.toolsAddons);
+	})();
+	
+	var generateVCMenu = (function(){
+        vcSubmenu.append(jambiMenu.vc.vc);
+        vcSubmenu.append(new gui.MenuItem({ type: 'separator' }));
+        vcSubmenu.append(jambiMenu.vc.vcPull);
+        vcSubmenu.append(jambiMenu.vc.vcCommit);
+        vcSubmenu.append(jambiMenu.vc.vcPush);
+        
+	})();
+	
+	var generateSettingsMenu = (function(){
+        settingsSubmenu.append(jambiMenu.settings.settingsFont);
+        settingsSubmenu.append(jambiMenu.settings.settingsSyntax);
+        settingsSubmenu.append(jambiMenu.settings.settingsTheme);
+	})();
+	
 
 	
 	addTopMenu(fileSubmenu, "File", 1);
 	addTopMenu(viewSubmenu, "View", 3);
-	addTopMenu(textSubmenu, "Text", 4);
-	addTopMenu(insertSubmenu, "Insert", 5);
-	addTopMenu(instasSubmenu, "Instas", 6);
-	addTopMenu(vcSubmenu, "Version Control", 7);
-	win.menu.append(new gui.MenuItem({ label: 'Help', submenu: new gui.Menu()}));
+	addTopMenu(instasSubmenu, "Instas", 4);
+	addTopMenu(toolsSubmenu, "Tools", 5);
+	addTopMenu(vcSubmenu, "Version Control", 6);
+	addTopMenu(settingsSubmenu, "Settings", 7);
 	
-
+	win.menu.append(new gui.MenuItem({ label: 'Help', submenu: new gui.Menu()}));
 	
 	function addTopMenu(subMenu, nameLabel, pos) {
 		menuBar.insert(new gui.MenuItem({ label: nameLabel, submenu: subMenu}), pos);

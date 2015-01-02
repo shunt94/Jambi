@@ -29,6 +29,7 @@ var Jambi = function () {
 	*/
 	Jambi.prototype.menuSetup = function () {
 	
+	    // File Submenu
 	    jSetup.jambiMenu.file.fileNewSubmenu[0].click = function () {
     	      
 	    };
@@ -54,6 +55,22 @@ var Jambi = function () {
 				"Remove Settings",
 				modalFunction);
 		};
+		
+		
+		// Version Control
+		
+		jSetup.jambiMenu.vc.vc.click = function () {
+		    function modalFunction() {
+    		    alert("VC Setup");
+		    }
+    	    jambi.createModal("Setup Version Control", "", "<p>VC test</p>", "Ok", modalFunction);
+		};
+		
+		if(true) { // Change this to if VC is setup
+		    jSetup.jambiMenu.vc.vcPull.enabled = false;
+		    jSetup.jambiMenu.vc.vcPush.enabled = false;
+		    jSetup.jambiMenu.vc.vcCommit.enabled = false;
+		}
 	};
 
 	Jambi.prototype.getVersion = function () {

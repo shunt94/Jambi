@@ -3,6 +3,10 @@ h1 {
 	font-size: 3em;
 }
 
+a:hover {
+	text-decoration: none;
+}
+
 .jumbotron p {
 	font-size: 26px;
 	font-weight: 300;
@@ -64,7 +68,7 @@ body {
 .navbar-default {
 	padding-bottom: 11px;
 	font-size: 1.2em;
-	background-color: rgba(255, 255, 255, 0.6);
+	background-color: rgba(255, 255, 255, 0.85);
 }
 .navbar-default,
 .navbar-default .navbar-collapse,
@@ -78,13 +82,17 @@ body {
 }
 
 .navbar-default .navbar-nav>li>a,
-.navbar-default .navbar-nav>.active>a,
-.navbar-default .navbar-nav>.active>a:hover,
 .navbar-default .navbar-nav>.active>a:active,
 .navbar-default .navbar-nav>.active>a:focus {
 	background-color: transparent;
 	color: #333;
 }
+
+.navbar-default .navbar-nav>.active>a {
+	background-color: transparent;
+	color: #f52;
+}
+
 .navbar-default .navbar-toggle .icon-bar {
 	background-color: #555;
 }
@@ -99,7 +107,47 @@ body {
 }
 
 .navbar-default .navbar-nav>li>a:hover,
+.navbar-default .navbar-nav>.active>a:hover,
 .navbar-default .navbar-brand:hover {
 	background-color: transparent;
+	color: #f92;
+}
+
+
+.jambipreivew-bg {
+	background: url('../img/mbpro_jambi.jpg');
+	width: 100%;
+	height: 700px;
+	margin-top: -70px;
+	padding-top: 70px;
 	color: #000;
+}
+
+.codeBg {
+	background: url('../img/codebg.jpg');
+	width: 100%;
+	height: 500px;
+	margin-top: -70px;
+	padding-top: 70px;
+	color: #fff;
+}
+
+.features-bottom {
+	padding-bottom: 200px;
+	margin-bottom: 200px;
+}
+
+.footer {
+	background-color: #333;
+	color: #fff;
+	padding: 15px;
+	min-height: 250px;
+}
+
+.heart {
+	color: red;
+}
+
+.features i {
+	color: #333;
 }
