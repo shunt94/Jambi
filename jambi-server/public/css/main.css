@@ -151,3 +151,7 @@ body {
 .features i {
 	color: #333;
 }
+
+.label-small {
+	font-size: 10px;
+}

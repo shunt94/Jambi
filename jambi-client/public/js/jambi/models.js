@@ -16,7 +16,7 @@ var JambiDocument = Backbone.Model.extend({
 	type: "html",
 	line: 1,
 	col: 1,
-	mode: "",
+	mode: "htmlmixed",
 	title: "untitlted",
 	fileLocation: "",
 	
@@ -94,6 +94,7 @@ function newDocument () {
     currentDocid = $('.file.active').parents('.file-container').data("modelid");
     saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
     jambi.getJambiEditor().setValue(jDoc.text);
+    jambi.getJambiEditor().setOption("mode", jDoc.mode);
     
     fileEventHandlers();
 }

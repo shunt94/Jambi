@@ -62,6 +62,13 @@ var APIView = Backbone.View.extend({
     }
 });
 
+var DownloadView = Backbone.View.extend({
+    el: '#content',
+    render: function(){
+        this.$el.html(render('downloads', {}));
+    }
+});
+
 var DocsView = Backbone.View.extend({
     el: '#content',
     render: function(){
@@ -69,10 +76,10 @@ var DocsView = Backbone.View.extend({
     }
 });
 
-var ContactView = Backbone.View.extend({
+var SupportView = Backbone.View.extend({
     el: '#content',
     render: function(){
-        this.$el.html(render('contact', {}));
+        this.$el.html(render('support', {}));
     }
 });
 
@@ -92,7 +99,8 @@ var Router = Backbone.Router.extend({
         'features': 'feautres',
         'docs': 'docs',
         'api': 'api',
-        'contact': 'contact',
+        'support': 'support',
+        'downloads': 'downloads',
         '*path':  'defaultRoute'
     }
 });
@@ -103,7 +111,8 @@ var aboutView = new AboutView();
 var featuresView = new FeaturesView();
 var docsView = new DocsView();
 var apiView = new APIView();
-var contactView = new ContactView();
+var supportView = new SupportView();
+var downloadView = new DownloadView();
 var notFoundView = new NotFoundView();
 
 var router = new Router();
@@ -127,9 +136,14 @@ router.on('route:docs', function() {
     setActiveMenu('docs');
 });
 
-router.on('route:contact', function() {
-    contactView.render();
-    setActiveMenu('contact');
+router.on('route:downloads', function() {
+    downloadView.render();
+    setActiveMenu('downloads');
+});
+
+router.on('route:support', function() {
+    supportView.render();
+    setActiveMenu('support');
 });
 
 router.on('route:api', function() {
