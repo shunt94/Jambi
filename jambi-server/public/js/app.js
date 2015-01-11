@@ -1,3 +1,11 @@
+
+// to do
+// seperate router by naming function and calling that function.varName
+
+
+
+
+
 (function() {
 // This function is taken from StackOverflow - http://stackoverflow.com/questions/8366733/external-template-in-underscore
 function render(tmpl_name, tmpl_data) {

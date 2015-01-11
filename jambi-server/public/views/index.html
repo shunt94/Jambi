@@ -3,14 +3,16 @@
 		<div class="row">
 			<h1 class="animated fadeIn">Jambi</h1>
 			<div class="col-md-12 animated fadeIn">
-				<p>The free web development code editor for <br><strong>Web Developers</strong> &amp; <strong>Designers</strong></p>
+				<p>The free web development code editor for <br>
+				    <strong><span class="jambiSubtitle">Web Developers</span></strong>
+				</p>
 				<br>
 				<p><a class="btn btn-primary btn-lg" role="button">Download Now<br> (<strong><span class="small" id="downloadOS">Mac OSX</span></strong>)</a></p>
 				<div class="spacer"></div>
 			</div>
 		</div>
 		<div class="spacer-large"></div>
-		<div class="jambi-preview"><img class="img-responsive" src="../img/jambi1.png"/></div>
+		<div class="jambi-preview animated fadeInUp"><img class="img-responsive" src="../img/jambi1.png"/></div>
 	</div>
 </div>
 
@@ -102,3 +104,22 @@
 	</div>
 </div>
 
+<script type="text/javascript">
+(function() {
+    var i = 0;
+    function changeSubtitle() {
+        if(i === words.length) {i = 0;} 
+        $('.jambiSubtitle').html(words[i]).fadeIn(500).delay(2000).fadeOut(500, changeSubtitle);
+        i+=1;
+    };
+    
+    var words = [
+        "Web Developers",
+        "Designers",
+        "Website Creation",
+        "Front-end Developers"
+    ];
+    $('.jambiSubtitle').hide();
+    changeSubtitle();
+})();
+</script>

@@ -35,7 +35,6 @@ var Projects = Backbone.Collection.extend({
    model: Project 
 });
 
-var documentToBeRendered;
 var document1 = new JambiDocument();
 var openDocuments = new AllDocuments();
 openDocuments.add(document1);
@@ -77,6 +76,15 @@ function saveCurrentDocument(documentModel) {
 }
 
 function newDocument () {
+
+    // jambi.newFile();
+    // Pass parameters into this function to share files
+
+    if($('.file-container').length !== 0) {
+        currentDocid = $('.file.active').parents('.file-container').data("modelid");
+        saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
+    }
+    
     var jDoc = new JambiDocument();
     openDocuments.add(jDoc);
     
@@ -84,15 +92,13 @@ function newDocument () {
     var fileName = jDoc.title + '.' + jDoc.type;
     var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
     						'<div class="file active">' +
-    							'<span class="filename">' + fileName + '</span>' +
+    							'<span class="filename">' + fileName + jDoc.id + '</span>' +
     							'<span class="close"><i class="fa fa-times-circle"></i></span>' +
     						'</div>' +
     					'</li>';
                         
 						
     $('#file_ul').append(appendedHTML);
-    currentDocid = $('.file.active').parents('.file-container').data("modelid");
-    saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
     jambi.getJambiEditor().setValue(jDoc.text);
     jambi.getJambiEditor().setOption("mode", jDoc.mode);
     
@@ -193,8 +199,7 @@ function fileEventHandlers() {
     
     $('.file-container').click(function() {
         window.location.replace('#/home');
-        documentToBeRendered = $(this);
-        changeFile(documentToBeRendered);
+        changeFile($(this));
     });
     
     $('.close').click(function() {
