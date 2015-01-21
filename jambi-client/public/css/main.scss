@@ -16,6 +16,13 @@ $sidebar-width: 250px;
     src: url("MesloLGL-Regular.ttf");
 }
 
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body,html, .container {
 	font-family: 'Source Sans Pro', sans-serif;
 	height: 100%;
@@ -131,8 +138,8 @@ h1,h2,h3 { font-weight: 200;}
     width: calc(100% - 250px);
     
     height: 100%;
-    height: -webkit-calc(100% - 50px);
-    height: calc(100% - 50px);
+    height: -webkit-calc(100% - 60px);
+    height: calc(100% - 60px);
 
 	position: absolute;
 	margin-right: -230px;

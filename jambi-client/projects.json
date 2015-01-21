@@ -1,0 +1,17 @@
+{
+    "activeproject": "",
+	"projects": [{
+    	"project1": {
+    	    "name": "project1",
+        	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
+        	"openfiles": [],
+        	"currentfile": {}
+    	},
+    	"project2": {
+    	    "name": "project2",
+        	"root": "/./Users/simon/Desktop/Work/University/anotherproject",
+        	"openfiles": [],
+        	"currentfile": {}
+    	}
+	}]
+}
