@@ -321,6 +321,7 @@ var Jambi = function () {
     Jambi.prototype.closeAllFiles = function () {
         jModel.closeAllDocs();
     };
+    
 
 
 
@@ -331,7 +332,9 @@ var Jambi = function () {
                 if (error) {
                     alert(error);
                 } else {
-                    jambiEditor.doc.setValue(data);
+                    console.log(data);
+                    //jambiEditor.doc.setValue(data);
+                    jModel.openFile('file' ,data, 'html', 'htmlmixed');
                 }
             });
         });

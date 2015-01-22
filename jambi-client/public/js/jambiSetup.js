@@ -152,6 +152,10 @@ var jambiSetup = function() {
 	function addTopMenu(subMenu, nameLabel, pos) {
 		menuBar.insert(new gui.MenuItem({ label: nameLabel, submenu: subMenu}), pos);
 	} 
+	
+	onload = function() {
+        gui.Window.get().show();
+    }
 
 	return {
 		gui: gui,

@@ -105,15 +105,16 @@ var jambiModel = function() {
         jambi.getJambiEditor().setOption("mode", jDoc.mode);
         setActiveDocument();
         fileEventHandlers();
+        goToEditor();
     }
     
     function closeDocument(docID) {
-        saveCurrentDocument(openDocuments.get(activeDocument));    
+        setActiveDocument();
+        saveCurrentDocument(openDocuments.get(activeDocument));
+        var index = openDocuments.get(docID).id;
         openDocuments.remove(openDocuments.get(docID));
-        
         if(openDocuments.length >= 1) {
             if(activeDocument === docID) {
-                var index = openDocuments.indexOf(docID);
                 if(index < 1) {
                     populateTopBar(index + 1);
                 } else {
@@ -142,6 +143,10 @@ var jambiModel = function() {
         window.location.replace('#/project');
     }
     
+    function goToEditor() {
+        window.location.replace('#/home');
+    }
+    
     function closeCurrentDocument() {
         setActiveDocument();
         saveCurrentDocument(openDocuments.get(activeDocument));
@@ -153,7 +158,6 @@ var jambiModel = function() {
         activeDocument = $('.file.active').parents('.file-container').data("modelid");
     }
     
-    
     function changeFile(fileToChange) {
         saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
         var currentDoc = openDocuments.get(openDocuments.get(fileToChange.data('modelid')));
@@ -162,9 +166,12 @@ var jambiModel = function() {
         setActiveDocument();
     }
     
-    
-    
-    
+    function changeFileById(file) {
+        saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
+        populateTopBar(file.id);
+        setDocOptions(file);
+        setActiveDocument();
+    }
     
     function connectToServer() {
 	$('#jambiStatus').html('Connecting <i class="fa fa fa-spinner fa-spin"></i>');
@@ -189,14 +196,18 @@ var jambiModel = function() {
     
     function populateTopBar(activeDocID) {
         var modelCount = openDocuments.length;
-        var first = true;
+        var first;
+        if (!activeDocID) {
+            first = true;
+        }
         $('.file-container').remove();
         for(var i = 0; i < modelCount; i++) {
 
             var jDoc = openDocuments.at(i);
             var active = "";
-            if(jDoc.id === activeDocID || modelCount <= 1) {
+            if(jDoc.id === activeDocID || modelCount <= 1 || first) {
                 active = "active";
+                first = false;
             }
              var fileName = jDoc.title + '.' + jDoc.type;
              var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
@@ -233,6 +244,19 @@ var jambiModel = function() {
         $('.close').click(function() {
             closeDocument($(this).parents(".file-container").data('modelid'));
         });
+    }
+    
+    function openFile(filename, filecontents, filetype, filemode) {
+        var jDoc = new JambiDocument();
+        jDoc.title = filename;
+        jDoc.text = filecontents;
+        jDoc.type = filetype;
+        jDoc.mode = filemode;
+        
+        openDocuments.add(jDoc);
+        populateTopBar(jDoc.id);
+        changeFileById(jDoc);
+        
     }
     
     var EditorView = Backbone.View.extend({
@@ -274,11 +298,13 @@ var jambiModel = function() {
     
     
     function setDocOptions(model) {
-        jambi.getJambiEditor().focus();
-        jambi.getJambiEditor().setValue(model.text);
-    	jambi.getJambiEditor().setCursor(model.line, model.col);
-    	jambi.getJambiEditor().setOption("mode", model.mode);
-    	jambi.getJambiEditor().scrollIntoView();
+        if(model) {
+            jambi.getJambiEditor().focus();
+            jambi.getJambiEditor().setValue(model.text);
+        	jambi.getJambiEditor().setCursor(model.line, model.col);
+        	jambi.getJambiEditor().setOption("mode", model.mode);
+        	jambi.getJambiEditor().scrollIntoView();
+    	}
     }
     
     
@@ -328,6 +354,7 @@ var jambiModel = function() {
     
     return {
         newFile: function() { newDocument (); },
+        openFile: function() { openFile(); },
         closeCurrentDoc: function() { closeCurrentDocument(); },
         closeAllDocs: function() { removeAllDocuments (); }
     }
