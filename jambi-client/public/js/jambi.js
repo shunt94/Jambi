@@ -61,6 +61,17 @@ var Jambi = function () {
                               modalFunction);
         };
         
+        jSetup.jambiMenu.view.viewProjects.click = function () {
+            window.location.replace("#/project");
+        };
+        
+        jSetup.jambiMenu.view.viewEditor.click = function () {
+            window.location.replace("#/home");
+        };
+        
+        jSetup.jambiMenu.view.viewShowcase.click = function () {
+            window.location.replace("#/showcase");
+        };
         
         
         // Themes 
@@ -334,7 +345,7 @@ var Jambi = function () {
                 } else {
                     console.log(data);
                     //jambiEditor.doc.setValue(data);
-                    jModel.openFile('file' ,data, 'html', 'htmlmixed');
+                    jModel.openFile("file" ,data, "html", "htmlmixed");
                 }
             });
         });

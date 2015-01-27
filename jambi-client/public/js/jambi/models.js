@@ -93,14 +93,32 @@ var jambiModel = function() {
     	documentModel.mode = jambi.getJambiEditor().getOption('mode');
     }
     
-    function newDocument () {
+    function newDocument (filename, filecontents, filetype, filemode) {
         if(openDocuments.length !== 0) {
             currentDocid = $('.file.active').parents('.file-container').data("modelid");
             saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
         }
         var jDoc = new JambiDocument();
         openDocuments.add(jDoc);
-        populateTopBar(jDoc.id);
+        
+        
+        // Set contents 
+        if(filename) {
+            jDoc.title = filename;
+        }
+        if(filecontents) {
+            jDoc.text = filecontents;
+        } 
+        if(filetype) {
+            jDoc.type = filetype;
+        }
+        if(filemode) {
+            jDoc.mode = filemode;
+        }
+        
+        
+        populateTopBar(jDoc.id);    
+
         jambi.getJambiEditor().setValue(jDoc.text);
         jambi.getJambiEditor().setOption("mode", jDoc.mode);
         setActiveDocument();
@@ -111,14 +129,19 @@ var jambiModel = function() {
     function closeDocument(docID) {
         setActiveDocument();
         saveCurrentDocument(openDocuments.get(activeDocument));
-        var index = openDocuments.get(docID).id;
+        var index = openDocuments.indexOf(openDocuments.get(docID));
         openDocuments.remove(openDocuments.get(docID));
         if(openDocuments.length >= 1) {
             if(activeDocument === docID) {
                 if(index < 1) {
-                    populateTopBar(index + 1);
+                    populateTopBar(openDocuments.at(index).id);
                 } else {
-                    populateTopBar(index - 1);
+                    if((index + 1) <= openDocuments.length) {
+                        populateTopBar(openDocuments.at(index).id);                
+                    }
+                    else {
+                        populateTopBar(openDocuments.at(index - 1).id);
+                    }
                 }
             }
             else {
@@ -167,9 +190,12 @@ var jambiModel = function() {
     }
     
     function changeFileById(file) {
-        saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
-        populateTopBar(file.id);
+        if(activeDocument || openDocuments.length > 1) {
+            alert(openDocuments.length + " " + activeDocument);
+            saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
+        }
         setDocOptions(file);
+        populateTopBar(file.id);
         setActiveDocument();
     }
     
@@ -246,17 +272,22 @@ var jambiModel = function() {
         });
     }
     
-    function openFile(filename, filecontents, filetype, filemode) {
+    function openFile(filename, filecontents, filetype, filemode) { 
+        /*
+if(openDocuments.length > 0) {
+            alert(openDocuments.length);
+            setActiveDocument();
+        }
         var jDoc = new JambiDocument();
-        jDoc.title = filename;
-        jDoc.text = filecontents;
-        jDoc.type = filetype;
-        jDoc.mode = filemode;
+        
         
         openDocuments.add(jDoc);
         populateTopBar(jDoc.id);
         changeFileById(jDoc);
+        goToEditor();
+*/
         
+        newDocument (filename, filecontents, filetype, filemode);
     }
     
     var EditorView = Backbone.View.extend({
@@ -354,7 +385,7 @@ var jambiModel = function() {
     
     return {
         newFile: function() { newDocument (); },
-        openFile: function() { openFile(); },
+        openFile: function(a,b,c,d) { openFile(a,b,c,d); },
         closeCurrentDoc: function() { closeCurrentDocument(); },
         closeAllDocs: function() { removeAllDocuments (); }
     }
