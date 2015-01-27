@@ -31,10 +31,16 @@
 	</div>
 	<div class="sidebar-timers">
 		<div class="timer">
+		    <h4>Current Activity Timer</h4>
 			<button class="btn btn-mini btn-blue" id="jambiStartTimer">Start Timer</button>
 			<button class="btn btn-mini btn-blue" id="jambiStopTimer">Stop Timer</button>
 			<br>
 			<span id="jambi_timer_hours">00</span>:<span id="jambi_timer_mins">00</span>:<span id="jambi_timer_secs">00</span>
+			
+			<hr>
+			
+			<h4>Active Timer</h4>
+			<span id="global_timer_hours">00</span>:<span id="global_timer_mins">00</span>:<span id="global_timer_secs">00</span>
 		</div>
 	</div>
 	
@@ -43,5 +49,12 @@
 	</div>
     <div class="sidebar-content">
 		<input id="stackoverflow_search" type="text" style="width:90%;" placeholder="Search Stackoverflow.com"/>
+	</div>
+	
+	<div class="sidebar-heading">
+	    Slow-Clap processor
+	</div>
+	<div class="clap">
+	    Clap
 	</div>
 </div>

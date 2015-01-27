@@ -14,6 +14,7 @@ a:hover {
 .jambi-bg {
 	background: url('../img/jambi2.jpg');
 	background-repeat: no-repeat;
+	background-size: cover;
 	margin-top: -70px;
 }
 
@@ -116,6 +117,7 @@ body {
 
 .jambipreivew-bg {
 	background: url('../img/mbpro_jambi.jpg');
+	background-repeat: no-repeat;
 	width: 100%;
 	height: 700px;
 	margin-top: -70px;
@@ -125,6 +127,8 @@ body {
 
 .codeBg {
 	background: url('../img/codebg.jpg');
+	background-size: cover;
+	background-repeat: no-repeat;
 	width: 100%;
 	height: 500px;
 	margin-top: -70px;

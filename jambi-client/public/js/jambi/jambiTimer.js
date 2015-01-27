@@ -1,4 +1,8 @@
-var jambiTimer = function(){
+var jambiTimer = function($elementSeconds, $elementMins, $elementHours){
+	
+	console.log($elementSeconds);
+	console.log($elementHours);
+	console.log($elementMins);
 	
 	var jambi_timer_seconds = 0;
 	var jambi_timer_minutes = 0;
@@ -16,19 +20,19 @@ var jambiTimer = function(){
 	
 	function updateMinutes() {
 		jambi_timer_minutes = ("0" + Number(jambi_timer_minutes)).slice(-2);
-		$('#jambi_timer_mins').text(jambi_timer_minutes);
+		$($elementMins).text(jambi_timer_minutes);
 	}
 	
 	function updateTime() {
 		jambi_timer_minutes = ("0" + Number(jambi_timer_minutes)).slice(-2);
-		$('#jambi_timer_mins').text(jambi_timer_minutes);
+		$($elementMins).text(jambi_timer_minutes);
 		jambi_timer_hours = ("0" + Number(jambi_timer_hours)).slice(-2);
-		$('#jambi_timer_hours').text(jambi_timer_hours);
+		$($elementHours).text(jambi_timer_hours);
 	}
 	
 	function updateSeconds() {
 		jambi_timer_seconds = ("0" + Number(jambi_timer_seconds)).slice(-2);
-		$('#jambi_timer_secs').text(jambi_timer_seconds);
+		$($elementSeconds).text(jambi_timer_seconds);
 	}
 
 	function jambiTimer1(){	
