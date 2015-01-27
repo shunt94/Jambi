@@ -9,6 +9,7 @@ var jambiModel = function() {
     var globalCounter = 1;
     var activeDocument;
     var json = require('json-update');
+    var projectOpen = false;
     
     var Project = Backbone.Model.extend({
     	projectLocation: "/",
@@ -33,23 +34,13 @@ var jambiModel = function() {
     
     
     var AllDocuments = Backbone.Collection.extend({
-        model: JambiDocument,
-        getElement: function() {
-            return this.currentElement;
-        },
-        next: function (){
-            this.setElement(this.at(this.indexOf(this.getElement()) + 1));
-            return this;
-        },
-        prev: function() {
-            this.setElement(this.at(this.indexOf(this.getElement()) - 1));
-            return this;
-        }
+        model: JambiDocument
     });
     
     var Projects = Backbone.Collection.extend({
        model: Project 
     });
+    
     
     var document1 = new JambiDocument();
     var openDocuments = new AllDocuments();
@@ -200,25 +191,25 @@ var jambiModel = function() {
     }
     
     function connectToServer() {
-	$('#jambiStatus').html('Connecting <i class="fa fa fa-spinner fa-spin"></i>');
-	$.ajax({
-		type: 'GET',
-		url: "http://jambi.herokuapp.com/api/jambi",
-		async: true,
-		contentType: "application/json",
-		dataType: 'json',
-		success: function(data) {
-			$('#jambiStatus').html(data.jambi.status);
-			if(data.jambi.version !== jambi.getVersion()) {
-				alert("Your version of Jambi is Out of Date");
-			}
-		},
-		error: function(e) {
-			$('#jambiStatus').html("Failed to connect to Jambi Server - " + e.statusText);
-		}
-	});
-	setTimeout(function(){connectToServer();},3600000);
-}
+    	$('#jambiStatus').html('Connecting <i class="fa fa fa-spinner fa-spin"></i>');
+    	$.ajax({
+    		type: 'GET',
+    		url: "http://jambi.herokuapp.com/api/jambi",
+    		async: true,
+    		contentType: "application/json",
+    		dataType: 'json',
+    		success: function(data) {
+    			$('#jambiStatus').html(data.jambi.status);
+    			if(data.jambi.version !== jambi.getVersion()) {
+    				alert("Your version of Jambi is Out of Date");
+    			}
+    		},
+    		error: function(e) {
+    			$('#jambiStatus').html("Failed to connect to Jambi Server - " + e.statusText);
+    		}
+    	});
+    	setTimeout(function(){connectToServer();},3600000);
+    }
     
     function populateTopBar(activeDocID) {
         var modelCount = openDocuments.length;
@@ -303,7 +294,6 @@ if(openDocuments.length > 0) {
     			jTimer.stopTimer();
     		});
     		
-    		
     		$('#jshintcode').click(function() {
     			jambi.jsHint();
     		});
@@ -354,26 +344,35 @@ if(openDocuments.length > 0) {
     
     var router = new Router();
     var firstLoad = true;
+    
     router.on('route:home', function() {
     	editorView.render();
     	jambi.searchWeb();
     	if(firstLoad) {
     		jambi.initCodeMirror();
     		firstLoad = false;
+    		setActiveDocument();
     	}
     	else {
     		jambi.renderEditor();
     		setDocOptions(document1);
+    		setActiveDocument();
     	}
     });
     
     router.on('route:projects', function() {
-    	saveCurrentDocument(document1);
+        setActiveDocument();
+        if(activeDocument !== undefined) {
+    	    saveCurrentDocument(openDocuments.get(activeDocument));
+        }
     	projectView.render();
     });
     
     router.on('route:showcase', function() {
-    	saveCurrentDocument(document1);
+        setActiveDocument();
+        if(activeDocument !== undefined) {
+            saveCurrentDocument(openDocuments.get(activeDocument));
+        }
     	showcaseView.render();
     });
     

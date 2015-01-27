@@ -458,16 +458,16 @@ var Jambi = function () {
     */
     Jambi.prototype.toggleSideMenu = function () {
         if($('.sidebar').hasClass("inView")) {
-            $('.sidebar').animate({"margin-right": '-=250px'}, 200);
-            $('.editor-container').animate({ "width": "+=250px" }, 200);
+            $('.sidebar').animate({"margin-right": '-=300px'}, 200);
+            $('.editor-container').animate({ "width": "+=300px" }, 200);
             $('.sidebar').removeClass("inView");
             $('#sidebar_toggle i').removeClass('fa-indent');
             $('#sidebar_toggle i').addClass('fa-outdent');
             jambiEditor.refresh();
         } 
         else {
-            $('.sidebar').animate({"margin-right": '+=250px'}, 200);
-            $('.editor-container').animate({ "width": "-=250px" }, 200);
+            $('.sidebar').animate({"margin-right": '+=300px'}, 200);
+            $('.editor-container').animate({ "width": "-=300px" }, 200);
             $('.sidebar').addClass("inView");
             $('#sidebar_toggle i').removeClass('fa-outdent');
             $('#sidebar_toggle i').addClass('fa-indent');

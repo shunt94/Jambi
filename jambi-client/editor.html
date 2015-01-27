@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Jambi</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="public/css/main.css">
 	<link rel="stylesheet" href="public/css/projects.css">
 	<link rel="stylesheet" href="public/css/jambi_editor.css">
@@ -22,7 +23,8 @@
 	<link rel="stylesheet" href="codemirror/theme/midnight.css">
 	<link rel="stylesheet" href="codemirror/theme/monokai.css">
 	<link rel="stylesheet" href="codemirror/theme/neat.css">
-
+    
+    
 
 </head>
 
@@ -85,7 +87,13 @@
 
 	<div class="container">
 		<div class="topbar">
-			<div class="topbar-tabs">
+		    <div class="menu inline">
+		        <ul class="menuitems">
+			        <li class="menuitem inline"><a draggable="false" href='#/project'>P</a></li>
+			        <li class="menuitem inline"><a draggable="false" href='#/showcase'>S</a></li>
+			    </ul>
+		    </div>
+			<div class="topbar-tabs inline">
 				<ul class="file-ul" id="file_ul">
 				</ul>
 			</div>
@@ -98,20 +106,12 @@
 			
 			
 		</div>
-
-		<div class="jambi-body" id="jambi-body">
-
-		</div>
-
+		
+		<div class="jambi-body" id="jambi-body"></div>
 
 		<div class="lowerbar">
-			<a draggable="false" href='#/project' class="btn btn-primary">Projects</a>
-			<a draggable="false" href='#/home' class="btn btn-primary">Editor</a>
-			<a draggable="false" href='#/showcase'>Showcase</a>
-
 			<div class="editor-info">
 				<span class="jambi-linenumber" id="jambiLine">1</span>:<span class="jambi-column" id="jambiColumn">1</span> 
-
 			</div>
 
 			<div class="theme-selector">
@@ -247,8 +247,6 @@
 	<script src="http://futtta.be/squeezeFrame/squeezeFrame.js"></script>
 
 	<script type="text/javascript">
-		
-		
 		$('.sidebar').blurjs({
         	source: '.editor-container',
         	radius: 5

@@ -15,10 +15,13 @@ body, html, .container {
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  cursor: default; }
+  cursor: default !important; }
 
 a {
-  text-decoration: none; }
+  text-decoration: none;
+  color: #fff; }
+  a:hover {
+    cursor: default !important; }
 
 h1, h2, h3 {
   font-weight: 200; }
@@ -57,7 +60,6 @@ h1, h2, h3 {
   width: 155px;
   height: 100%;
   display: inline-block;
-  cursor: pointer;
   margin-right: -3px; }
 
 .file {
@@ -104,8 +106,8 @@ h1, h2, h3 {
 
 .editor-container {
   z-index: 1;
-  width: -webkit-calc(100% - 250px);
-  width: calc(100% - 250px);
+  width: -webkit-calc(100% - 300px);
+  width: calc(100% - 300px);
   height: 100%;
   height: -webkit-calc(100% - 60px);
   height: calc(100% - 60px);
@@ -116,30 +118,46 @@ h1, h2, h3 {
 
 .sidebar {
   right: 0;
-  width: 250px;
-  height: 100%;
+  width: 300px;
+  height: calc(100% - 18px);
   position: fixed;
   background-color: #f1f1f1;
+  background-image: url("../img/blurtile.png");
+  background-repeat: repeat;
   z-index: 10;
   padding-top: 40px;
+  padding-bottom: 60px;
   margin-top: -5px;
-  font-family: "Source Sans Pro", Calibri, Candara, Arial, sans-serif; }
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 300;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  box-shadow: 0px -1px 5px #111; }
 
 .sidebar-title {
   font-size: 26px;
   background-color: #696969;
-  padding: 5px; }
+  padding: 5px;
+  font-weight: 200;
+  position: fixed;
+  width: 300px;
+  z-index: 100; }
+
+.sidebar-title-after {
+  margin-bottom: 45px; }
 
 .sidebar-content {
-  color: #333;
   padding: 5px; }
 
-.sidebar-footer {
-  position: absolute;
-  bottom: 20px;
-  margin-bottom: 50px;
-  margin-left: 10px;
-  width: 100%; }
+.sidebar-heading {
+  position: relative;
+  padding: 5px;
+  font-weight: 300;
+  background-color: #111;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #727272; }
 
 .lowerbar {
   position: fixed;
@@ -150,10 +168,28 @@ h1, h2, h3 {
   z-index: 10;
   display: inline-block; }
 
-.file-ul {
+.file-ul, .menuitems {
   display: inline-block;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  list-style: none; }
+
+.menuitem {
+  height: 100%;
+  width: 40px;
+  margin-top: -30px;
+  text-align: center; }
+
+.menu {
+  overflow: auto;
+  overflow-y: hidden;
+  height: 100%;
+  white-space: nowrap;
+  padding-top: 15px;
+  padding-left: 5px; }
+
+.inline {
+  display: inline-block; }
 
 .jambi-body {
   background-color: #444;
@@ -221,7 +257,6 @@ iframe {
   vertical-align: middle;
   -ms-touch-action: manipulation;
   touch-action: manipulation;
-  cursor: pointer;
   background-image: none;
   border: 1px solid transparent;
   white-space: nowrap;
