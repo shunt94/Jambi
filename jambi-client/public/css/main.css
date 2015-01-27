@@ -178,7 +178,10 @@ h1, h2, h3 {
   height: 100%;
   width: 40px;
   margin-top: -30px;
-  text-align: center; }
+  text-align: center;
+  font-size: 22px; }
+  .menuitem i:hover {
+    color: #ddd; }
 
 .menu {
   overflow: auto;
