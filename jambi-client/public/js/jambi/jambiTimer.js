@@ -1,9 +1,4 @@
 var jambiTimer = function($elementSeconds, $elementMins, $elementHours){
-	
-	console.log($elementSeconds);
-	console.log($elementHours);
-	console.log($elementMins);
-	
 	var jambi_timer_seconds = 0;
 	var jambi_timer_minutes = 0;
 	var jambi_timer_hours = 0;

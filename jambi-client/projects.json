@@ -1,17 +1,29 @@
-{
-    "activeproject": "",
-	"projects": [{
-    	"project1": {
-    	    "name": "project1",
+[
+    {   
+        "active": 1
+    },
+	{
+	    "project": {
+    	    "name": "Project name 1",
         	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
         	"openfiles": [],
         	"currentfile": {}
-    	},
-    	"project2": {
+        }
+	},
+	{
+	    "project": {
     	    "name": "project2",
         	"root": "/./Users/simon/Desktop/Work/University/anotherproject",
         	"openfiles": [],
         	"currentfile": {}
+        }
+	},
+	{
+    	"project": {
+    	    "name": "The Third Website",
+        	"root": "/./Users/simon/Desktop/Work/University/anotherproject",
+        	"openfiles": [],
+        	"currentfile": {}
     	}
-	}]
-}
+	}
+]

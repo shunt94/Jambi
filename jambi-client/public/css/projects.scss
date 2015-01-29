@@ -10,26 +10,28 @@
     text-align: center;
     -webkit-transition: width 0.5s ease-in-out, left 1s ease-in-out;
     transition: width 0.5s ease-in-out, left 1s ease-in-out;
+    
+    &.active > .project-name {
+        color: #fff !important;
+    }
 }
 
 .project-image {
-    width: 230px;
+    width: 100%;
     height: 140px;
     background: url('../img/jambi.jpg');
     background-size: cover;
-    box-shadow: 2px 4px 4px #000;
     margin: 0 auto;
     text-align: center;
 -webkit-transition:.2s;
         transition:.2s;
-    &:hover {
-        cursor: pointer;
-        box-shadow: 6px 8px 12px #000;
-    }
 }
 
 .project-name {
-    padding-top: 10px;
+    padding-top: 40px;
+    font-size: 14px;
+    color: #e96710;
+    text-transform: capitalize;
 }
 
 // Grid responsive css
@@ -38,6 +40,78 @@
   float: left;
   padding-bottom: 35px;
 }
+
+
+
+.card-container {
+  -webkit-perspective: 800;
+   width: 260px;
+   height: 300px;
+   position: relative;
+}
+.card-container .card.flipped {
+  -webkit-transform: rotatey(-180deg);
+}
+.card-container .card {
+  width: 100%;
+  height: 100%;
+  -webkit-transform-style: preserve-3d;
+  -webkit-transition: 0.5s;
+}
+.card-container .card .face {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  -webkit-backface-visibility: hidden ;
+  z-index: 2;
+}
+.card-container .card .front {
+  position: absolute;
+  z-index: 1;
+    background: black;
+    color: white;
+}
+.card-container .card .back {
+  -webkit-transform: rotatey(-180deg);
+    background: blue;
+    background: white;
+    color: black;
+}
+
+
+.add-project {
+    padding-top: 50%;
+    font-size: 3em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (min-width: 768px) {
     .col-sm-6 {

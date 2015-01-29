@@ -10,11 +10,9 @@ var jambiModel = function() {
 	var globalCounter = 1;
 	var activeDocument;
 	var json = require('json-update');
-	var projectOpen = false;
 
 	var Project = Backbone.Model.extend({
-		projectLocation: "/",
-		files: []
+
 	});
 
 	var JambiDocument = Backbone.Model.extend({
@@ -38,16 +36,36 @@ var jambiModel = function() {
 		model: JambiDocument
 	});
 
-	var Projects = Backbone.Collection.extend({
+	var ProjectsCollection = Backbone.Collection.extend({
 		model: Project 
 	});
 
+	var Projects = new ProjectsCollection();
+
+
+	$.ajaxSetup({
+		async: false
+	});
+	Projects.fetch({ 
+		url: "projects.json", 
+		success: function() {
+			console.log("JSON file load was successful", Projects);
+		},
+		error: function(){
+			alert("Error! - Could not fetch project list!");
+		}
+	});
+	$.ajaxSetup({
+		async: true
+	});
+
+
+
+
 	programTimer.startTimer();
 
-	var document1 = new JambiDocument();
 	var openDocuments = new AllDocuments();
 
-	openDocuments.add(document1);
 
 	populateTopBar();
 	fileEventHandlers();
@@ -87,6 +105,7 @@ var jambiModel = function() {
 	}
 
 	function newDocument (filename, filecontents, filetype, filemode) {
+		goToEditor();
 		if(openDocuments.length !== 0) {
 			currentDocid = $('.file.active').parents('.file-container').data("modelid");
 			saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
@@ -110,13 +129,13 @@ var jambiModel = function() {
 		}
 
 
-		populateTopBar(jDoc.id);    
+		populateTopBar(jDoc.id);  
 
 		jambi.getJambiEditor().setValue(jDoc.text);
 		jambi.getJambiEditor().setOption("mode", jDoc.mode);
 		setActiveDocument();
 		fileEventHandlers();
-		goToEditor();
+
 	}
 
 	function closeDocument(docID) {
@@ -350,16 +369,10 @@ goToEditor();
 	router.on('route:home', function() {
 		editorView.render();
 		jambi.searchWeb();
-		if(firstLoad) {
-			jambi.initCodeMirror();
-			firstLoad = false;
-			setActiveDocument();
-		}
-		else {
-			jambi.renderEditor();
-			setDocOptions(document1);
-			setActiveDocument();
-		}
+		jambi.renderEditor();
+		setActiveDocument();
+		populateTopBar(activeDocument);
+		setDocOptions(openDocuments.get(activeDocument));
 	});
 
 	router.on('route:projects', function() {
@@ -368,7 +381,55 @@ goToEditor();
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
 		projectView.render();
+		var activeProject = Projects.at(0).attributes.active;
+		// Render Projects into page
+		for(var i = 1; i < Projects.length; i++) {
+			console.log(Projects.at(i).attributes.project.name);
+			var active = "";
+			if(i === activeProject) {
+				active = "active";
+			}
+			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+									'<div class="card-container">' +
+    									'<div class="card">' +
+        									'<div class="face front">' +
+        									    '<div class="project-image"></div>' + 
+        									    '<div class="project-name">' + Projects.at(i).attributes.project.name + '</div>' +
+        									'</div>' +
+        									'<div class="face back">' +
+        									    'Back' +
+        									'</div>' +
+        									'</div>' + 
+    									'</div>' +
+									'</div>');
+		}
+		
+		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+    		'<div class="card-container">' +
+        		'<div class="card">' +
+            		'<div class="face front">' +
+                        '<div class="add-project"><i class="fa fa-plus"></i></div>' +
+                        '<div class="project-name">Add Project</div>' +
+            		'</div>' +
+                    '<div class="face back">' +
+                		'Project Details' +
+            		'</div>' +
+            		'</div>' + 
+        		'</div>' +
+    		'</div>');
+		
+		$(document).click(function(event){
+			if(!$(event.target).closest('.card-container').length) {
+				$('.card').removeClass('flipped');
+			}
+		});
+		
+		$('.card-container').click(function(){
+			$('.card').removeClass('flipped');
+			$(this).find('.card').addClass('flipped');       
+		});
 	});
+
 
 	router.on('route:showcase', function() {
 		setActiveDocument();
@@ -378,10 +439,13 @@ goToEditor();
 		showcaseView.render();
 	});
 
+
+
 	Backbone.history.start();
+	jambi.initCodeMirror();
 
 	// if in project then start home else start project
-	window.location.replace("#/home");
+	window.location.replace("#/project");
 
 
 	return {
