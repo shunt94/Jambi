@@ -6,7 +6,10 @@
 	    "project": {
     	    "name": "Project name 1",
         	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
-        	"openfiles": [],
+        	"openfiles": [
+        	    {"name": "FileOne", "root": "/FileOne.html", "mode": "htmlmixed", "isopen": false},
+        	    {"name": "JsFile", "root": "/JsFile.js", "mode": "javascript", "isopen": false}
+            ],
         	"currentfile": {}
         }
 	},

@@ -10,9 +10,11 @@ var jambiModel = function() {
 	var globalCounter = 1;
 	var activeDocument;
 	var json = require('json-update');
+	var path = require('path');
+	
 
 	var Project = Backbone.Model.extend({
-
+        url: 'projects.json'
 	});
 
 	var JambiDocument = Backbone.Model.extend({
@@ -37,7 +39,8 @@ var jambiModel = function() {
 	});
 
 	var ProjectsCollection = Backbone.Collection.extend({
-		model: Project 
+		model: Project,
+		url: "projects.json"
 	});
 
 	var Projects = new ProjectsCollection();
@@ -46,8 +49,7 @@ var jambiModel = function() {
 	$.ajaxSetup({
 		async: false
 	});
-	Projects.fetch({ 
-		url: "projects.json", 
+	Projects.fetch({  
 		success: function() {
 			console.log("JSON file load was successful", Projects);
 		},
@@ -104,7 +106,7 @@ var jambiModel = function() {
 		documentModel.mode = jambi.getJambiEditor().getOption('mode');
 	}
 
-	function newDocument (filename, filecontents, filetype, filemode) {
+	function newDocument (filename, filecontents, filetype, filemode, fileLocation) {
 		goToEditor();
 		if(openDocuments.length !== 0) {
 			currentDocid = $('.file.active').parents('.file-container').data("modelid");
@@ -126,6 +128,9 @@ var jambiModel = function() {
 		}
 		if(filemode) {
 			jDoc.mode = filemode;
+		}
+		if(fileLocation) {
+			jDoc.fileLocation = fileLocation;
 		}
 
 
@@ -350,6 +355,110 @@ goToEditor();
 	}
 
 
+
+    function populateProjects() {
+        var activeProject = Projects.at(0).attributes.active;
+		// Render Projects into page
+		for(var i = 1; i < Projects.length; i++) {
+			var active = "";
+			if(i === activeProject) {
+				active = "active";
+			}
+			
+			// Make project file list html
+			var openFilesHTML = "";
+
+			
+			for(var k = 0; k < Projects.at(i).attributes.project.openfiles.length; k++) {
+    			openFilesHTML = openFilesHTML + 
+    			'<div class="project-file"' +
+    			    'data-projectindex="' + i + 
+        			'" data-fileindex="' + k + 
+                    '">' + 
+        			Projects.at(i).attributes.project.openfiles[k].name + '</div>';
+			}
+			
+			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+									'<div class="card-container">' +
+    									'<div class="card">' +
+        									'<div class="face front">' +
+        									    '<div class="project-image"></div>' + 
+        									    '<div class="project-name">' + Projects.at(i).attributes.project.name + '</div>' +
+        									'</div>' +
+        									'<div class="face back">' +
+        									    openFilesHTML +
+        									'</div>' +
+        									'</div>' + 
+    									'</div>' +
+									'</div>');
+		}
+		
+		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+    		'<div class="card-container">' +
+        		'<div class="card">' +
+            		'<div class="face front">' +
+                        '<div class="add-project"><i class="fa fa-plus"></i></div>' +
+                        '<div class="project-name">Add Project</div>' +
+            		'</div>' +
+                    '<div class="face back">' +
+                		'Project Details' +
+            		'</div>' +
+            		'</div>' + 
+        		'</div>' +
+    		'</div>');
+    		
+    		
+        $('.project-file').dblclick(function() {
+            var projectindex = parseInt($(this).data('projectindex'));
+            var fileindex = parseInt($(this).data('fileindex'));
+            
+            
+            var fileroot = Projects.at(projectindex).attributes.project.root + Projects.at(projectindex).attributes.project.openfiles[fileindex].root;
+            var dirRoot = Projects.at(projectindex).attributes.project.openfiles[fileindex].root;
+            
+            var contents = jambi.openFileByDir(fileroot);
+            var filename = Projects.at(projectindex).attributes.project.openfiles[fileindex].name;
+            var fileExtension = path.extname(dirRoot.split('\\').pop().split('/').pop()).substring(1);
+            var filemode = Projects.at(projectindex).attributes.project.openfiles[fileindex].mode;
+            var isOpen = Projects.at(projectindex).attributes.project.openfiles[fileindex].isopen;
+            
+
+            if(!isOpen) {
+                Projects.at(projectindex).attributes.project.openfiles[fileindex].isopen = true;
+                Projects.at(projectindex).save();
+                newDocument(filename, contents, fileExtension, filemode, fileroot);
+            } else {
+                // open file 
+            }
+        });
+		
+		$(document).click(function(event){
+			if(!$(event.target).closest('.card-container').length) {
+				$('.card').removeClass('flipped');
+			}
+		});
+		
+		$('.card-container').click(function(){
+			$('.card').removeClass('flipped');
+			$(this).find('.card').addClass('flipped');       
+		});
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Routers
+
 	var Router = Backbone.Router.extend({
 		routes: {
 			'home': 'home',
@@ -381,54 +490,9 @@ goToEditor();
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
 		projectView.render();
-		var activeProject = Projects.at(0).attributes.active;
-		// Render Projects into page
-		for(var i = 1; i < Projects.length; i++) {
-			console.log(Projects.at(i).attributes.project.name);
-			var active = "";
-			if(i === activeProject) {
-				active = "active";
-			}
-			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
-									'<div class="card-container">' +
-    									'<div class="card">' +
-        									'<div class="face front">' +
-        									    '<div class="project-image"></div>' + 
-        									    '<div class="project-name">' + Projects.at(i).attributes.project.name + '</div>' +
-        									'</div>' +
-        									'<div class="face back">' +
-        									    'Back' +
-        									'</div>' +
-        									'</div>' + 
-    									'</div>' +
-									'</div>');
-		}
-		
-		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
-    		'<div class="card-container">' +
-        		'<div class="card">' +
-            		'<div class="face front">' +
-                        '<div class="add-project"><i class="fa fa-plus"></i></div>' +
-                        '<div class="project-name">Add Project</div>' +
-            		'</div>' +
-                    '<div class="face back">' +
-                		'Project Details' +
-            		'</div>' +
-            		'</div>' + 
-        		'</div>' +
-    		'</div>');
-		
-		$(document).click(function(event){
-			if(!$(event.target).closest('.card-container').length) {
-				$('.card').removeClass('flipped');
-			}
-		});
-		
-		$('.card-container').click(function(){
-			$('.card').removeClass('flipped');
-			$(this).find('.card').addClass('flipped');       
-		});
-	});
+		populateProjects();
+			
+    });
 
 
 	router.on('route:showcase', function() {
@@ -442,6 +506,7 @@ goToEditor();
 
 
 	Backbone.history.start();
+
 	jambi.initCodeMirror();
 
 	// if in project then start home else start project

@@ -334,7 +334,9 @@ var Jambi = function () {
     };
     
 
-
+    Jambi.prototype.openFileByDir = function(dir) {
+        return fs.readFileSync(dir,{"encoding":'utf8'});
+    };
 
 
     Jambi.prototype.openFile = function () {
