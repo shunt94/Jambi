@@ -29,7 +29,7 @@
 
 .project-name {
     padding-top: 40px;
-    font-size: 14px;
+    font-size: 16px;
     color: #e96710;
     text-transform: capitalize;
 }
@@ -92,7 +92,14 @@
     background-color: red;
 }
 
+.project-info {
+    color: #aaa;
+    padding-left: 2px;
+}
 
+.project-info:hover {
+    color: #fff;
+}
 
 
 

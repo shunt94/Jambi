@@ -7,8 +7,8 @@
     	    "name": "Project name 1",
         	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
         	"openfiles": [
-        	    {"name": "FileOne", "root": "/FileOne.html", "mode": "htmlmixed", "isopen": false},
-        	    {"name": "JsFile", "root": "/JsFile.js", "mode": "javascript", "isopen": false}
+        	    {"name": "FileOne", "root": "/FileOne.html", "mode": "htmlmixed", "col": 0, "line": 0, "active": true},
+        	    {"name": "JsFile", "root": "/JsFile.js", "mode": "javascript", "col": 0, "line": 0, "active": false}
             ],
         	"currentfile": {}
         }

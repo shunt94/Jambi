@@ -9,6 +9,7 @@ var jambiModel = function() {
 	var currentDocid;
 	var globalCounter = 1;
 	var activeDocument;
+	var activeProject;
 	var json = require('json-update');
 	var path = require('path');
 	
@@ -353,95 +354,136 @@ goToEditor();
 			jambi.getJambiEditor().scrollIntoView();
 		}
 	}
+	
+	
+	function openProject(name, projectData) {
+	    if(projectData) {
+        	// if project open save all open files
+        	if(activeProject !== 0) {
+                // Save all files to disk...
+        	}
+        	
+        	// else 
+        	// close all current docuements, asking to save them first... make a new method (if unsaved/ isSaved() )
+            for(var i = 0; i<= openDocuments.length; i++) {
+        	    openDocuments.pop();
+        	}
+            
+            var projectActiveDocument;
+    
+        	// For loop through all open files in that project 
+        	for(var k = 0; k < projectData.openfiles.length; k++) {
+            	// add files to openDocuments collection
+            	var jDoc = new JambiDocument();
+                var directory = projectData.root + projectData.openfiles[k].root;
+                
+                openDocuments.add(jDoc);
+                
+                
+                jDoc.text = jambi.openFileByDir(directory);
+                jDoc.title = projectData.openfiles[k].name;
+                jDoc.mode = projectData.openfiles[k].mode;
+                jDoc.line = projectData.openfiles[k].line;
+                jDoc.col = projectData.openfiles[k].col;
+                
+                if(projectData.openfiles[k].active) {
+                    projectActiveDocument = k;
+                }
+            
+            }
+            
+        	// populate top bar 
+        	if(projectActiveDocument !== undefined) {
+        	    populateTopBar(openDocuments.at(projectActiveDocument).id);
+        	    setDocOptions(openDocuments.at(projectActiveDocument));
+        	}
+        	else {
+            	var jDoc = new JambiDocument();
+            	openDocuments.add(jDoc);
+            	populateTopBar(openDocuments.at(0).id);
+        	}
+        	goToEditor();
+    	}
+	}
 
 
 
     function populateProjects() {
-        var activeProject = Projects.at(0).attributes.active;
-		// Render Projects into page
-		for(var i = 1; i < Projects.length; i++) {
-			var active = "";
-			if(i === activeProject) {
-				active = "active";
-			}
-			
-			// Make project file list html
-			var openFilesHTML = "";
-
-			
-			for(var k = 0; k < Projects.at(i).attributes.project.openfiles.length; k++) {
-    			openFilesHTML = openFilesHTML + 
-    			'<div class="project-file"' +
-    			    'data-projectindex="' + i + 
-        			'" data-fileindex="' + k + 
-                    '">' + 
-        			Projects.at(i).attributes.project.openfiles[k].name + '</div>';
-			}
-			
-			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
-									'<div class="card-container">' +
-    									'<div class="card">' +
-        									'<div class="face front">' +
-        									    '<div class="project-image"></div>' + 
-        									    '<div class="project-name">' + Projects.at(i).attributes.project.name + '</div>' +
+        if(Projects.length > 0) {
+            var activeProjectIndex = Projects.at(0).attributes.active;
+    		// Render Projects into page
+    		for(var i = 1; i < Projects.length; i++) {
+    			var active = "";
+    			if(i === activeProjectIndex) {
+    			    activeProject = Projects.at(i).attributes.project;
+    				active = "active";
+    			}
+    			
+    			// Make project file list html
+    			//var openFilesHTML = "";
+    
+    /*
+    			
+    			for(var k = 0; k < Projects.at(i).attributes.project.openfiles.length; k++) {
+        			openFilesHTML = openFilesHTML + 
+        			'<div class="project-file"' +
+        			    'data-projectindex="' + i + 
+            			'" data-fileindex="' + k + 
+                        '">' + 
+            			Projects.at(i).attributes.project.openfiles[k].name + '</div>';
+    			}
+    			
+    */
+    			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project" data-projectindex="' +
+    			                        i + '"' +
+                                        'data-name="' + Projects.at(i).attributes.project.name + '">' +
+    									'<div class="card-container">' +
+        									'<div class="card">' +
+            									'<div class="face front">' +
+            									    '<div class="project-image"></div>' + 
+            									    '<div class="project-name">' + Projects.at(i).attributes.project.name + 
+            									        ' <i class="fa fa-info-circle project-info"></i></div>' +
+            									'</div>' +
+            									'<div class="face back">' +
+    
+            									'</div>' +
+            									'</div>' + 
         									'</div>' +
-        									'<div class="face back">' +
-        									    openFilesHTML +
-        									'</div>' +
-        									'</div>' + 
-    									'</div>' +
-									'</div>');
+    									'</div>');
+    		}
+    		
+    		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+        		'<div class="card-container">' +
+            		'<div class="card">' +
+                		'<div class="face front">' +
+                            '<div class="add-project"><i class="fa fa-plus"></i></div>' +
+                            '<div class="project-name">Add Project</div>' +
+                		'</div>' +
+                        '<div class="face back">' +
+                    		'Project Details' +
+                		'</div>' +
+                		'</div>' + 
+            		'</div>' +
+        		'</div>');
+        		
+        		
+            $('.project').dblclick(function() {
+                var projectIndex = $(this).data("projectindex");
+                activeProject = Projects.at(projectIndex).attributes.project;
+                openProject($(this).data("name"), activeProject);
+            });
+    		
+    		$(document).click(function(event){
+    			if(!$(event.target).closest('.card-container').length) {
+    				$('.card').removeClass('flipped');
+    			}
+    		});
+    		
+    		$('.project-info').click(function(){
+    			$('.card').removeClass('flipped');
+    			$(this).parent().parent().parent().addClass('flipped');       
+    		});
 		}
-		
-		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
-    		'<div class="card-container">' +
-        		'<div class="card">' +
-            		'<div class="face front">' +
-                        '<div class="add-project"><i class="fa fa-plus"></i></div>' +
-                        '<div class="project-name">Add Project</div>' +
-            		'</div>' +
-                    '<div class="face back">' +
-                		'Project Details' +
-            		'</div>' +
-            		'</div>' + 
-        		'</div>' +
-    		'</div>');
-    		
-    		
-        $('.project-file').dblclick(function() {
-            var projectindex = parseInt($(this).data('projectindex'));
-            var fileindex = parseInt($(this).data('fileindex'));
-            
-            
-            var fileroot = Projects.at(projectindex).attributes.project.root + Projects.at(projectindex).attributes.project.openfiles[fileindex].root;
-            var dirRoot = Projects.at(projectindex).attributes.project.openfiles[fileindex].root;
-            
-            var contents = jambi.openFileByDir(fileroot);
-            var filename = Projects.at(projectindex).attributes.project.openfiles[fileindex].name;
-            var fileExtension = path.extname(dirRoot.split('\\').pop().split('/').pop()).substring(1);
-            var filemode = Projects.at(projectindex).attributes.project.openfiles[fileindex].mode;
-            var isOpen = Projects.at(projectindex).attributes.project.openfiles[fileindex].isopen;
-            
-
-            if(!isOpen) {
-                Projects.at(projectindex).attributes.project.openfiles[fileindex].isopen = true;
-                Projects.at(projectindex).save();
-                newDocument(filename, contents, fileExtension, filemode, fileroot);
-            } else {
-                // open file 
-            }
-        });
-		
-		$(document).click(function(event){
-			if(!$(event.target).closest('.card-container').length) {
-				$('.card').removeClass('flipped');
-			}
-		});
-		
-		$('.card-container').click(function(){
-			$('.card').removeClass('flipped');
-			$(this).find('.card').addClass('flipped');       
-		});
 
     }
 
