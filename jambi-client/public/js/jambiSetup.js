@@ -18,6 +18,7 @@ var jambiSetup = function() {
 
 	// tools Menus
 	var toolsSubmenu = new gui.Menu();
+	var addonSubmenu = new gui.Menu();
 
 	// Instas Menus 
 	var instasSubmenu = new gui.Menu();
@@ -63,7 +64,7 @@ var jambiSetup = function() {
 			instasNew:      new gui.MenuItem({ label: 'Add New Insta..'})
 		},
 		tools: {
-			toolsAddons:    new gui.MenuItem({ label: 'Addons' })
+			toolsAddons:    new gui.MenuItem({ label: 'Addons', submenu: addonSubmenu })
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -158,9 +159,28 @@ var jambiSetup = function() {
 	onload = function() {
         gui.Window.get().show();
     }
+    
 
 	return {
 		gui: gui,
-		jambiMenu: jambiMenu
+		jambiMenu: jambiMenu,
+		addAddon: function(name, sub) {
+		    var subMenuItem = new gui.Menu();
+		    if(sub) {
+		        for(var i = 0; i < sub.length; i++) {
+		            var subItem = new gui.MenuItem({ label: sub[i].label });
+		            subItem.click = sub[i].click;
+		            
+    		        subMenuItem.append(subItem);
+    		        
+		        }
+    		    var mItem = new gui.MenuItem({ label: name, submenu: subMenuItem });
+		    }
+		    else {
+    		    var mItem = new gui.MenuItem({ label: name });
+		    }
+            addonSubmenu.append(mItem);
+            return mItem; 
+        }
 	};
 };

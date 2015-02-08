@@ -1,3 +1,4 @@
+var jSetup = new jambiSetup();
 var Jambi = function () {
 
     var fs = require('fs');
@@ -7,7 +8,7 @@ var Jambi = function () {
     var currentFileDir;
     var version;
     var widgets = [];
-    var jSetup = new jambiSetup();
+    
 
     readJambiSettings();
 
@@ -28,6 +29,7 @@ var Jambi = function () {
 		Function used to setup all of the menu bar - Action listeners and populators
 	*/
     Jambi.prototype.menuSetup = function () {
+        
         // File Submenu
         jSetup.jambiMenu.file.fileNewSubmenu[0].click = function () {
 
@@ -270,6 +272,23 @@ var Jambi = function () {
     Jambi.prototype.renderEditor = function () {
         jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
         jambiEditor.focus();
+        
+        jambiEditor.on("change", function(e) {
+            updateCursorPosition();
+        });
+
+        jambiEditor.on("cursorActivity", function(e) {
+            updateCursorPosition();
+        });
+        var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+        jambiEditor.on("gutterClick", foldLine);
+
+
+        function updateCursorPosition() {
+            var cursorPos = jambiEditor.getCursor();
+            $('#jambiLine').text(cursorPos.line + 1);
+            $('#jambiColumn').text(cursorPos.ch + 1);
+        }
     };
 
     /*

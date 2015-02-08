@@ -52,7 +52,7 @@ var jambiModel = function() {
 	});
 	Projects.fetch({  
 		success: function() {
-			console.log("JSON file load was successful", Projects);
+//			console.log("JSON file load was successful", Projects);
 		},
 		error: function(){
 			alert("Error! - Could not fetch project list!");
@@ -533,7 +533,6 @@ goToEditor();
 		}
 		projectView.render();
 		populateProjects();
-			
     });
 
 
