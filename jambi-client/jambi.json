@@ -1,4 +1,7 @@
 {
 	"product": "Jambi",
-	"version": "1.0"
+	"version": "1.0",
+	"editor_settings": {
+    	"fontsize": 14
+	}
 }

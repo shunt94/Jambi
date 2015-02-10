@@ -8,7 +8,9 @@ var Jambi = function () {
     var currentFileDir;
     var version;
     var widgets = [];
+    var areFilesUnsaved = false;
     
+    var editorFontSize = 14;
 
     readJambiSettings();
 
@@ -21,6 +23,7 @@ var Jambi = function () {
             }
             else {
                 version = data.version;
+                editorFontSize = data.editor_settings.fontsize;
             }
         });
     }
@@ -108,11 +111,23 @@ var Jambi = function () {
             jSetup.jambiMenu.vc.vcPush.enabled = false;
             jSetup.jambiMenu.vc.vcCommit.enabled = false;
         }
+        
+        
+        jSetup.gui.Window.get().on('close', function () {
+            // show warning if you want
+            jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){});
+            jambi.openModal();
+            this.close(true);
+        });
     };
 
     Jambi.prototype.getVersion = function () {
         return version;
     };
+    
+    Jambi.prototype.getFontSize = function () {
+        return editorFontSize;
+    }
 
 
     Jambi.prototype.getJambiEditor = function () {
@@ -364,8 +379,6 @@ var Jambi = function () {
                 if (error) {
                     alert(error);
                 } else {
-                    console.log(data);
-                    //jambiEditor.doc.setValue(data);
                     jModel.openFile("file" ,data, "html", "htmlmixed");
                 }
             });
@@ -373,37 +386,51 @@ var Jambi = function () {
         $('#fileDialog').trigger('click');
     };
 
-    Jambi.prototype.saveFile = function (fileName) {
-        if (currentFileDir) {
-            fileName = currentFileDir;
-            fs.writeFile(fileName, jambiEditor.doc.getValue(), function (err) {
-                if (err) {
-                    alert(err);
-                } else {
-                    console.log("The file was saved!");
-                }
-            });
-        } else {
-            this.saveFileAs();
+    Jambi.prototype.saveFile = function () {
+        if(jModel.onEditorPage()){
+            var file = jModel.getActiveDocument();
+            var fileLocation = jModel.getActiveDocument().fileLocation;
+            if (fileLocation) {
+                fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
+                    if (err) {
+                        alert(err);
+                    } else {
+                        // save animation
+                    }
+                });
+            } else {
+                jambi.saveFileAs();
+            }
         }
     };
 
-    Jambi.prototype.saveFileAs = function () {
-        var textToWrite = jambiEditor.doc.getValue();
-        var textFileAsBlob = new Blob([textToWrite], {
-            type: 'text/plain'
-        });
-
-        // If file already has a name, use that, else use untitled
-        var fileNameToSaveAs = "untitled.html";
-
-        var downloadLink = document.createElement("a");
-        downloadLink.download = fileNameToSaveAs;
-        //		currentFileDir = fileNameToSaveAs;
-        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-        downloadLink.click();
-
-
+    Jambi.prototype.saveFileAs = function () {    
+        if(jModel.onEditorPage()){
+            $('#saveDialog').click();
+            $('#saveDialog').on('change', function (event) {
+                var fileLocation = $(this).val();
+                fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
+                    if (err) {
+                        alert(err);
+                    } else {
+                        jModel.setDocLocation(fileLocation);
+                        
+                        var filename = fileLocation.replace(/^.*[\\\/]/, '');
+                        jModel.setDocName(filename);
+                        
+                        
+                        var sysString = "/";
+                        if(process.platform == "win32" || process.platform == "win64" ) {
+                    		sysString = "\\";
+                    	}
+                        fileLocation = fileLocation.substring(0,fileLocation.lastIndexOf(sysString)+1);
+                        $('#saveDialog').attr('nwworkingdir', fileLocation);
+                        
+                        // save animation
+                    }
+                });
+            });
+        }
     };
 
     Jambi.prototype.saveUserSetting = function (setting, value) {
@@ -473,8 +500,8 @@ var Jambi = function () {
     };
 
     Jambi.prototype.addSideMenu = function (title, content) {
-        $('#sidebar-content').append('<div class="sidebar-heading">' + title + '</div>');
-        $('#sidebar-content').append('<div class="sidebar-content">' + content + '</div>');
+        $('#sidebar-content').append('<div class="sidebar-heading">' + title + '</div>')
+        .append('<div class="sidebar-content">' + content + '</div>');
     };
 
     // Jambi Animations
@@ -486,16 +513,14 @@ var Jambi = function () {
             $('.sidebar').animate({"margin-right": '-=300px'}, 200);
             $('.editor-container').animate({ "width": "+=300px" }, 200);
             $('.sidebar').removeClass("inView");
-            $('#sidebar_toggle i').removeClass('fa-indent');
-            $('#sidebar_toggle i').addClass('fa-outdent');
+            $('#sidebar_toggle i').removeClass('fa-indent').addClass('fa-outdent');
             jambiEditor.refresh();
         } 
         else {
             $('.sidebar').animate({"margin-right": '+=300px'}, 200);
             $('.editor-container').animate({ "width": "-=300px" }, 200);
             $('.sidebar').addClass("inView");
-            $('#sidebar_toggle i').removeClass('fa-outdent');
-            $('#sidebar_toggle i').addClass('fa-indent');
+            $('#sidebar_toggle i').removeClass('fa-outdent').addClass('fa-indent');
             jambiEditor.refresh();
         }
     };

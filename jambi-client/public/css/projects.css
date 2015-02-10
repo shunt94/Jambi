@@ -3,13 +3,15 @@
   padding-right: 20px;
   padding-top: 80px; }
 
-.project {
+.project,
+.addproject {
   display: inline-block;
   margin: 0 auto;
   text-align: center;
   -webkit-transition: width 0.5s ease-in-out, left 1s ease-in-out;
   transition: width 0.5s ease-in-out, left 1s ease-in-out; }
-  .project.active > .project-name {
+  .project.active > .project-name,
+  .addproject.active > .project-name {
     color: #fff !important; }
 
 .project-image {

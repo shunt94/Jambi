@@ -160,6 +160,7 @@ var jambiSetup = function() {
         gui.Window.get().show();
     }
     
+        
 
 	return {
 		gui: gui,

@@ -1,4 +1,4 @@
-$top-margin: 40px;
+$top-margin: 45px;
 $font-size: 13px;
 $linecounter-fontsize: 13px;
 
@@ -34,6 +34,19 @@ body,html, .container {
     cursor: default !important;
 }
 
+::-webkit-scrollbar {
+      width: 5px;
+      height: 3px;
+}
+
+::-webkit-scrollbar-track {
+      background-color: transparent;
+}
+ 
+::-webkit-scrollbar-thumb {
+      background-color: rgba(255,255,255,0.4); 
+      border-radius: 5px;
+}
 a {
 	text-decoration: none;
 	color: #fff;
@@ -61,6 +74,7 @@ h1,h2,h3 { font-weight: 200;}
 	height: $top-margin;
 	position: fixed;
 	z-index: 11;
+	border-bottom: 2px solid black;
 }
 
 .topbar-tabs {

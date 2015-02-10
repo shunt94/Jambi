@@ -1,8 +1,3 @@
-// To do: Move most of the multi-file code into Jambi.js and call from here, passing in params... clean up code
-
-// Store the current document as a global variable in jambiModel, then you can save and change file without getting active file in DOM
-
-// Projects stored with the write json plugin?
 var jambiModel = function() {
 	var jTimer = new jambiTimer('#jambi_timer_secs', '#jambi_timer_mins', '#jambi_timer_hours');
 	var programTimer = new jambiTimer('#global_timer_secs', '#global_timer_mins', '#global_timer_hours');
@@ -12,6 +7,8 @@ var jambiModel = function() {
 	var activeProject;
 	var json = require('json-update');
 	var path = require('path');
+	
+	var isEditorOpen = false;
 	
 
 	var Project = Backbone.Model.extend({
@@ -273,21 +270,21 @@ var jambiModel = function() {
 		$('.file-container').unbind('click');
 		$('.close').unbind('click');
 
-		$('#sidebar_toggle').click(function() {
+		$('#sidebar_toggle').on('click', function() {
 			jambi.toggleSideMenu();  
 		});
 
-		$('#newfile_tab').click(function() {
+		$('#newfile_tab').on('click', function() {
 			window.location.replace('#/home');
 			newDocument();
 		});
 
-		$('.file-container').click(function() {
+		$('.file-container').on('click', function() {
 			window.location.replace('#/home');
 			changeFile($(this));
 		});
 
-		$('.close').click(function() {
+		$('.close').on('click', function() {
 			closeDocument($(this).parents(".file-container").data('modelid'));
 		});
 	}
@@ -334,12 +331,12 @@ var jambiModel = function() {
                 
                 openDocuments.add(jDoc);
                 
-                
                 jDoc.text = jambi.openFileByDir(directory);
                 jDoc.title = projectData.openfiles[k].name;
                 jDoc.mode = projectData.openfiles[k].mode;
                 jDoc.line = projectData.openfiles[k].line;
                 jDoc.col = projectData.openfiles[k].col;
+                jDoc.fileLocation = directory;
                 
                 if(projectData.openfiles[k].active) {
                     projectActiveDocument = k;
@@ -360,6 +357,49 @@ var jambiModel = function() {
         	goToEditor();
     	}
 	}
+	
+	function onDropEvents(){
+        window.ondragover = function(e) { e.preventDefault(); return false };
+        window.ondrop = function(e) { e.preventDefault(); return false };
+        
+        var holder = document.getElementById('fileHoverBar');
+        holder.ondragover = function () { return false; };
+        holder.ondragleave = function () { return false; };
+        holder.ondrop = function (e) {
+          e.preventDefault();
+        
+          for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+
+            if(e.dataTransfer.files[i].name.indexOf('.') !== -1) {
+                var file            = e.dataTransfer.files[i].path;
+                var filecontents    = jambi.openFileByDir(file);
+                var filename        = e.dataTransfer.files[i].name;
+                var filetype        = filename.match(/\.[^.]+$/).toString();
+                
+                filetype = filetype.substr(1);
+                filename = filename.substring(filename.lastIndexOf('/')+1, filename.indexOf('.'));
+                
+                newDocument(filename,filecontents,filetype,checkFileType(filetype),file);
+            }
+          }
+          return false;
+        };
+    }
+    
+    onDropEvents();
+    
+    
+    function checkFileType(fileTypeString) {
+        switch(fileTypeString) {
+            case "html": 
+                return "htmlmixed";
+                break;
+            case "js":
+                return "javascript";
+                break;
+        }
+    }
+
 
 
 
@@ -373,22 +413,6 @@ var jambiModel = function() {
     			    activeProject = Projects.at(i).attributes.project;
     				active = "active";
     			}
-    			
-    			// Make project file list html
-    			//var openFilesHTML = "";
-    
-    /*
-    			
-    			for(var k = 0; k < Projects.at(i).attributes.project.openfiles.length; k++) {
-        			openFilesHTML = openFilesHTML + 
-        			'<div class="project-file"' +
-        			    'data-projectindex="' + i + 
-            			'" data-fileindex="' + k + 
-                        '">' + 
-            			Projects.at(i).attributes.project.openfiles[k].name + '</div>';
-    			}
-    			
-    */
     			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project" data-projectindex="' +
     			                        i + '"' +
                                         'data-name="' + Projects.at(i).attributes.project.name + '">' +
@@ -407,7 +431,7 @@ var jambiModel = function() {
     									'</div>');
     		}
     		
-    		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project">' +
+    		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 addproject" id="addprojectcard">' +
         		'<div class="card-container">' +
             		'<div class="card">' +
                 		'<div class="face front">' +
@@ -426,18 +450,56 @@ var jambiModel = function() {
                 var projectIndex = $(this).data("projectindex");
                 activeProject = Projects.at(projectIndex).attributes.project;
                 openProject($(this).data("name"), activeProject);
+                resetAddProject();
             });
     		
-    		$(document).click(function(event){
+    		$(document).on('click', function(event){
     			if(!$(event.target).closest('.card-container').length) {
     				$('.card').removeClass('flipped');
+    				resetAddProject();
     			}
     		});
     		
-    		$('.project-info').click(function(){
+    		$('.project-info').on('click', function(){
     			$('.card').removeClass('flipped');
-    			$(this).parent().parent().parent().addClass('flipped');       
+    			$(this).parent().parent().parent().addClass('flipped'); 
+    			resetAddProject();      
     		});
+    		
+    		$('#addprojectcard').on('click', function(){
+    			$('.card').removeClass('flipped');
+    			$(this).find('.card').addClass('flipped');
+    			var $cardContainer = $('.card-container', this);
+    			
+                var left = $cardContainer.offset().left;
+    			$('.card-container', this).css({
+        			'width': '500px',
+        			'height': '600px',
+        			'position': 'absolute',
+        			left: left,
+                    'right': '0px',
+                    'margin-left': 'auto',
+                    'margin-right': 'auto'
+
+    			}).animate({"left":"0px", "right": "0px", "marginLeft": "auto","marginRight": "auto"}, 500);
+    		});
+    		
+    		$('#addProject').on('click', function() {
+                // Adds a new project into the json file 
+                
+                // Generates the new projects array from json file
+                
+                
+                // opens it using project.Click
+                
+                
+    		});
+    		
+    		function resetAddProject() {
+                $('#addprojectcard .card-container').removeAttr('style');
+    		}
+    		
+    		
 		}
 
     }
@@ -452,18 +514,19 @@ var jambiModel = function() {
 		render: function(){
 			this.$el.html(render('editor', {}));
 
-			$('#jambiStartTimer').click(function(){
+			$('#jambiStartTimer').on('click', function(){
 				jTimer.startTimer();
 			});
 
-			$('#jambiStopTimer').click(function(){
+			$('#jambiStopTimer').on('click', function(){
 				jTimer.stopTimer();
 			});
 
-			$('#jshintcode').click(function() {
+			$('#jshintcode').on('click', function() {
 				jambi.jsHint();
 			});
 			connectToServer();
+			$('#jambi-editor').css('font-size', jambi.getFontSize());
 
 		}
 	});
@@ -482,8 +545,6 @@ var jambiModel = function() {
 			this.$el.html(render('showcase', {}));
 		}
 	});
-
-
 
 
 
@@ -513,6 +574,7 @@ var jambiModel = function() {
 		setActiveDocument();
 		populateTopBar(activeDocument);
 		setDocOptions(openDocuments.get(activeDocument));
+		isEditorOpen = true;
 	});
 
 	router.on('route:projects', function() {
@@ -522,6 +584,7 @@ var jambiModel = function() {
 		}
 		projectView.render();
 		populateProjects();
+		isEditorOpen = false;
     });
 
 
@@ -531,6 +594,8 @@ var jambiModel = function() {
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
 		showcaseView.render();
+		
+		isEditorOpen = false;
 	});
 
 
@@ -540,14 +605,21 @@ var jambiModel = function() {
 	jambi.initCodeMirror();
 
 	// if in project then start home else start project
-	window.location.replace("#/editor");
+	window.location.replace("#/project");
+	
+	
+
 
 
 	return {
 		newFile: function() { newDocument (); },
 		openFile: function(a,b,c,d) { openFile(a,b,c,d); },
 		closeCurrentDoc: function() { closeCurrentDocument(); },
-		closeAllDocs: function() { removeAllDocuments (); }
+		closeAllDocs: function() { removeAllDocuments (); },
+		getActiveDocument: function() { return openDocuments.get(activeDocument); },
+		setDocLocation: function(loc) { openDocuments.get(activeDocument).fileLocation = loc; },
+		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
+		onEditorPage: function() { return isEditorOpen; }
 	};
 };
 

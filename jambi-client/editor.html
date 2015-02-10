@@ -54,7 +54,7 @@
 			        <li class="menuitem inline"><a draggable="false" href='#/showcase'><i class="fa fa-desktop"></i></a></li>
 			    </ul>
 		    </div>
-			<div class="topbar-tabs inline">
+			<div class="topbar-tabs inline" id="fileHoverBar">
 				<ul class="file-ul" id="file_ul">
 				</ul>
 			</div>
@@ -153,8 +153,6 @@
 	<!-- Local Storage -->
 	<script type="text/javascript" src="public/js/storedb.js"></script>
 	
-	<!-- Blur JS -->
-	<script type="text/javascript" src="public/js/blur.min.js"></script>
 	<!-- Codemirror main -->
 	<script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
 	
@@ -185,8 +183,8 @@
 
 	<!-- Jambi Files -->
 	<script type="text/javascript" src="public/js/jambi/jambiTimer.js"></script>
-	<script type="text/javascript" src="public/js/jambiSetup.js"></script>   
-	<script type="text/javascript" src="public/js/jambi.js"></script>   
+	<script type="text/javascript" src="public/js/jambi/jambiSetup.js"></script>   
+	<script type="text/javascript" src="public/js/jambi/jambi.js"></script>   
 
 	<!-- MVC Files -->
 	<script type="text/javascript" src="public/js/underscore-min.js"></script>   
@@ -200,12 +198,6 @@
 	
 	<script type="text/javascript" src="http://futtta.be/squeezeFrame/squeezeFrame.js"></script>
 
-	<script type="text/javascript">
-		$('.sidebar').blurjs({
-        	source: '.editor-container',
-        	radius: 5
-        });
-	</script>
 
 	<script type="text/javascript" src="public/js/jambi/models.js"></script>
 	<script type="text/javascript" src="public/js/jambi/addons.js"></script>
