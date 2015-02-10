@@ -472,6 +472,10 @@ var Jambi = function () {
         location.href = "#jambiModal";
     };
 
+    Jambi.prototype.addSideMenu = function (title, content) {
+        $('#sidebar-content').append('<div class="sidebar-heading">' + title + '</div>');
+        $('#sidebar-content').append('<div class="sidebar-content">' + content + '</div>');
+    };
 
     // Jambi Animations
     /*

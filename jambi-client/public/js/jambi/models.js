@@ -27,6 +27,7 @@ var jambiModel = function() {
 		mode: "htmlmixed",
 		title: "untitlted",
 		fileLocation: "",
+		history_object: {},
 
 		initialize: function () {
 			this.set('id', globalCounter);
@@ -99,8 +100,8 @@ var jambiModel = function() {
 		return render.tmpl_cache[tmpl_name](tmpl_data);
 	}
 
-
 	function saveCurrentDocument(documentModel) {
+	    documentModel.history_object = $.extend({}, document.hisotry_object, jambi.getJambiEditor().getHistory());
 		documentModel.text = jambi.getJambiEditor().getValue();
 		documentModel.line = jambi.getJambiEditor().getCursor().line;
 		documentModel.col = jambi.getJambiEditor().getCursor().ch;
@@ -139,6 +140,7 @@ var jambiModel = function() {
 
 		jambi.getJambiEditor().setValue(jDoc.text);
 		jambi.getJambiEditor().setOption("mode", jDoc.mode);
+		setDocOptions(jDoc);
 		setActiveDocument();
 		fileEventHandlers();
 
@@ -291,64 +293,17 @@ var jambiModel = function() {
 	}
 
 	function openFile(filename, filecontents, filetype, filemode) { 
-		/*
-if(openDocuments.length > 0) {
-alert(openDocuments.length);
-setActiveDocument();
-}
-var jDoc = new JambiDocument();
-
-
-openDocuments.add(jDoc);
-populateTopBar(jDoc.id);
-changeFileById(jDoc);
-goToEditor();
-*/
-
 		newDocument (filename, filecontents, filetype, filemode);
 	}
 
-	var EditorView = Backbone.View.extend({
-		el: '#jambi-body',
-		render: function(){
-			this.$el.html(render('editor', {}));
-
-			$('#jambiStartTimer').click(function(){
-				jTimer.startTimer();
-			});
-
-			$('#jambiStopTimer').click(function(){
-				jTimer.stopTimer();
-			});
-
-			$('#jshintcode').click(function() {
-				jambi.jsHint();
-			});
-			connectToServer();
-
-		}
-	});
-
-	var ProjectView = Backbone.View.extend({
-		el: '#jambi-body',
-
-		render: function(){
-			this.$el.html(render('projects', {}));
-		}
-	});
-
-	var ShowcaseView = Backbone.View.extend({
-		el: '#jambi-body',
-		render: function(){
-			this.$el.html(render('showcase', {}));
-		}
-	});
-
-
 	function setDocOptions(model) {
 		if(model) {
+		    jambi.getJambiEditor().setValue(model.text);
+		    jambi.getJambiEditor().clearHistory();
+		    if(!($.isEmptyObject(model.history_object))) {
+		        jambi.getJambiEditor().setHistory(model.history_object);
+		    }
 			jambi.getJambiEditor().focus();
-			jambi.getJambiEditor().setValue(model.text);
 			jambi.getJambiEditor().setCursor(model.line, model.col);
 			jambi.getJambiEditor().setOption("mode", model.mode);
 			jambi.getJambiEditor().scrollIntoView();
@@ -492,7 +447,41 @@ goToEditor();
 
 
 
+    var EditorView = Backbone.View.extend({
+		el: '#jambi-body',
+		render: function(){
+			this.$el.html(render('editor', {}));
 
+			$('#jambiStartTimer').click(function(){
+				jTimer.startTimer();
+			});
+
+			$('#jambiStopTimer').click(function(){
+				jTimer.stopTimer();
+			});
+
+			$('#jshintcode').click(function() {
+				jambi.jsHint();
+			});
+			connectToServer();
+
+		}
+	});
+
+	var ProjectView = Backbone.View.extend({
+		el: '#jambi-body',
+
+		render: function(){
+			this.$el.html(render('projects', {}));
+		}
+	});
+
+	var ShowcaseView = Backbone.View.extend({
+		el: '#jambi-body',
+		render: function(){
+			this.$el.html(render('showcase', {}));
+		}
+	});
 
 
 
@@ -551,7 +540,7 @@ goToEditor();
 	jambi.initCodeMirror();
 
 	// if in project then start home else start project
-	window.location.replace("#/project");
+	window.location.replace("#/editor");
 
 
 	return {
