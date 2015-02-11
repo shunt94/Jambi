@@ -130,11 +130,10 @@
 				<a draggable="false" href="#" title="Close" class="jambiModalClose"><i class="fa fa-times"></i></a>
 				<h3 id="modalSubtitle"></h3>
 				<p id="modalContent"></p>
-
-				<div class="jambiModal-footer">
-					<div class="jambiModal-buttons">
-						<a href="#" class="btn btn-blue" id="modalButtonLeft">Close</a> <a href="#" class="btn btn-blue" id="modalButtonRight">Save</a>
-					</div>
+			</div>
+			<div class="jambiModal-footer">
+				<div class="jambiModal-buttons">
+					<a href="#" class="btn btn-blue" id="modalButtonLeft">Close</a> <a href="#" class="btn btn-blue" id="modalButtonRight">Save</a>
 				</div>
 			</div>
 		</div>
@@ -143,9 +142,7 @@
 	<!-- File Save,Load,Etc -->
 	<input style="display:none;" id="fileDialog" type="file" multiple />
 	<input style="display:none;" type="file" nwsaveas="untitled.html" id="saveDialog"/>
-	<input style="display:none;" id="selectDialog" type="file" nwdirectory />
-
-
+    
 
 	<!-- jQuery -->
 	<script type="text/javascript" src="jquery.js"></script>
@@ -183,7 +180,8 @@
 
 	<!-- Jambi Files -->
 	<script type="text/javascript" src="public/js/jambi/jambiTimer.js"></script>
-	<script type="text/javascript" src="public/js/jambi/jambiSetup.js"></script>   
+	<script type="text/javascript" src="public/js/jambi/jambiSetup.js"></script>  
+	<script type="text/javascript" src="public/js/jambi/jambiFS.js"></script> 
 	<script type="text/javascript" src="public/js/jambi/jambi.js"></script>   
 
 	<!-- MVC Files -->
@@ -201,6 +199,7 @@
 
 	<script type="text/javascript" src="public/js/jambi/models.js"></script>
 	<script type="text/javascript" src="public/js/jambi/addons.js"></script>
+	
 
 
 </body>

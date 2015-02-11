@@ -2,7 +2,6 @@ var jSetup = new jambiSetup();
 var Jambi = function () {
 
     var fs = require('fs');
-    var json = require('json-update');
     var jambiEditor;
     var jambiEditorConfig;
     var currentFileDir;
@@ -16,7 +15,7 @@ var Jambi = function () {
 
 
     function readJambiSettings() {
-        json.load('jambi.json', function(err, data) {
+        jambifs.readJSON('jambi.json', function(err, data) {
             if(err) {
                 alert("Failed to read Jambi settings");
                 version = "1.0";
@@ -25,7 +24,7 @@ var Jambi = function () {
                 version = data.version;
                 editorFontSize = data.editor_settings.fontsize;
             }
-        });
+        });   
     }
 
     /*

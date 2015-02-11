@@ -6,7 +6,7 @@
   "window": {
     "title": "Jambi",
     "icon": "public/icons/icon.png",
-    "toolbar": false,
+    "toolbar": true,
     "frame": true,
     "position": "mouse",
     "width": 1000,

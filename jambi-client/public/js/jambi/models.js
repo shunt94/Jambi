@@ -5,14 +5,20 @@ var jambiModel = function() {
 	var globalCounter = 1;
 	var activeDocument;
 	var activeProject;
-	var json = require('json-update');
-	var path = require('path');
 	
 	var isEditorOpen = false;
 	
 
 	var Project = Backbone.Model.extend({
-        url: 'projects.json'
+        "project": {
+    	    "name": "Project name",
+        	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
+        	"openfiles": [
+        	    {"name": "FileOne", "root": "/FileOne.html", "mode": "htmlmixed", "col": 0, "line": 0, "active": true},
+        	    {"name": "JsFile", "root": "/JsFile.js", "mode": "javascript", "col": 0, "line": 0, "active": false}
+            ],
+        	"currentfile": {}
+        }
 	});
 
 	var JambiDocument = Backbone.Model.extend({
@@ -404,6 +410,7 @@ var jambiModel = function() {
 
 
     function populateProjects() {
+        $('#projects').empty();
         if(Projects.length > 0) {
             var activeProjectIndex = Projects.at(0).attributes.active;
     		// Render Projects into page
@@ -417,7 +424,7 @@ var jambiModel = function() {
     			                        i + '"' +
                                         'data-name="' + Projects.at(i).attributes.project.name + '">' +
     									'<div class="card-container">' +
-        									'<div class="card">' +
+        									'<div class="card project-card">' +
             									'<div class="face front">' +
             									    '<div class="project-image"></div>' + 
             									    '<div class="project-name">' + Projects.at(i).attributes.project.name + 
@@ -431,81 +438,119 @@ var jambiModel = function() {
     									'</div>');
     		}
     		
-    		$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 addproject" id="addprojectcard">' +
-        		'<div class="card-container">' +
-            		'<div class="card">' +
-                		'<div class="face front">' +
-                            '<div class="add-project"><i class="fa fa-plus"></i></div>' +
-                            '<div class="project-name">Add Project</div>' +
-                		'</div>' +
-                        '<div class="face back">' +
-                    		'Project Details' +
-                		'</div>' +
-                		'</div>' + 
-            		'</div>' +
-        		'</div>');
+    		$('#projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
         		
         		
             $('.project').dblclick(function() {
                 var projectIndex = $(this).data("projectindex");
                 activeProject = Projects.at(projectIndex).attributes.project;
                 openProject($(this).data("name"), activeProject);
-                resetAddProject();
             });
     		
     		$(document).on('click', function(event){
     			if(!$(event.target).closest('.card-container').length) {
     				$('.card').removeClass('flipped');
-    				resetAddProject();
     			}
     		});
     		
     		$('.project-info').on('click', function(){
     			$('.card').removeClass('flipped');
     			$(this).parent().parent().parent().addClass('flipped'); 
-    			resetAddProject();      
     		});
     		
-    		$('#addprojectcard').on('click', function(){
-    			$('.card').removeClass('flipped');
-    			$(this).find('.card').addClass('flipped');
-    			var $cardContainer = $('.card-container', this);
-    			
-                var left = $cardContainer.offset().left;
-    			$('.card-container', this).css({
-        			'width': '500px',
-        			'height': '600px',
-        			'position': 'absolute',
-        			left: left,
-                    'right': '0px',
-                    'margin-left': 'auto',
-                    'margin-right': 'auto'
-
-    			}).animate({"left":"0px", "right": "0px", "marginLeft": "auto","marginRight": "auto"}, 500);
-    		});
     		
     		$('#addProject').on('click', function() {
-                // Adds a new project into the json file 
-                
-                // Generates the new projects array from json file
-                
-                
-                // opens it using project.Click
-                
-                
+    		    if($('#addProjectName').val() && $('#addProjectLocation').val()) {
+                    addProject($('#addProjectName').val(), $('#addProjectLocation').val());
+                }
     		});
     		
-    		function resetAddProject() {
-                $('#addprojectcard .card-container').removeAttr('style');
-    		}
+            $('#closeAddProject').on('click', function() {
+               $('#addprojectcard').fadeOut();
+    		});
+    		
+    		$('#addprojectcard').hide();
     		
     		
+    		$('#addProject_selectLocation').on('change', function (event) {
+                var fileLocation = $(this).val();
+                $('#addProjectLocation').val(fileLocation);
+            });
 		}
 
     }
+    
+    
+    function addProject(name, root) {
+        var newProject = new Project({
+            "project": {
+        	    "name": name,
+            	"root": root,
+            	"openfiles": [],
+            	"currentfile": {}
+            }
+        });
+        Projects.add(newProject);
+        
+        var projectsJSON;
+        
+        jambifs.readJSON('projects.json', function(err, data){
+            projectsJSON = data;
+            projectsJSON[Projects.length-1] = newProject.attributes;
+            jambifs.writeJSON('projects.json', JSON.stringify(projectsJSON));
+        });
+        
+        
+        
+        populateProjects();
+        
+        /*
+var projectID = Projects.length-1;
+        var activeProject = Projects.at(projectID).attributes.project;
+        openProject($('.project [data-projectindex="' + projectID + '"]').data("name"), activeProject);
+*/
+    }
 
 
-
+    function generateProjectsContextMenu() {
+        var gui = jSetup.gui;
+        var card_menu = new gui.Menu();
+        var project_menu = new gui.Menu();
+        var clickedCard;
+        
+        card_menu.append(new gui.MenuItem({ label: 'Open' }));
+        card_menu.append(new gui.MenuItem({ label: 'Edit...' }));
+        card_menu.append(new gui.MenuItem({ label: 'Duplicate' }));
+        card_menu.append(new gui.MenuItem({ label: 'Delete...' }));
+        card_menu.append(new gui.MenuItem({ type: 'separator' }));
+        card_menu.append(new gui.MenuItem({ label: 'Change Image...' }));
+        
+        card_menu.items[0].click = function(e) {
+            var projectIndex = clickedCard.data("projectindex");
+            activeProject = Projects.at(projectIndex).attributes.project;
+            openProject(clickedCard.data("name"), activeProject);
+            console.log(clickedCard);
+        };
+        
+        $('#jambi-body').on("contextmenu", '.project-card' ,function(e){
+           card_menu.popup(e.pageX, e.pageY);
+           clickedCard = $(this).parent().parent();
+           return false
+        });
+        
+        
+        project_menu.append(new gui.MenuItem({ label: 'Add Project...' }));
+        
+        project_menu.items[0].click = function(e) {
+           // addProject("Project Test", "./");
+           $('#addprojectcard').fadeIn();
+        };
+        
+        $('#jambi-body').on("contextmenu", function(e){
+           project_menu.popup(e.pageX, e.pageY);
+           return false
+        });
+    }
 
 
 
@@ -513,6 +558,7 @@ var jambiModel = function() {
 		el: '#jambi-body',
 		render: function(){
 			this.$el.html(render('editor', {}));
+			$('#jambi-body').off("contextmenu");
 
 			$('#jambiStartTimer').on('click', function(){
 				jTimer.startTimer();
@@ -527,6 +573,7 @@ var jambiModel = function() {
 			});
 			connectToServer();
 			$('#jambi-editor').css('font-size', jambi.getFontSize());
+			
 
 		}
 	});
@@ -543,6 +590,7 @@ var jambiModel = function() {
 		el: '#jambi-body',
 		render: function(){
 			this.$el.html(render('showcase', {}));
+			$('#jambi-body').off("contextmenu");
 		}
 	});
 
@@ -585,6 +633,7 @@ var jambiModel = function() {
 		projectView.render();
 		populateProjects();
 		isEditorOpen = false;
+		generateProjectsContextMenu();
     });
 
 

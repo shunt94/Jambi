@@ -343,7 +343,7 @@ iframe {
 	white-space: nowrap;
 	padding: 7px 15px;
 	font-size: 15px;
-	line-height: 1.42857143;
+	line-height: 1.1;
 	border-radius: 0;
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -393,7 +393,7 @@ iframe {
 		position: relative;
 		margin: 10% auto;
 		border-radius: $modal-border-radius;
-		background: #ffffff;
+		background: #eaeaea;
 		color: #333;
 		word-wrap: break-word;
 	}
@@ -411,25 +411,40 @@ iframe {
 	.jambiModalClose:hover { color: #8a8a8a; }
 	
 	.jambiModal-head {
-		background-color: #eaeaea;
+		background-color: #c2c2c2;
 		border-top-left-radius: $modal-border-radius;
 		border-top-right-radius: $modal-border-radius;
-		padding: 2px;
-		padding-top: 2px;
-		padding-bottom: 2px;
+		padding: 5px 10px 5px 10px;
 		font-size: 24px;
 	}
 	
 	.jambiModal-body {
-		padding: 5px;
-		padding-bottom: 40px;
+		padding: 15px;
 		
 	}
 	
 	.jambiModal-footer {
-		float: right;
+        background-color: #c2c2c2;
+		border-bottom-left-radius: $modal-border-radius;
+		border-bottom-right-radius: $modal-border-radius;
+		padding: 5px 10px 5px 10px;
+		font-size: 24px;
+        margin-top: 60px;
 	}
 	
 .hidden {
 	display: none;
+}
+
+
+.addproject-card-container {
+    width: 500px;
+	height: 600px;
+	position: absolute;
+    right: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff;
+    color: #333;
 }
