@@ -11,11 +11,9 @@ var jambiModel = function() {
 
 	var Project = Backbone.Model.extend({
         "project": {
-    	    "name": "Project name",
-        	"root": "/./Users/simon/Desktop/Work/University/jambitestproject",
+    	    "name": "",
+        	"root": "",
         	"openfiles": [
-        	    {"name": "FileOne", "root": "/FileOne.html", "mode": "htmlmixed", "col": 0, "line": 0, "active": true},
-        	    {"name": "JsFile", "root": "/JsFile.js", "mode": "javascript", "col": 0, "line": 0, "active": false}
             ],
         	"currentfile": {}
         }
