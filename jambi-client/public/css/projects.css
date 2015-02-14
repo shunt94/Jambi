@@ -1,28 +1,29 @@
+.projects {
+  padding-top: 100px; }
+
 .project-container {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 80px; }
 
-.project,
 .addproject {
   display: inline-block;
   margin: 0 auto;
   text-align: center;
   -webkit-transition: width 0.5s ease-in-out, left 1s ease-in-out;
   transition: width 0.5s ease-in-out, left 1s ease-in-out; }
-  .project.active > .project-name,
   .addproject.active > .project-name {
     color: #fff !important; }
 
 .project-image {
   width: 100%;
   height: 140px;
-  background: url("../img/jambi.jpg");
+  background: url('../img/jambi.jpg');
   background-size: cover;
   margin: 0 auto;
   text-align: center;
-  -webkit-transition: .2s;
-  transition: .2s; }
+  -webkit-transition: 0.2s;
+  transition: 0.2s; }
 
 .project-name {
   padding-top: 40px;
@@ -89,12 +90,17 @@
 @media (min-width: 768px) {
   .col-sm-6 {
     width: 50%;
-    float: left; } }
+    float: left; }
+ }
+
 @media (min-width: 992px) {
   .col-md-4 {
-    width: 33.33333333%;
-    float: left; } }
+    width: 33.33333%;
+    float: left; }
+ }
+
 @media (min-width: 1200px) {
   .col-lg-3 {
     width: 25%;
-    float: left; } }
+    float: left; }
+ }

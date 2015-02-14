@@ -401,12 +401,6 @@ var jambiModel = function() {
             case "js":
                 return "javascript";
                 break;
-            case "json":
-                return "javascript";
-                break;
-			case "css":
-				return "css";
-				break;
         }
     }
 
@@ -424,7 +418,20 @@ var jambiModel = function() {
     			    activeProject = Projects.at(i).attributes.project;
     				active = "active";
     			}
-    			$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project" data-projectindex="' +
+
+    			$('#projectsTable > tbody:last').append('<tr class="project" data-name="' + Projects.at(i).attributes.project.name +
+    			'" data-projectindex="' + i + '">' +
+
+    			'<td>' + Projects.at(i).attributes.project.name + '</td>' +
+    			'<td>' + Projects.at(i).attributes.project.root + '</td>' +
+    			'<td>' + '' + '</td>' +
+
+    			'</tr>');
+
+
+
+    			/*
+$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project" data-projectindex="' +
     			                        i + '"' +
                                         'data-name="' + Projects.at(i).attributes.project.name + '">' +
     									'<div class="card-container">' +
@@ -440,9 +447,10 @@ var jambiModel = function() {
             									'</div>' +
         									'</div>' +
     									'</div>');
+*/
     		}
 
-    		$('#projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
+    		//$('#projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
 
 
             $('.project').dblclick(function() {
