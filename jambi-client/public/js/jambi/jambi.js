@@ -2,6 +2,7 @@ var jSetup = new jambiSetup();
 var Jambi = function () {
 
     var fs = require('fs');
+    var terminal = require('child_process');
     var jambiEditor;
     var jambiEditorConfig;
     var currentFileDir;
@@ -523,6 +524,33 @@ var Jambi = function () {
             jambiEditor.refresh();
         }
     };
+
+
+
+
+    // Facebook Flow
+
+Jambi.prototype.runCommand = function(command) {
+        var ls = terminal.spawn(command, [])
+        ls.stdout.on('data', function (data) {
+            console.log(data.toString());
+            return data.toString();
+        });
+    };
+
+
+    Jambi.prototype.initFlow = function (projectLocation) {
+        runCommand('cd ' + projectLocation);
+        runCommand('flow init');
+    };
+
+    Jambi.prototype.flowCode = function (fileLocation) {
+        var filename = "jambi.fs";
+        runCommand('cd ' + fileLocation);
+        var reporting = runCommand('flow ' + filename);
+        return reporting;
+    };
+
 };
 
 var jambi = new Jambi();

@@ -192,10 +192,7 @@ var jambiModel = function() {
 	}
 
 	function closeCurrentDocument() {
-		setActiveDocument();
-		saveCurrentDocument(openDocuments.get(activeDocument));
-		openDocuments.remove(activeDocument);
-		populateTopBar(findClosestDocument().data('modelid'));
+		closeDocument(activeDocument);
 	}
 
 	function setActiveDocument() {
@@ -522,6 +519,7 @@ var projectID = Projects.length-1;
         openProject($('.project [data-projectindex="' + projectID + '"]').data("name"), activeProject);
 */
     }
+
 
 
     function generateProjectsContextMenu() {
