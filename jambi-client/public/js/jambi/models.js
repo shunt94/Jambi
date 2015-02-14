@@ -401,6 +401,12 @@ var jambiModel = function() {
             case "js":
                 return "javascript";
                 break;
+            case "json":
+                return "javascript";
+                break;
+			case "css":
+				return "css";
+				break;
         }
     }
 

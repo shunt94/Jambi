@@ -8,6 +8,9 @@ html {
 *, *:before, *:after {
   box-sizing: inherit; }
 
+*:focus {
+  outline: none; }
+
 body, html, .container {
   font-family: 'Source Sans Pro', sans-serif;
   height: 100%;
@@ -19,14 +22,14 @@ body, html, .container {
   cursor: default !important; }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 3px; }
+  width: 2px;
+  height: 2px; }
 
 ::-webkit-scrollbar-track {
   background-color: transparent; }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.8);
   border-radius: 5px; }
 
 a {
@@ -148,7 +151,7 @@ h1, h2, h3 {
 .sidebar-title {
   font-size: 26px;
   background-color: #696969;
-  padding: 5px;
+  padding: 5px 60px 5px 60px;
   font-weight: 200;
   position: fixed;
   width: 300px;

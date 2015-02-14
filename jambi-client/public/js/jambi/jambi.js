@@ -8,7 +8,7 @@ var Jambi = function () {
     var version;
     var widgets = [];
     var areFilesUnsaved = false;
-    
+
     var editorFontSize = 14;
 
     readJambiSettings();
@@ -24,14 +24,14 @@ var Jambi = function () {
                 version = data.version;
                 editorFontSize = data.editor_settings.fontsize;
             }
-        });   
+        });
     }
 
     /*
 		Function used to setup all of the menu bar - Action listeners and populators
 	*/
     Jambi.prototype.menuSetup = function () {
-        
+
         // File Submenu
         jSetup.jambiMenu.file.fileNewSubmenu[0].click = function () {
 
@@ -49,10 +49,10 @@ var Jambi = function () {
             jambi.newFile();
         };
         jSetup.jambiMenu.file.fileClose.click = function () {
-            jambi.closeCurrentFile(); 
+            jambi.closeCurrentFile();
         };
         jSetup.jambiMenu.file.fileCloseAll.click = function () {
-            jambi.closeAllFiles();  
+            jambi.closeAllFiles();
         };
         jSetup.jambiMenu.file.fileClearSettings.click = function () {
             function modalFunction() {
@@ -64,25 +64,25 @@ var Jambi = function () {
                               "Remove Settings",
                               modalFunction);
         };
-        
+
         jSetup.jambiMenu.view.viewProjects.click = function () {
             window.location.replace("#/project");
         };
-        
+
         jSetup.jambiMenu.view.viewEditor.click = function () {
             window.location.replace("#/home");
         };
-        
+
         jSetup.jambiMenu.view.viewShowcase.click = function () {
             window.location.replace("#/showcase");
         };
-        
-        
-        // Themes 
-        
+
+
+        // Themes
+
         jSetup.jambiMenu.settings.settingsTheme.click = function () {
             function modalFunction() {
-                
+
             }
             var modalContent;
              $.ajax({
@@ -92,7 +92,7 @@ var Jambi = function () {
                      modalContent = results;
                      jambi.createModal("Select Theme", "", modalContent, "Ok", modalFunction);
                  }
-            });  
+            });
         };
 
 
@@ -110,8 +110,8 @@ var Jambi = function () {
             jSetup.jambiMenu.vc.vcPush.enabled = false;
             jSetup.jambiMenu.vc.vcCommit.enabled = false;
         }
-        
-        
+
+
         jSetup.gui.Window.get().on('close', function () {
             // show warning if you want
             jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){});
@@ -123,14 +123,14 @@ var Jambi = function () {
     Jambi.prototype.getVersion = function () {
         return version;
     };
-    
+
     Jambi.prototype.getFontSize = function () {
         return editorFontSize;
     }
 
 
     Jambi.prototype.getJambiEditor = function () {
-        return jambiEditor;	
+        return jambiEditor;
     };
 
     Jambi.prototype.initCodeMirror = function () {
@@ -276,17 +276,17 @@ var Jambi = function () {
                 jambi.stopJSHint();
                 $('#jshintcode').addClass("hidden");
             }
-        });	
+        });
     };
 
-    /* 
+    /*
 		Renders the same editor when the editor view is called - Used when the editor view is called and when the initial editor is made
 
 	*/
     Jambi.prototype.renderEditor = function () {
         jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
         jambiEditor.focus();
-        
+
         jambiEditor.on("change", function(e) {
             updateCursorPosition();
         });
@@ -357,15 +357,15 @@ var Jambi = function () {
     Jambi.prototype.newFile = function () {
         jModel.newFile();
     };
-    
+
     Jambi.prototype.closeCurrentFile = function () {
         jModel.closeCurrentDoc();
     };
-    
+
     Jambi.prototype.closeAllFiles = function () {
         jModel.closeAllDocs();
     };
-    
+
 
     Jambi.prototype.openFileByDir = function(dir) {
         return fs.readFileSync(dir,{"encoding":'utf8'});
@@ -403,7 +403,7 @@ var Jambi = function () {
         }
     };
 
-    Jambi.prototype.saveFileAs = function () {    
+    Jambi.prototype.saveFileAs = function () {
         if(jModel.onEditorPage()){
             $('#saveDialog').click();
             $('#saveDialog').on('change', function (event) {
@@ -413,18 +413,18 @@ var Jambi = function () {
                         alert(err);
                     } else {
                         jModel.setDocLocation(fileLocation);
-                        
+
                         var filename = fileLocation.replace(/^.*[\\\/]/, '');
                         jModel.setDocName(filename);
-                        
-                        
+
+
                         var sysString = "/";
                         if(process.platform == "win32" || process.platform == "win64" ) {
                     		sysString = "\\";
                     	}
                         fileLocation = fileLocation.substring(0,fileLocation.lastIndexOf(sysString)+1);
                         $('#saveDialog').attr('nwworkingdir', fileLocation);
-                        
+
                         // save animation
                     }
                 });
@@ -444,7 +444,7 @@ var Jambi = function () {
             if(event.keyCode === 13){
                 var searchTerm = $("#stackoverflow_search").val().split(' ').join('+');
                 var searchURL = 'https://www.google.co.uk/webhp?sourceid=chrome-instant&rlz=1C5CHFA_enGB558GB558&ion=1&espv=2&ie=UTF-8#q=' +
-                    searchTerm + 
+                    searchTerm +
                     '%20site%3Astackoverflow.com';
                 jSetup.gui.Shell.openExternal(searchURL);
                 $('#stackoverflow_search').val("");
@@ -514,7 +514,7 @@ var Jambi = function () {
             $('.sidebar').removeClass("inView");
             $('#sidebar_toggle i').removeClass('fa-indent').addClass('fa-outdent');
             jambiEditor.refresh();
-        } 
+        }
         else {
             $('.sidebar').animate({"margin-right": '+=300px'}, 200);
             $('.editor-container').animate({ "width": "-=300px" }, 200);

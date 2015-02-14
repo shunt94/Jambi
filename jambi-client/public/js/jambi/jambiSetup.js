@@ -4,7 +4,7 @@ var jambiSetup = function() {
 	var menuBar = new gui.Menu({ type: 'menubar' });
 
 	if(process.platform == "darwin") {
-		menuBar.createMacBuiltin('Jambi');	
+		menuBar.createMacBuiltin('Jambi');
 	}
 	win.menu = menuBar;
 
@@ -12,7 +12,7 @@ var jambiSetup = function() {
 	var fileSubmenu = new gui.Menu();
 	var fileNewSub = new gui.Menu();
 
-	// View Menus 
+	// View Menus
 	var viewSubmenu = new gui.Menu();
 
 
@@ -20,7 +20,7 @@ var jambiSetup = function() {
 	var toolsSubmenu = new gui.Menu();
 	var addonSubmenu = new gui.Menu();
 
-	// Instas Menus 
+	// Instas Menus
 	var instasSubmenu = new gui.Menu();
 
 	// Version Control Menus
@@ -154,13 +154,13 @@ var jambiSetup = function() {
 
 	function addTopMenu(subMenu, nameLabel, pos) {
 		menuBar.insert(new gui.MenuItem({ label: nameLabel, submenu: subMenu}), pos);
-	} 
-	
+	}
+
 	onload = function() {
         gui.Window.get().show();
     }
-    
-        
+
+
 
 	return {
 		gui: gui,
@@ -171,9 +171,9 @@ var jambiSetup = function() {
 		        for(var i = 0; i < sub.length; i++) {
 		            var subItem = new gui.MenuItem({ label: sub[i].label });
 		            subItem.click = sub[i].click;
-		            
+
     		        subMenuItem.append(subItem);
-    		        
+
 		        }
     		    var mItem = new gui.MenuItem({ label: name, submenu: subMenuItem });
 		    }
@@ -181,7 +181,7 @@ var jambiSetup = function() {
     		    var mItem = new gui.MenuItem({ label: name });
 		    }
             addonSubmenu.append(mItem);
-            return mItem; 
+            return mItem;
         }
 	};
 };

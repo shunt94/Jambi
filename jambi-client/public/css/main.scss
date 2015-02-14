@@ -23,6 +23,10 @@ html {
   box-sizing: inherit;
 }
 
+*:focus {
+    outline: none;
+}
+
 body,html, .container {
 	font-family: 'Source Sans Pro', sans-serif;
 	height: 100%;
@@ -34,9 +38,20 @@ body,html, .container {
     cursor: default !important;
 }
 
+html, body {
+    width:      100%;
+    height:     100%;
+    overflow:   hidden;
+}
+
+body > div {
+    height:     100%;
+    overflow:   scroll;
+}
+
 ::-webkit-scrollbar {
-      width: 5px;
-      height: 3px;
+      width: 2px;
+      height: 2px;
 }
 
 ::-webkit-scrollbar-track {
@@ -44,7 +59,7 @@ body,html, .container {
 }
 
 ::-webkit-scrollbar-thumb {
-      background-color: rgba(255,255,255,0.4);
+      background-color: rgba(255,255,255,0.8);
       border-radius: 5px;
 }
 a {
@@ -190,7 +205,7 @@ h1,h2,h3 { font-weight: 200;}
 .sidebar-title {
 	font-size: 26px;
 	background-color: #696969;
-	padding: 5px;
+	padding: 5px 60px 5px 60px;
 	font-weight: 200;
 	position: fixed;
     width: $sidebar-width;
