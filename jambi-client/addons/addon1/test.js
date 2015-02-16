@@ -3,12 +3,14 @@
 
 var submenu1 = [
     {
-        "label": "TestSub1", 
+        "label": "TestSub1",
         "click": function() {
             //jambi.createModal("modalTitle", "modalSubtitle", "modalContent", "Save");
             //jambi.openModal();
-            console.log(jambi.getJambiEditor().getHistory());
-        } 
+            jambi.runCommand('/usr/local/bin/flow --version');
+            console.log($('.CodeMirror-cursor').offset().left);
+            console.log($('.CodeMirror-cursor').offset().top);
+        }
     }
 ]
 var test = jSetup.addAddon("asd", submenu1);

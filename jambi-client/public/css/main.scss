@@ -463,3 +463,23 @@ iframe {
     background: #fff;
     color: #333;
 }
+
+#jambiAutoCompleteBox {
+    background-color: #fff;
+    min-height: 10px;
+    max-height: 100px;
+    min-width: 50px;
+    z-index: 9999;
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    overflow: scroll;
+    display: none;
+    color: #333;
+
+    & ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+}

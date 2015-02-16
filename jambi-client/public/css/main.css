@@ -21,6 +21,15 @@ body, html, .container {
   -webkit-user-select: none;
   cursor: default !important; }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+
+body > div {
+  height: 100%;
+  overflow: scroll; }
+
 ::-webkit-scrollbar {
   width: 2px;
   height: 2px; }
@@ -365,3 +374,20 @@ iframe {
   margin-right: auto;
   background: #fff;
   color: #333; }
+
+#jambiAutoCompleteBox {
+  background-color: #fff;
+  min-height: 10px;
+  max-height: 100px;
+  min-width: 50px;
+  z-index: 9999;
+  position: absolute;
+  top: 50px;
+  left: 100px;
+  overflow: scroll;
+  display: none;
+  color: #333; }
+  #jambiAutoCompleteBox ul {
+    list-style: none;
+    margin: 0;
+    padding: 0; }

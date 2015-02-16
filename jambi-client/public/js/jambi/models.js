@@ -669,7 +669,6 @@ var projectID = Projects.length-1;
 
 
 
-
 	return {
 		newFile: function() { newDocument (); },
 		openFile: function(a,b,c,d) { openFile(a,b,c,d); },
@@ -683,3 +682,7 @@ var projectID = Projects.length-1;
 };
 
 var jModel = new jambiModel();
+
+
+
+

@@ -3,6 +3,7 @@ var Jambi = function () {
 
     var fs = require('fs');
     var terminal = require('child_process');
+    var shell = require('shelljs');
     var jambiEditor;
     var jambiEditorConfig;
     var currentFileDir;
@@ -129,7 +130,6 @@ var Jambi = function () {
         return editorFontSize;
     }
 
-
     Jambi.prototype.getJambiEditor = function () {
         return jambiEditor;
     };
@@ -196,32 +196,6 @@ var Jambi = function () {
 
         jambi.renderEditor();
 
-        jambiEditor.on("gutterClick", foldLine);
-
-        jambiEditor.on("keyup", function (e, s) {
-            /*
-            if(s.keyCode === 37 || s.keyCode === 38 || s.keyCode === 39 || s.keyCode === 40 ){
-                return false;
-            }
-            else {
-                setTimeout(function() {
-                    jambiEditor.showHint(e);
-                }, 3000)
-
-            }
-            */
-        });
-
-        jambiEditor.on("change", function(e) {
-            updateCursorPosition();
-        });
-
-        jambiEditor.on("cursorActivity", function(e) {
-            updateCursorPosition();
-        });
-
-
-
         function updateCursorPosition() {
             var cursorPos = jambiEditor.getCursor();
             $('#jambiLine').text(cursorPos.line + 1);
@@ -268,14 +242,15 @@ var Jambi = function () {
         // Activates the JSHint-ing button on Javascript mode
         $('#modeSelector').on('change', function () {
             var mode = $("#modeSelector option:selected").attr('data-mode');
+            var $jsHintCode = $('#jshintcode');
             jambiEditor.setOption("mode", mode);
             if(mode === "javascript") {
                 jambi.jsHint();
-                $('#jshintcode').removeClass("hidden");
+                $jsHintCode.removeClass("hidden");
             }
             else {
                 jambi.stopJSHint();
-                $('#jshintcode').addClass("hidden");
+                $jsHintCode.addClass("hidden");
             }
         });
     };
@@ -284,9 +259,16 @@ var Jambi = function () {
 		Renders the same editor when the editor view is called - Used when the editor view is called and when the initial editor is made
 
 	*/
+	var instaStarted = false;
     Jambi.prototype.renderEditor = function () {
+
         jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
         jambiEditor.focus();
+
+        jambiEditor.off("cursorActivity");
+        jambiEditor.off("change");
+        jambiEditor.off("keyup");
+        jambiEditor.off("gutterClick");
 
         jambiEditor.on("change", function(e) {
             updateCursorPosition();
@@ -298,13 +280,94 @@ var Jambi = function () {
         var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
         jambiEditor.on("gutterClick", foldLine);
 
+        var timeout;
+         var popupKeyCodes = {
+            "9": "tab",
+            "13": "enter",
+            "27": "escape",
+            "33": "pageup",
+            "32": "space",
+            "8": "backspace",
+            "91": "unknown",
+            "34": "pagedown",
+            "35": "end",
+            "36": "home",
+            "38": "up",
+            "40": "down"
+        }
+
+
+        jambiAC.setMenuContext('html');
+
+        var instaArray = ["html", "bootstrap_basic"];
+        jambiEditor.on("keyup", function(editor, keyevent) {
+            // dollar sign ready for instas
+            if(keyevent.shiftKey && keyevent.keyCode === 52) {
+                jambi.destroyBuiltWord();
+                instaStarted = true;
+                alert("insta started");
+            }
+            else {
+                if(instaStarted) {
+                    jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
+
+                    for(var i = 0; i < instaArray.length; i++) {
+                        console.log(builtWord + "===" + instaArray[i]);
+                        console.log(builtWord === "html");
+                        if(builtWord === instaArray[i]) {
+                            alert("Insta caught: " + instaArray[i]);
+                        }
+                    }
+                }
+                else if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && !editor.state.completionActive) {
+                    jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
+                    jambiAC.filterResults(builtWord);
+
+                    if(timeout) clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        jambiAC.show();
+                    }, 200);
+                }
+                else {
+                    jambiAC.hide();
+                    jambi.destroyBuiltWord();
+                    instaStarted = false;
+                }
+
+            }
+
+
+
+        });
+
+
 
         function updateCursorPosition() {
+            jambiAC.hide();
             var cursorPos = jambiEditor.getCursor();
             $('#jambiLine').text(cursorPos.line + 1);
             $('#jambiColumn').text(cursorPos.ch + 1);
         }
     };
+
+    var builtWord = "";
+
+    Jambi.prototype.createBuiltWord = function (letter) {
+        builtWord = builtWord + letter;
+    };
+
+    Jambi.prototype.getBuiltWord = function () {
+        return builtWord;
+    };
+
+    Jambi.prototype.destroyBuiltWord = function () {
+        builtWord = "";
+    };
+
+
+
+
+
 
     /*
 		Handler for the JSHint function for the Javascript mode in the editor
@@ -530,26 +593,38 @@ var Jambi = function () {
 
     // Facebook Flow
 
-Jambi.prototype.runCommand = function(command) {
+    Jambi.prototype.runCommand = function(command) {
+/*
         var ls = terminal.spawn(command, [])
         ls.stdout.on('data', function (data) {
             console.log(data.toString());
             return data.toString();
+        });
+*/
+        shell.exec(command, function(code, output) {
+            if(code !== 0) {
+                console.log('Exit code:', code);
+            }
+            console.log(output);
+            return output;
         });
     };
 
 
     Jambi.prototype.initFlow = function (projectLocation) {
         runCommand('cd ' + projectLocation);
-        runCommand('flow init');
+        runCommand('/usr/local/bin/flow init');
     };
 
     Jambi.prototype.flowCode = function (fileLocation) {
         var filename = "jambi.fs";
         runCommand('cd ' + fileLocation);
-        var reporting = runCommand('flow ' + filename);
+        var reporting = runCommand('/usr/local/bin/flow ' + filename);
         return reporting;
     };
+
+
+
 
 };
 
