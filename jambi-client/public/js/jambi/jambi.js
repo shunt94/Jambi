@@ -293,47 +293,47 @@ var Jambi = function () {
             "35": "end",
             "36": "home",
             "38": "up",
-            "40": "down"
+            "40": "down",
+            "16": "shift"
         }
 
 
         jambiAC.setMenuContext('html');
 
-        var instaArray = ["html", "bootstrap_basic"];
+        var instaArray = {"html": "htmlTemplate", "bootstrap_basic": "Bootstrap Basic Site"}
         jambiEditor.on("keyup", function(editor, keyevent) {
             // dollar sign ready for instas
-            if(keyevent.shiftKey && keyevent.keyCode === 52) {
-                jambi.destroyBuiltWord();
-                instaStarted = true;
-                alert("insta started");
-            }
-            else {
-                if(instaStarted) {
-                    jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
+            if(instaStarted && !popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()]) {
 
-                    for(var i = 0; i < instaArray.length; i++) {
-                        console.log(builtWord + "===" + instaArray[i]);
-                        console.log(builtWord === "html");
-                        if(builtWord === instaArray[i]) {
-                            alert("Insta caught: " + instaArray[i]);
-                        }
+                jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
+                console.log(Object.keys(instaArray)[0]);
+                for(var i = 0; i < 2; i++) {
+                    if(builtWord === Object.keys(instaArray)[i]) {
+                        alert("Insta caught: " + instaArray[Object.keys(instaArray)[i]]);
+                        insertAtCursor(instaArray[Object.keys(instaArray)[i]]);
                     }
                 }
-                else if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && !editor.state.completionActive) {
-                    jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
-                    jambiAC.filterResults(builtWord);
+            }
+            else if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && !editor.state.completionActive) {
+                jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
+                jambiAC.filterResults(builtWord);
 
-                    if(timeout) clearTimeout(timeout);
-                    timeout = setTimeout(function() {
-                        jambiAC.show();
-                    }, 200);
-                }
-                else {
-                    jambiAC.hide();
-                    jambi.destroyBuiltWord();
-                    instaStarted = false;
-                }
+                if(timeout) clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    jambiAC.show();
+                }, 200);
+            }
+            else {
+                jambiAC.hide();
+                jambi.destroyBuiltWord();
+                console.log("setting insta to false");
+//                instaStarted = false;
+            }
 
+            if(keyevent.shiftKey && keyevent.keyCode === 52) {
+                alert("insta");
+                jambi.destroyBuiltWord();
+                instaStarted = true;
             }
 
 
@@ -347,6 +347,10 @@ var Jambi = function () {
             var cursorPos = jambiEditor.getCursor();
             $('#jambiLine').text(cursorPos.line + 1);
             $('#jambiColumn').text(cursorPos.ch + 1);
+        }
+
+        function insertAtCursor(text) {
+            jambiEditor.replaceSelection(text);
         }
     };
 
