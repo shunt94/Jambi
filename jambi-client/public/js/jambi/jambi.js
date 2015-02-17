@@ -206,10 +206,6 @@ var Jambi = function () {
 
         // Instas
 
-        // if $ is detected then init Insta
-        function insertAtCursor(text) {
-            jambiEditor.replaceSelection(text);
-        }
 
         jambi.setListeners();
     };
@@ -300,8 +296,65 @@ var Jambi = function () {
 
         jambiAC.setMenuContext('html');
 
-        var instaArray = {"html": "htmlTemplate", "bootstrap_basic": "Bootstrap Basic Site"}
+        var instaReady = false;
+
+
+        function checkInstas(code, keyevent) {
+            if(instaReady && code === 13) {
+                jInsta.insert(jInsta.getString());
+                instaReady = false;
+            }
+
+            if(!!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()]) {
+                jInsta.destoryString();
+            }
+
+            if(jInsta.instaStarted() && code !== 16) {
+                jInsta.addCharacter(String.fromCharCode(code).toLowerCase());
+                if(jInsta.checkInsta()) {
+                    instaReady = true;
+                }
+            }
+
+            // if $ detected then start the insta function
+            if(code === 52 && keyevent.shiftKey) {
+                jInsta.destoryString();
+                jInsta.init();
+            }
+
+            if(code === 8) {
+                jInsta.removeCharacter();
+            }
+
+        }
+
         jambiEditor.on("keyup", function(editor, keyevent) {
+            var code = keyevent.keyCode;
+
+            // if insta has been init then build string
+
+            checkInstas(code, keyevent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+            if(keyevent.keyCode === 8) {
+                jambi.removeLastBuiltLetter();
+            }
+
+
+
             // dollar sign ready for instas
             if(instaStarted && !popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()]) {
 
@@ -310,7 +363,11 @@ var Jambi = function () {
                 for(var i = 0; i < 2; i++) {
                     if(builtWord === Object.keys(instaArray)[i]) {
                         alert("Insta caught: " + instaArray[Object.keys(instaArray)[i]]);
-                        insertAtCursor(instaArray[Object.keys(instaArray)[i]]);
+                        // delete insta code
+
+                        // insert new insta
+                        jambi.insertAtCursor(instaArray[Object.keys(instaArray)[i]]);
+
                     }
                 }
             }
@@ -334,9 +391,9 @@ var Jambi = function () {
                 alert("insta");
                 jambi.destroyBuiltWord();
                 instaStarted = true;
+
             }
-
-
+*/
 
         });
 
@@ -349,27 +406,13 @@ var Jambi = function () {
             $('#jambiColumn').text(cursorPos.ch + 1);
         }
 
-        function insertAtCursor(text) {
-            jambiEditor.replaceSelection(text);
-        }
-    };
 
-    var builtWord = "";
-
-    Jambi.prototype.createBuiltWord = function (letter) {
-        builtWord = builtWord + letter;
-    };
-
-    Jambi.prototype.getBuiltWord = function () {
-        return builtWord;
-    };
-
-    Jambi.prototype.destroyBuiltWord = function () {
-        builtWord = "";
     };
 
 
-
+    Jambi.prototype.insertAtCursor = function (text) {
+        jambi.getJambiEditor().replaceSelection(text);
+    }
 
 
 
