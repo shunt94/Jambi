@@ -63,7 +63,8 @@ var jambiInsta = function () {
         jambi.getJambiEditor().setSelection(instaStart, instaEnd);
 
         // insert new snippet
-        var iString = instaArray[instaString]
+        //var iString = instaArray[instaString]
+		var iString = jambifs.readHTML("instas/" + instaArray[instaString]);
         jambi.getJambiEditor().replaceSelection(iString);
         instaStarted = false;
     };

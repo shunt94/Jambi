@@ -1,4 +1,4 @@
 {
-    "html": "<!DOCTYPE html>\n<html>\n<head>\n    <title></title>\n</head>\n<body>\n\n</body>\n</html>",
-    "bootstrapbasic": "<!DOCTYPE html>\n<html>\n<head>\n    <title></title>\n</head>\n<body>\n<div class='container'>\n</div>\n</body>\n</html>"
+    "html": "instas/html.html",
+    "bootstrapbasic": "instas/bootstrapbasic.html"
 }
