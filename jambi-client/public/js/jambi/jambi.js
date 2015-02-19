@@ -33,30 +33,31 @@ var Jambi = function () {
 		Function used to setup all of the menu bar - Action listeners and populators
 	*/
     Jambi.prototype.menuSetup = function () {
+        var jMenu = jSetup.jambiMenu;
 
         // File Submenu
-        jSetup.jambiMenu.file.fileNewSubmenu[0].click = function () {
+        jMenu.file.fileNewSubmenu[0].click = function () {
 
         };
-        jSetup.jambiMenu.file.fileSave.click = function () {
+        jMenu.file.fileSave.click = function () {
             jambi.saveFile();
         };
-        jSetup.jambiMenu.file.fileSaveAs.click = function () {
+        jMenu.file.fileSaveAs.click = function () {
             jambi.saveFileAs();
         };
-        jSetup.jambiMenu.file.fileOpen.click = function () {
+        jMenu.file.fileOpen.click = function () {
             jambi.openFile();
         };
-        jSetup.jambiMenu.file.fileNewSubmenu[0].value.click = function () {
+        jMenu.file.fileNewSubmenu[0].value.click = function () {
             jambi.newFile();
         };
-        jSetup.jambiMenu.file.fileClose.click = function () {
+        jMenu.file.fileClose.click = function () {
             jambi.closeCurrentFile();
         };
-        jSetup.jambiMenu.file.fileCloseAll.click = function () {
+        jMenu.file.fileCloseAll.click = function () {
             jambi.closeAllFiles();
         };
-        jSetup.jambiMenu.file.fileClearSettings.click = function () {
+        jMenu.file.fileClearSettings.click = function () {
             function modalFunction() {
                 storedb('userSettings').remove();
             }
@@ -67,22 +68,29 @@ var Jambi = function () {
                               modalFunction);
         };
 
-        jSetup.jambiMenu.view.viewProjects.click = function () {
+        jMenu.view.viewProjects.click = function () {
             window.location.replace("#/project");
         };
 
-        jSetup.jambiMenu.view.viewEditor.click = function () {
+        jMenu.view.viewEditor.click = function () {
             window.location.replace("#/home");
         };
 
-        jSetup.jambiMenu.view.viewShowcase.click = function () {
+        jMenu.view.viewShowcase.click = function () {
             window.location.replace("#/showcase");
         };
 
 
+        jMenu.tools.toolsFlowFlowCode.click = function () {
+            jambi.initFlow(jModel.getActiveProject().root);
+            jambi.flowCode(jModel.getActiveDocument().fileLocation);
+        };
+
+
+
         // Themes
 
-        jSetup.jambiMenu.settings.settingsTheme.click = function () {
+        jMenu.settings.settingsTheme.click = function () {
             function modalFunction() {
 
             }
@@ -100,7 +108,7 @@ var Jambi = function () {
 
         // Version Control
 
-        jSetup.jambiMenu.vc.vc.click = function () {
+        jMenu.vc.vc.click = function () {
             function modalFunction() {
 
             }
@@ -108,9 +116,9 @@ var Jambi = function () {
         };
 
         if(true) { // Change this to if VC is setup
-            jSetup.jambiMenu.vc.vcPull.enabled = false;
-            jSetup.jambiMenu.vc.vcPush.enabled = false;
-            jSetup.jambiMenu.vc.vcCommit.enabled = false;
+            jMenu.vc.vcPull.enabled = false;
+            jMenu.vc.vcPush.enabled = false;
+            jMenu.vc.vcCommit.enabled = false;
         }
 
 
@@ -561,7 +569,6 @@ var Jambi = function () {
                 $('#stackoverflow_search').val("");
             }
         });
-
     };
 
     /*
@@ -659,15 +666,14 @@ var Jambi = function () {
 
 
     Jambi.prototype.initFlow = function (projectLocation) {
-        runCommand('cd ' + projectLocation);
-        runCommand('/usr/local/bin/flow init');
+        jambi.runCommand('cd ' + projectLocation +
+        ' && /usr/local/bin/flow init');
     };
 
     Jambi.prototype.flowCode = function (fileLocation) {
-        var filename = "jambi.fs";
-        runCommand('cd ' + fileLocation);
-        var reporting = runCommand('/usr/local/bin/flow ' + filename);
-        return reporting;
+        var filename = fileLocation.replace(/^.*[\\\/]/, '');
+        jambi.runCommand('cd ' + fileLocation.substring(0,fileLocation.length - filename.length) +
+        ' && /usr/local/bin/flow ' + filename);
     };
 
 
