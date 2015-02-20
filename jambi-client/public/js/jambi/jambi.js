@@ -80,10 +80,13 @@ var Jambi = function () {
             window.location.replace("#/showcase");
         };
 
-
         jMenu.tools.toolsFlowFlowCode.click = function () {
             jambi.initFlow(jModel.getActiveProject().root);
             jambi.flowCode(jModel.getActiveDocument().fileLocation);
+        };
+
+        jMenu.tools.toolsSass.click = function () {
+            jambi.sass();
         };
 
 
@@ -666,16 +669,49 @@ var Jambi = function () {
 
 
     Jambi.prototype.initFlow = function (projectLocation) {
-        jambi.runCommand('cd ' + projectLocation +
-        ' && /usr/local/bin/flow init');
+        if(!(jModel.getActiveProject().flowInitialised)) {
+            jambi.runCommand('cd ' + '"' + projectLocation + '"' +
+                ' && /usr/local/bin/flow init');
+            jModel.getActiveProject().flowInitialised = true;
+            jModel.saveAllProjects();
+        }
+
     };
 
     Jambi.prototype.flowCode = function (fileLocation) {
-        var filename = fileLocation.replace(/^.*[\\\/]/, '');
-        jambi.runCommand('cd ' + fileLocation.substring(0,fileLocation.length - filename.length) +
-        ' && /usr/local/bin/flow ' + filename);
+        jambi.saveFile();
+        if(fileLocation) {
+            var filename = fileLocation.replace(/^.*[\\\/]/, '');
+            jambi.runCommand('cd ' + '"' + fileLocation.substring(0,fileLocation.length - filename.length) + '"' +
+                ' && /usr/local/bin/flow ' + filename);
+        }
     };
 
+
+
+    /* SASS/SCSS */
+    Jambi.prototype.sass = function () {
+        var sass = require('node-sass');
+        var currentFile = jModel.getActiveDocument();
+        var fileName = currentFile.fileLocation;
+        sass.render({
+            file: fileName,
+            success: function(result) {
+                // result is an object: v2 change
+                console.log(result.css);
+                console.log(result.stats);
+                console.log(result.map)
+            },
+            error: function(error) {
+                // error is an object: v2 change
+                console.log(error.message);
+                console.log(error.code);
+                console.log(error.line);
+                console.log(error.column); // new in v2
+            },
+            outputStyle: 'nested'
+        });
+    };
 
 
 

@@ -14,7 +14,8 @@ var jambiModel = function() {
     	    "name": "",
         	"root": "",
         	"openfiles": [],
-        	"currentfile": {}
+        	"currentfile": {},
+        	"flowInitialised": false
         }
 	});
 
@@ -690,7 +691,15 @@ var projectID = Projects.length-1;
 		setDocLocation: function(loc) { openDocuments.get(activeDocument).fileLocation = loc; },
 		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
 		onEditorPage: function() { return isEditorOpen; },
-		getActiveProject: function() { return activeProject; }
+		getActiveProject: function() { return activeProject; },
+
+		saveAllProjects: function() {
+            var jsonToBeSaved = [];
+    	    for(var i = 0; i < Projects.models.length; i++) {
+        	    jsonToBeSaved.push(Projects.models[i].attributes);
+    	    }
+    	    jambifs.writeJSON("projects.json", JSON.stringify(jsonToBeSaved));
+        }
 	};
 };
 

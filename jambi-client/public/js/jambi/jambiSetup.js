@@ -69,6 +69,7 @@ var jambiSetup = function() {
 			toolsFlow:              new gui.MenuItem({ label: 'Flow', submenu: flowSubmenu }),
 			toolsFlowFlowCode:      new gui.MenuItem({ label: 'Flow Code' }),
 			toolsFlowFlowSettings:  new gui.MenuItem({ label: 'Settings' }),
+			toolsSass:                 new gui.MenuItem({ label: 'Compile Sass' })
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -133,6 +134,7 @@ var jambiSetup = function() {
 		flowSubmenu.append(jambiMenu.tools.toolsFlowFlowSettings);
 
 		toolsSubmenu.append(jambiMenu.tools.toolsFlow);
+		toolsSubmenu.append(jambiMenu.tools.toolsSass);
 	})();
 
 	var generateVCMenu = (function(){
