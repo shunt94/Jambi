@@ -20,6 +20,7 @@ var jambiSetup = function() {
 	var toolsSubmenu = new gui.Menu();
 	var addonSubmenu = new gui.Menu();
 	var flowSubmenu = new gui.Menu();
+	var beautifySubmenu = new gui.Menu();
 
 	// Instas Menus
 	var instasSubmenu = new gui.Menu();
@@ -69,7 +70,9 @@ var jambiSetup = function() {
 			toolsFlow:              new gui.MenuItem({ label: 'Flow', submenu: flowSubmenu }),
 			toolsFlowFlowCode:      new gui.MenuItem({ label: 'Flow Code' }),
 			toolsFlowFlowSettings:  new gui.MenuItem({ label: 'Settings' }),
-			toolsSass:                 new gui.MenuItem({ label: 'Compile Sass' })
+			toolsSass:              new gui.MenuItem({ label: 'Compile Sass' }),
+			toolsBeautify:          new gui.MenuItem({ label: 'Beautify..' , submenu: beautifySubmenu}),
+			toolsBeautifyJSON:      new gui.MenuItem({ label: 'JSON' })
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -135,6 +138,10 @@ var jambiSetup = function() {
 
 		toolsSubmenu.append(jambiMenu.tools.toolsFlow);
 		toolsSubmenu.append(jambiMenu.tools.toolsSass);
+
+		beautifySubmenu.append(jambiMenu.tools.toolsBeautifyJSON);
+
+		toolsSubmenu.append(jambiMenu.tools.toolsBeautify);
 	})();
 
 	var generateVCMenu = (function(){

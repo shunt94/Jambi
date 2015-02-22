@@ -12,10 +12,7 @@ var JambiFS = function() {
     };
 
     JambiFS.prototype.writeJSON = function(fileLocation, data) {
-        fs.writeFile(fileLocation, data, function(err) {
-            if (err) throw err;
-            return true;
-        });
+        fs.writeFileSync(fileLocation, data);
     };
 
     JambiFS.prototype.readHTML = function(fileLocation, callback) {

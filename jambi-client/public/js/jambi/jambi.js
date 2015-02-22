@@ -82,11 +82,22 @@ var Jambi = function () {
 
         jMenu.tools.toolsFlowFlowCode.click = function () {
             jambi.initFlow(jModel.getActiveProject().root);
-            jambi.flowCode(jModel.getActiveDocument().fileLocation);
+            jambi.flowCode(jModel.getActiveDocument().fileLocation + jModel.getActiveDocument().name);
+            console.log("Active file: " + jModel.getActiveDocument().fileLocation);
         };
 
         jMenu.tools.toolsSass.click = function () {
             jambi.sass();
+        };
+
+        jMenu.tools.toolsBeautifyJSON.click = function () {
+            var activeDoc = jModel.getActiveDocument();
+            alert(activeDoc);
+            if(activeDoc.type === "json") {
+                var beautify = require('js-beautify').js_beautify;
+                var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
+                jambi.getJambiEditor().setValue(code);
+            }
         };
 
 
@@ -165,15 +176,7 @@ var Jambi = function () {
 
         // Create code mirror
         var mixedMode = {
-            name: "htmlmixed",
-            scriptTypes: [{
-                matches: /\/x-handlebars-template|\/x-mustache/i,
-                mode: null
-            },
-                          {
-                              matches: /(text|application)\/(x-)?vb(a|script)/i,
-                              mode: "vbscript"
-                          }]
+            name: "htmlmixed"
         };
 
         function betterTab(cm) {
@@ -202,7 +205,7 @@ var Jambi = function () {
             foldGutter: true,
             highlightSelectionMatches: true,
             styleActiveLine: true,
-            extraKeys: { Tab: betterTab }
+            extraKeys: { Tab: betterTab, "Ctrl-Space": "autocomplete" }
         };
 
         jambi.renderEditor();
@@ -344,10 +347,10 @@ var Jambi = function () {
 
             // if insta has been init then build string
 
-            checkInstas(code, keyevent)
+            checkInstas(code, keyevent);
 
 
-
+            jModel.getActiveDocument().isSaved = false;
 
 
 
@@ -490,28 +493,42 @@ var Jambi = function () {
 
 
     Jambi.prototype.openFileByDir = function(dir) {
-        return fs.readFileSync(dir,{"encoding":'utf8'});
+        try {
+            return fs.readFileSync(dir,{"encoding":'utf8'});
+        }
+        catch(err) {
+            return null;
+        }
     };
 
 
     Jambi.prototype.openFile = function () {
-        $('#fileDialog').change(function (evt) {
-            fs.readFile($(this).val(), "utf8", function (error, data) {
-                if (error) {
-                    alert(error);
-                } else {
-                    jModel.openFile("file" ,data, "html", "htmlmixed");
-                }
+        try {
+            $('#fileDialog').change(function (evt) {
+                var openFileLocation = $(this).val();
+                fs.readFile(openFileLocation, "utf8", function (error, data) {
+                    if (error) {
+                        alert(error);
+                    } else {
+
+                        var fileLocation = openFileLocation.substring(0,openFileLocation.lastIndexOf("/")+1);
+                        var fileName = openFileLocation.replace(/^.*[\\\/]/, '');
+                        var filetype = fileName.substr(fileName.lastIndexOf('.') + 1, fileName.length);
+                        jModel.openFile(fileName ,data, "html", jModel.checkFileTypes(filetype), fileLocation);
+                    }
+                });
             });
-        });
-        $('#fileDialog').trigger('click');
+            $('#fileDialog').trigger('click');
+        } catch(err) {
+            alert("Could not open file");
+        }
     };
 
     Jambi.prototype.saveFile = function () {
         if(jModel.onEditorPage()){
             var file = jModel.getActiveDocument();
-            var fileLocation = jModel.getActiveDocument().fileLocation;
-            if (fileLocation) {
+            var fileLocation = jModel.getActiveDocument().fileLocation + jModel.getActiveDocument().title;
+            if (fileLocation !== 'undefined') {
                 fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
                     if (err) {
                         alert(err);
@@ -534,18 +551,41 @@ var Jambi = function () {
                     if (err) {
                         alert(err);
                     } else {
-                        jModel.setDocLocation(fileLocation);
-
-                        var filename = fileLocation.replace(/^.*[\\\/]/, '');
-                        jModel.setDocName(filename);
-
 
                         var sysString = "/";
                         if(process.platform == "win32" || process.platform == "win64" ) {
                     		sysString = "\\";
                     	}
+
+
+
+                        var filename = fileLocation.replace(/^.*[\\\/]/, '');
                         fileLocation = fileLocation.substring(0,fileLocation.lastIndexOf(sysString)+1);
                         $('#saveDialog').attr('nwworkingdir', fileLocation);
+                        jModel.setDocLocation(fileLocation);
+                        jModel.setDocName(filename);
+
+                        // if file is not already in Projects JSON
+                        // use checkFileType here as well
+                        var activeProject = jModel.getActiveProject();
+                        if(activeProject) {
+                    		var activeIndex = -1;
+                    		for(var i = 0; i < activeProject.openfiles.length; i++){
+                    		    activeProject.openfiles[i].active = false;
+                    		    if(jModel.getActiveDocument().fileLocation === activeProject.openfiles[i].root &&
+                    		        jModel.getActiveDocument().title === activeProject.openfiles[i].name) {
+                        		      activeIndex = i;
+                    		    }
+                    		}
+                            if(activeIndex < 0) {
+                        		jModel.addFileToProject(filename, fileLocation, "htmlmixed");
+                        		jModel.saveAllProjects();
+
+                    		}
+
+                        }
+
+
 
                         // save animation
                     }
@@ -647,7 +687,6 @@ var Jambi = function () {
 
 
 
-
     // Facebook Flow
 
     Jambi.prototype.runCommand = function(command) {
@@ -712,6 +751,7 @@ var Jambi = function () {
             outputStyle: 'nested'
         });
     };
+
 
 
 

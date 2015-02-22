@@ -1,7 +1,7 @@
 var assert = require("assert");
 var jsdom = require('mocha-jsdom');
 var fs = require('fs');
-var jQuery = require('jQuery');
+
   
 
 describe('TestLabel1', function(){
@@ -15,24 +15,24 @@ describe('TestLabel1', function(){
 });
 
 
-describe('Server Tests', function() {
-    describe('GET jambi.herokuapp.com/api', function() {        
-        it('Should get a list get a list of API', function(done){
-             jQuery.ajax({
-                type: 'GET',
-                url: "http://jambi.herokuapp.com/api",
-                async: true,
-                contentType: "application/json",
-                dataType: 'json',
-                success: function(data) {
-                    if(data) done();
-                },
-                error: function(e) {
-                    if(e) !done();
-                }
-            });
+// describe('Server Tests', function() {
+//     describe('GET jambi.herokuapp.com/api', function() {        
+//         it('Should get a list get a list of API', function(done){
+//              jQuery.ajax({
+//                 type: 'GET',
+//                 url: "http://jambi.herokuapp.com/api",
+//                 async: true,
+//                 contentType: "application/json",
+//                 dataType: 'json',
+//                 success: function(data) {
+//                     if(data) done();
+//                 },
+//                 error: function(e) {
+//                     if(e) !done();
+//                 }
+//             });
 
-        });
-    });
+//         });
+//     });
     
-});
+// });

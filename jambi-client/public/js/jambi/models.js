@@ -26,9 +26,11 @@ var jambiModel = function() {
 		line: 1,
 		col: 1,
 		mode: "htmlmixed",
-		title: "untitlted",
+		title: "untitlted.html",
 		fileLocation: "",
 		history_object: {},
+		flowInitialised: false,
+		isSaved: true,
 
 		initialize: function () {
 			this.set('id', globalCounter);
@@ -115,12 +117,13 @@ var jambiModel = function() {
 		/* check that file is not already open */
 		var isDocOpen = false;
 		var openFile;
-		for(var i = 0; i < openDocuments.length; i++) {
-			if(fileLocation === openDocuments.at(i).fileLocation) {
+		for(var i = 0; i < openDocuments.models.length; i++) {
+			if(fileLocation === openDocuments.at(i).fileLocation && filename === openDocuments.at(i).title) {
 				isDocOpen = true;
 				openFile = openDocuments.at(i);
 			}
 		}
+
 		if(!isDocOpen) {
 			if(openDocuments.length !== 0) {
 				currentDocid = $('.file.active').parents('.file-container').data("modelid");
@@ -155,16 +158,46 @@ var jambiModel = function() {
 			setDocOptions(jDoc);
 			setActiveDocument();
 			fileEventHandlers();
+
+			if(activeProject) {
+    			var isFileInProject = false;
+                for(var k = 0; k < activeProject.openfiles.length; k++) {
+                    if(fileLocation === activeProject.openfiles[k].root && filename === activeProject.openfiles[k].name) {
+                        isFileInProject = true;
+                    }
+                }
+                if(!(isFileInProject)) {
+                    addFileToProjectJSON(filename, fileLocation, filemode);
+                }
+			}
 		} else {
 			changeFileById(openFile);
 		}
 
 	}
 
+	function addFileToProjectJSON(filename, fileLocation, filemode) {
+    	activeProject.openfiles.push(
+			{"name": filename,"root":fileLocation,"mode":filemode,"col":0,"line":0,"active":true}
+		);
+		saveProjectsJSON();
+	}
+
 	function closeDocument(docID) {
 		setActiveDocument();
 		saveCurrentDocument(openDocuments.get(activeDocument));
 		var index = openDocuments.indexOf(openDocuments.get(docID));
+
+        if(activeProject) {
+            for(var i = 0; i < activeProject.openfiles.length; i++) {
+                if(activeProject.openfiles[i].root === openDocuments.get(docID).fileLocation &&
+                   activeProject.openfiles[i].name === openDocuments.get(docID).title) {
+                        activeProject.openfiles.splice(i, 1);
+                }
+            }
+            saveProjectsJSON();
+        }
+
 		openDocuments.remove(openDocuments.get(docID));
 		if(openDocuments.length >= 1) {
 			if(activeDocument === docID) {
@@ -211,6 +244,22 @@ var jambiModel = function() {
 
 	function setActiveDocument() {
 		activeDocument = $('.file.active').parents('.file-container').data("modelid");
+		if(activeProject && activeDocument) {
+    		if(activeProject.openfiles.length > 0) {
+        		var activeIndex = -1;
+        		for(var i = 0; i < activeProject.openfiles.length; i++){
+        		    activeProject.openfiles[i].active = false;
+        		    if(openDocuments.get(activeDocument).fileLocation === activeProject.openfiles[i].root &&
+        		       openDocuments.get(activeDocument).title === activeProject.openfiles[i].name) {
+                            activeIndex = i;
+        		    }
+        		}
+                if(activeIndex >= 0) {
+            		activeProject.openfiles[activeIndex].active = true;
+            		saveProjectsJSON();
+        		}
+    		}
+		}
 	}
 
 	function changeFile(fileToChange) {
@@ -266,7 +315,7 @@ var jambiModel = function() {
 				active = "active";
 				first = false;
 			}
-			var fileName = jDoc.title + '.' + jDoc.type;
+			var fileName = jDoc.title;
 			var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
 				'<div class="file ' + active + '">' +
 				'<span class="filename">' + fileName + '</span>' +
@@ -303,10 +352,6 @@ var jambiModel = function() {
 		});
 	}
 
-	function openFile(filename, filecontents, filetype, filemode) {
-		newDocument (filename, filecontents, filetype, filemode);
-	}
-
 	function setDocOptions(model) {
 		if(model) {
 		    jambi.getJambiEditor().setValue(model.text);
@@ -334,31 +379,49 @@ var jambiModel = function() {
             for(var i = 0; i<= openDocuments.length; i++) {
         	    openDocuments.pop();
         	}
+            openDocuments.reset();
 
             var projectActiveDocument;
+            var fileRoot;
+            var fileName;
 
         	// For loop through all open files in that project
         	for(var k = 0; k < projectData.openfiles.length; k++) {
-            	// add files to openDocuments collection
-            	var jDoc = new JambiDocument();
-                var directory = projectData.root + projectData.openfiles[k].root;
+            	fileRoot = projectData.openfiles[k].root;
+            	fileName = projectData.openfiles[k].name;
+            	var filesContents = jambi.openFileByDir(fileRoot + "/" + fileName);
 
-                openDocuments.add(jDoc);
+                if(filesContents !== null) {
+                	// add files to openDocuments collection
+                	var jDoc = new JambiDocument();
+                    //var directory = projectData.root + projectData.openfiles[k].root;
 
-                jDoc.text = jambi.openFileByDir(directory);
-                jDoc.title = projectData.openfiles[k].name;
-                jDoc.mode = projectData.openfiles[k].mode;
-                jDoc.line = projectData.openfiles[k].line;
-                jDoc.col = projectData.openfiles[k].col;
-                jDoc.fileLocation = directory;
+                    openDocuments.add(jDoc);
+                    jDoc.text = filesContents;
+                    jDoc.title = projectData.openfiles[k].name;
+                    jDoc.mode = projectData.openfiles[k].mode;
+                    jDoc.line = projectData.openfiles[k].line;
+                    jDoc.col = projectData.openfiles[k].col;
+                    jDoc.fileLocation = projectData.openfiles[k].root;
 
-                if(projectData.openfiles[k].active) {
-                    projectActiveDocument = k;
+                    if(projectData.openfiles[k].active) {
+                        projectActiveDocument = k;
+                    }
+                }
+
+                if(filesContents === null && activeProject) {
+                    for(var x = 0; x < activeProject.openfiles.length; x++) {
+                        if(fileRoot === activeProject.openfiles[x].root && fileName === activeProject.openfiles[x].name) {
+                            activeProject.openfiles.splice(x, 1);
+                        }
+                    }
+                    saveProjectsJSON();
                 }
 
             }
 
         	// populate top bar
+
         	if(projectActiveDocument !== undefined) {
         	    populateTopBar(openDocuments.at(projectActiveDocument).id);
         	    setDocOptions(openDocuments.at(projectActiveDocument));
@@ -389,11 +452,13 @@ var jambiModel = function() {
                 var filecontents    = jambi.openFileByDir(file);
                 var filename        = e.dataTransfer.files[i].name;
                 var filetype        = filename.match(/\.[^.]+$/).toString();
+                var fileLocation    = file.substring(0,file.lastIndexOf("/")+1);
 
                 filetype = filetype.substr(1);
-                filename = filename.substring(filename.lastIndexOf('/')+1, filename.indexOf('.'));
+                //filename = filename.substring(filename.lastIndexOf('/')+1, filename.indexOf('.'));
 
-                newDocument(filename,filecontents,filetype,checkFileType(filetype),file);
+                newDocument(filename,filecontents,filetype,checkFileType(filetype),fileLocation);
+
             }
           }
           return false;
@@ -502,6 +567,9 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
     }
 
+    function saveProjectsJSON(){
+	    jambifs.writeJSON("projects.json", JSON.stringify(Projects.models));
+    }
 
     function addProject(name, root) {
         var newProject = new Project({
@@ -509,7 +577,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         	    "name": name,
             	"root": root,
             	"openfiles": [],
-            	"currentfile": {}
+                "flowInitialised":false
             }
         });
         Projects.add(newProject);
@@ -525,12 +593,6 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 
         populateProjects();
-
-        /*
-var projectID = Projects.length-1;
-        var activeProject = Projects.at(projectID).attributes.project;
-        openProject($('.project [data-projectindex="' + projectID + '"]').data("name"), activeProject);
-*/
     }
 
 
@@ -684,7 +746,9 @@ var projectID = Projects.length-1;
 
 	return {
 		newFile: function() { newDocument (); },
-		openFile: function(a,b,c,d) { openFile(a,b,c,d); },
+		openFile: function(filename, filecontents, filetype, filemode, fileLocation) {
+            newDocument(filename, filecontents, filetype, filemode, fileLocation);
+        },
 		closeCurrentDoc: function() { closeCurrentDocument(); },
 		closeAllDocs: function() { removeAllDocuments (); },
 		getActiveDocument: function() { return openDocuments.get(activeDocument); },
@@ -692,13 +756,11 @@ var projectID = Projects.length-1;
 		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
 		onEditorPage: function() { return isEditorOpen; },
 		getActiveProject: function() { return activeProject; },
+		addFileToProject: function(filename, fileLocation, filemode) { addFileToProjectJSON(filename, fileLocation, filemode)},
+		checkFileTypes: function (fileType) { return checkFileType(fileType); },
 
 		saveAllProjects: function() {
-            var jsonToBeSaved = [];
-    	    for(var i = 0; i < Projects.models.length; i++) {
-        	    jsonToBeSaved.push(Projects.models[i].attributes);
-    	    }
-    	    jambifs.writeJSON("projects.json", JSON.stringify(jsonToBeSaved));
+            saveProjectsJSON();
         }
 	};
 };
