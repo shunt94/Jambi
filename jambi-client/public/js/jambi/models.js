@@ -22,7 +22,6 @@ var jambiModel = function() {
 	var JambiDocument = Backbone.Model.extend({
 		id: 1,
 		text: "",
-		type: "html",
 		line: 1,
 		col: 1,
 		mode: "htmlmixed",
@@ -111,7 +110,7 @@ var jambiModel = function() {
 		documentModel.mode = jambi.getJambiEditor().getOption('mode');
 	}
 
-	function newDocument (filename, filecontents, filetype, filemode, fileLocation) {
+	function newDocument (filename, filecontents, filemode, fileLocation) {
 		goToEditor();
 
 		/* check that file is not already open */
@@ -139,9 +138,6 @@ var jambiModel = function() {
 			}
 			if(filecontents) {
 				jDoc.text = filecontents;
-			}
-			if(filetype) {
-				jDoc.type = filetype;
 			}
 			if(filemode) {
 				jDoc.mode = filemode;
@@ -319,6 +315,7 @@ var jambiModel = function() {
 			var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
 				'<div class="file ' + active + '">' +
 				'<span class="filename">' + fileName + '</span>' +
+				'<span class="filesaved"><i class="fa fa-circle-o"></i></span>' +
 				'<span class="close"><i class="fa fa-times-circle"></i></span>' +
 				'</div>' +
 				'</li>';
@@ -457,7 +454,7 @@ var jambiModel = function() {
                 filetype = filetype.substr(1);
                 //filename = filename.substring(filename.lastIndexOf('/')+1, filename.indexOf('.'));
 
-                newDocument(filename,filecontents,filetype,checkFileType(filetype),fileLocation);
+                newDocument(filename,filecontents,checkFileType(filetype),fileLocation);
 
             }
           }
@@ -746,8 +743,8 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 	return {
 		newFile: function() { newDocument (); },
-		openFile: function(filename, filecontents, filetype, filemode, fileLocation) {
-            newDocument(filename, filecontents, filetype, filemode, fileLocation);
+		openFile: function(filename, filecontents, filemode, fileLocation) {
+            newDocument(filename, filecontents, filemode, fileLocation);
         },
 		closeCurrentDoc: function() { closeCurrentDocument(); },
 		closeAllDocs: function() { removeAllDocuments (); },

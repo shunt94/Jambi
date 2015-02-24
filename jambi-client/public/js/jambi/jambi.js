@@ -81,9 +81,10 @@ var Jambi = function () {
         };
 
         jMenu.tools.toolsFlowFlowCode.click = function () {
-            jambi.initFlow(jModel.getActiveProject().root);
-            jambi.flowCode(jModel.getActiveDocument().fileLocation + jModel.getActiveDocument().name);
-            console.log("Active file: " + jModel.getActiveDocument().fileLocation);
+            if(jModel.getActiveDocument().mode === "javascript") {
+                jambi.initFlow(jModel.getActiveProject().root);
+                jambi.flowCode(jModel.getActiveDocument().fileLocation, jModel.getActiveDocument().title);
+            }
         };
 
         jMenu.tools.toolsSass.click = function () {
@@ -93,7 +94,7 @@ var Jambi = function () {
         jMenu.tools.toolsBeautifyJSON.click = function () {
             var activeDoc = jModel.getActiveDocument();
             alert(activeDoc);
-            if(activeDoc.type === "json") {
+            if(activeDoc.mode === "javascript") {
                 var beautify = require('js-beautify').js_beautify;
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
@@ -298,13 +299,18 @@ var Jambi = function () {
             "33": "pageup",
             "32": "space",
             "8": "backspace",
-            "91": "unknown",
             "34": "pagedown",
             "35": "end",
             "36": "home",
             "38": "up",
             "40": "down",
-            "16": "shift"
+            "16": "shift",
+            "91": "leftwindow",
+            "93": "rightwindow",
+            "18": "alt",
+            "17": "ctrl",
+            "16": "shift",
+            "20": "caps"
         }
 
 
@@ -350,8 +356,13 @@ var Jambi = function () {
             checkInstas(code, keyevent);
 
 
-            jModel.getActiveDocument().isSaved = false;
-
+            // REALLY Naive way of doing this
+            if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && event.which != 8 && isNaN(String.fromCharCode(event.which))) {
+                if(jModel.getActiveDocument().isSaved) {
+                    $('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
+                    jModel.getActiveDocument().isSaved = false;
+                }
+            }
 
 
 
@@ -533,7 +544,10 @@ var Jambi = function () {
                     if (err) {
                         alert(err);
                     } else {
-                        // save animation
+                        if(!jModel.getActiveDocument().isSaved) {
+                            $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
+                            jModel.getActiveDocument().isSaved = true;
+                        }
                     }
                 });
             } else {
@@ -565,6 +579,11 @@ var Jambi = function () {
                         jModel.setDocLocation(fileLocation);
                         jModel.setDocName(filename);
 
+                        if(!jModel.getActiveDocument().isSaved) {
+                            $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
+                            jModel.getActiveDocument().isSaved = true;
+                        }
+
                         // if file is not already in Projects JSON
                         // use checkFileType here as well
                         var activeProject = jModel.getActiveProject();
@@ -582,7 +601,6 @@ var Jambi = function () {
                         		jModel.saveAllProjects();
 
                     		}
-
                         }
 
 
@@ -689,7 +707,7 @@ var Jambi = function () {
 
     // Facebook Flow
 
-    Jambi.prototype.runCommand = function(command) {
+    Jambi.prototype.runCommand = function(command, div) {
 /*
         var ls = terminal.spawn(command, [])
         ls.stdout.on('data', function (data) {
@@ -701,7 +719,9 @@ var Jambi = function () {
             if(code !== 0) {
                 console.log('Exit code:', code);
             }
-            console.log(output);
+            if(div) {
+                div.text(output);
+            }
             return output;
         });
     };
@@ -717,12 +737,10 @@ var Jambi = function () {
 
     };
 
-    Jambi.prototype.flowCode = function (fileLocation) {
+    Jambi.prototype.flowCode = function (fileLocation, filename) {
         jambi.saveFile();
-        if(fileLocation) {
-            var filename = fileLocation.replace(/^.*[\\\/]/, '');
-            jambi.runCommand('cd ' + '"' + fileLocation.substring(0,fileLocation.length - filename.length) + '"' +
-                ' && /usr/local/bin/flow ' + filename);
+        if(fileLocation && filename) {
+            jambi.runCommand('cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename, $('#flowcontent'));
         }
     };
 
@@ -753,9 +771,13 @@ var Jambi = function () {
     };
 
 
+	Jambi.prototype.templateTest = function () {
+
+	};
 
 
 };
 
 var jambi = new Jambi();
 jambi.menuSetup();
+jambi.templateTest();
