@@ -3,80 +3,72 @@
 <div class="sidebar inView" id="sidebar-content">
 	<div class="sidebar-title center">
 		<div class="col-lg-3">
-            <i class="fa fa-home"></i>
+			<i class="fa fa-home" id="sidebar_home"></i>
 		</div>
 		<div class="col-lg-3">
-            <i class="fa fa-file"></i>
+            <i class="fa fa-file" id="sidebar_file"></i>
 		</div>
 		<div class="col-lg-3">
-            <i class="fa fa-th-list"></i>
+            <i class="fa fa-th-list" id="sidebar_list"></i>
 		</div>
 		<div class="col-lg-3">
-            <i class="fa fa-code-fork"></i>
+            <i class="fa fa-code-fork" id="sidebar_connection"></i>
 		</div>
 	</div>
 	<div class="sidebar-title-after"></div>
+	<div id="sidebarcontent">
+
+    	<div id="sidebarHome" class="sidebarMenuItem">
+        	<div id="sidebarLoader">
+        		<div class="sidebar-heading">
+        			Jambi Servers
+        		</div>
+        		<div class="sidebar-content">
+        			<div class="jambiStatusBar">
+        				Status: <span id="jambiStatus"></span>
+        			</div>
+
+        			<button id="jshintcode" class="btn btn-blue hidden">JSHint</button>
+        			<div class="jsErrors" id="jsErrors">
 
 
-
-    <div id="sidebarLoader">
-        <div class="sidebar-heading">
-            Jambi Servers
-    	</div>
-        <div class="sidebar-content">
-    		<div class="jambiStatusBar">
-    			Status: <span id="jambiStatus"></span>
-    		</div>
-
-    		<button id="jshintcode" class="btn btn-blue hidden">JSHint</button>
-    		<div class="jsErrors" id="jsErrors">
+        			</div>
+        		</div>
 
 
-    		</div>
-    	</div>
+        		<div class="sidebar-heading">
+        			Timers
+        		</div>
+        		<div class="sidebar-timers">
+        			<div class="timer">
+        				<h4>Current Activity Timer</h4>
+        				<button class="btn btn-mini btn-blue" id="jambiStartTimer">Start Timer</button>
+        				<button class="btn btn-mini btn-blue" id="jambiStopTimer">Stop Timer</button>
+        				<br>
+        				<span id="jambi_timer_hours">00</span>:<span id="jambi_timer_mins">00</span>:<span id="jambi_timer_secs">00</span>
 
+        				<hr>
 
-    	<div class="sidebar-heading">
-            Timers
-    	</div>
-    	<div class="sidebar-timers">
-    		<div class="timer">
-    		    <h4>Current Activity Timer</h4>
-    			<button class="btn btn-mini btn-blue" id="jambiStartTimer">Start Timer</button>
-    			<button class="btn btn-mini btn-blue" id="jambiStopTimer">Stop Timer</button>
-    			<br>
-    			<span id="jambi_timer_hours">00</span>:<span id="jambi_timer_mins">00</span>:<span id="jambi_timer_secs">00</span>
+        				<h4>Active Timer</h4>
+        				<span id="global_timer_hours">00</span>:<span id="global_timer_mins">00</span>:<span id="global_timer_secs">00</span>
+        			</div>
+        		</div>
 
-    			<hr>
+        		<div class="sidebar-heading">
+        			Search Stackoverflow
+        		</div>
+        		<div class="sidebar-content">
+        			<input id="stackoverflow_search" type="text" style="width:90%;" placeholder="Search Stackoverflow.com"/>
+        		</div>
 
-    			<h4>Active Timer</h4>
-    			<span id="global_timer_hours">00</span>:<span id="global_timer_mins">00</span>:<span id="global_timer_secs">00</span>
-    		</div>
-    	</div>
+        		<div class="sidebar-heading">
+        			Flow <i class="fa fa-facebook"></i>
+        		</div>
+        		<div class="sidebar-content">
+        			<div id="flowcontent" class="flow-content"></div>
+        		</div>
+        	</div>
+        </div>
 
-    	<div class="sidebar-heading">
-    	    Search Stackoverflow
-    	</div>
-        <div class="sidebar-content">
-    		<input id="stackoverflow_search" type="text" style="width:90%;" placeholder="Search Stackoverflow.com"/>
-    	</div>
-
-    	<div class="sidebar-heading">
-    	    Flow <i class="fa fa-facebook"></i>
-    	</div>
-        <div class="sidebar-content">
-            <div id="flowcontent" class="flow-content"></div>
-    	</div>
-    </div>
+	</div>
 </div>
-
-
-<div class="jambi-terminal hidden">
-            <div id="terminal-text">
-                JambiTerminal:
-            </div>
-            <div class="jambi-terminal-controls">
-                x
-            </div>
-
-		</div>

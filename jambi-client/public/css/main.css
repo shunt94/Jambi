@@ -99,9 +99,10 @@ h1, h2, h3 {
     opacity: 1; }
   .file .close {
     position: absolute;
+    display: inline-block;
     color: #bcbcbc;
     opacity: 0;
-    right: 10px;
+    right: 8px;
     -webkit-transition: 0.3s;
     transition: 0.3s; }
     .file .close:hover {
@@ -110,9 +111,18 @@ h1, h2, h3 {
   .file .filesaved {
     font-size: 10px;
     padding-top: 2px;
-    padding-left: 5px; }
+    padding-left: 2px;
+    display: inline-block;
+    position: absolute; }
   .file.active {
     background-color: rgba(0, 107, 255, 0.66); }
+
+.filename {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block; }
 
 .file:not(:first-child) {
   margin-left: 20px; }

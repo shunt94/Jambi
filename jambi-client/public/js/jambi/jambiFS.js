@@ -18,6 +18,10 @@ var JambiFS = function() {
     JambiFS.prototype.readHTML = function(fileLocation, callback) {
         return fs.readFileSync(fileLocation, "utf8");
     };
+
+    JambiFS.prototype.readDir = function(path) {
+        return fs.readdirSync(path);
+    };
 }
 
 var jambifs = new JambiFS();

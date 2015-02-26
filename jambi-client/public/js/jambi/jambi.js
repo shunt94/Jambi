@@ -348,6 +348,16 @@ var Jambi = function () {
 
         }
 
+        jambiEditor.on("change", function() {
+            if(jModel.getActiveDocument()) {
+                if(jModel.getActiveDocument().isSaved) {
+                    $('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
+                    jModel.getActiveDocument().isSaved = false;
+                }
+            }
+        });
+
+
         jambiEditor.on("keyup", function(editor, keyevent) {
             var code = keyevent.keyCode;
 
@@ -357,12 +367,14 @@ var Jambi = function () {
 
 
             // REALLY Naive way of doing this
+/*
             if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && event.which != 8 && isNaN(String.fromCharCode(event.which))) {
                 if(jModel.getActiveDocument().isSaved) {
                     $('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
                     jModel.getActiveDocument().isSaved = false;
                 }
             }
+*/
 
 
 
@@ -538,16 +550,15 @@ var Jambi = function () {
     Jambi.prototype.saveFile = function () {
         if(jModel.onEditorPage()){
             var file = jModel.getActiveDocument();
-            var fileLocation = jModel.getActiveDocument().fileLocation + jModel.getActiveDocument().title;
-            if (fileLocation !== 'undefined') {
+            var fileLocation = file.fileLocation;
+            if (fileLocation) {
+                fileLocation = file.fileLocation + file.title;
                 fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
                     if (err) {
                         alert(err);
                     } else {
-                        if(!jModel.getActiveDocument().isSaved) {
-                            $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
-                            jModel.getActiveDocument().isSaved = true;
-                        }
+                        $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
+                        jModel.getActiveDocument().isSaved = true;
                     }
                 });
             } else {
@@ -720,6 +731,7 @@ var Jambi = function () {
                 console.log('Exit code:', code);
             }
             if(div) {
+                console.log(output[0]);
                 div.text(output);
             }
             return output;
@@ -780,4 +792,3 @@ var Jambi = function () {
 
 var jambi = new Jambi();
 jambi.menuSetup();
-jambi.templateTest();

@@ -126,9 +126,10 @@ h1,h2,h3 { font-weight: 200;}
 
 	& .close {
 	    position: absolute;
+	    display: inline-block;
 		color: #bcbcbc;
 		opacity: 0;
-		right: 10px;
+		right: 8px;
 		-webkit-transition:.3s;
 				transition: .3s;
 
@@ -141,12 +142,22 @@ h1,h2,h3 { font-weight: 200;}
 	.filesaved {
     	font-size: 10px;
     	padding-top: 2px;
-    	padding-left: 5px;
+    	padding-left: 2px;
+    	display: inline-block;
+    	position: absolute;
 	}
 
 	&.active {
 		background-color: rgba(0,107,255,0.66);
 	}
+}
+
+.filename {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
 }
 
 .file:not(:first-child) {

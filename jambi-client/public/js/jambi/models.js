@@ -307,15 +307,19 @@ var jambiModel = function() {
 
 			var jDoc = openDocuments.at(i);
 			var active = "";
+			var savedIcon = '<i class="fa fa-circle"></i>';
 			if(jDoc.id === activeDocID || modelCount <= 1 || first) {
 				active = "active";
 				first = false;
+			}
+			if(jDoc.isSaved) {
+    			savedIcon = '<i class="fa fa-circle-o"></i>';
 			}
 			var fileName = jDoc.title;
 			var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
 				'<div class="file ' + active + '">' +
 				'<span class="filename">' + fileName + '</span>' +
-				'<span class="filesaved"><i class="fa fa-circle-o"></i></span>' +
+				'<span class="filesaved">' + savedIcon +'</span>' +
 				'<span class="close"><i class="fa fa-times-circle"></i></span>' +
 				'</div>' +
 				'</li>';
@@ -668,6 +672,14 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		}
 	});
 
+	var FileBrowserView = Backbone.View.extend({
+		el: '#jambi-body',
+
+		render: function(){
+			this.$el.html(render('filebrowser', {}));
+		}
+	});
+
 	var ShowcaseView = Backbone.View.extend({
 		el: '#jambi-body',
 		render: function(){
@@ -675,6 +687,50 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 			$('#jambi-body').off("contextmenu");
 		}
 	});
+
+    function hideSidebarToggle() {
+        $('#sidebar_toggle').hide();
+    }
+
+    function showSidebarToggle() {
+        $('#sidebar_toggle').show();
+    }
+
+
+    // Sidebar menus
+    function sideBarMenus() {
+        var $el = $('#sidebarcontent');
+        var sidebarContent = $('.sidebarMenuItem');
+
+
+
+        $('#sidebar_home').off('click');
+        $('#sidebar_list').off('click');
+        $('#sidebar_file').off('click');
+        $('#sidebar_connection').off('click');
+
+
+        sidebarContent.hide();
+        $('#sidebarHome').show();
+
+
+        $('#sidebar_home').on('click', function(){
+            sidebarContent.hide();
+            $('#sidebarHome').show();
+        });
+        $('#sidebar_list').on('click', function(){
+            sidebarContent.hide();
+            $('#sidebarList').show();
+        });
+        $('#sidebar_file').on('click', function(){
+            sidebarContent.hide();
+            $('#sidebarFile').show();
+        });
+        $('#sidebar_connection').on('click', function(){
+            sidebarContent.hide();
+            $('#sidebarConnection').show();
+        });
+    }
 
 
 
@@ -685,6 +741,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		routes: {
 			'home': 'home',
 			'project': 'projects',
+			'files' : 'files',
 			'showcase': 'showcase'
 		}
 	});
@@ -692,6 +749,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 	var editorView = new EditorView();
 	var projectView = new ProjectView();
+	var fileBrowserView = new FileBrowserView();
 	var showcaseView = new ShowcaseView();
 
 	var router = new Router();
@@ -705,6 +763,38 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		populateTopBar(activeDocument);
 		setDocOptions(openDocuments.get(activeDocument));
 		isEditorOpen = true;
+
+        var $el = $('#sidebarcontent');
+        $el.append(render('sidebar/file', {}));
+        $el.append(render('sidebar/list', {}));
+        $el.append(render('sidebar/connection', {}));
+        sideBarMenus();
+
+        if(activeProject) {
+            var files = jambifs.readDir(activeProject.root);
+            for(var i = 0; i <files.length; i++) {
+                $('#fb_files').append('<div class="file-list"><i class="fa fa-file"></i><br>' + files[i] +'</div>');
+            }
+        }
+        showSidebarToggle();
+
+	});
+
+	router.on('route:files', function() {
+		setActiveDocument();
+		if(activeDocument !== undefined) {
+			saveCurrentDocument(openDocuments.get(activeDocument));
+		}
+		fileBrowserView.render();
+
+		if(activeProject) {
+            var files = jambifs.readDir(activeProject.root);
+            for(var i = 0; i <files.length; i++) {
+                $('#fb_files').append('<div class="col-sm-2"><i class="fa fa-file"></i><br>' + files[i] +'</div>');
+            }
+        }
+        hideSidebarToggle()
+		isEditorOpen = false;
 	});
 
 	router.on('route:projects', function() {
@@ -716,6 +806,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		populateProjects();
 		isEditorOpen = false;
 		generateProjectsContextMenu();
+		hideSidebarToggle()
     });
 
 
@@ -725,9 +816,10 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
 		showcaseView.render();
-
+        hideSidebarToggle()
 		isEditorOpen = false;
 	});
+
 
 
 
