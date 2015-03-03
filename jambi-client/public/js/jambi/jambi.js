@@ -364,6 +364,7 @@ var Jambi = function () {
         }
 
         jambiEditor.on("change", function(keyevent) {
+            console.log(keyevent);
             jambi.updateCursorPosition();
             if(jModel.getActiveDocument()) {
                 if(jModel.getActiveDocument().isSaved) {
@@ -508,6 +509,7 @@ var Jambi = function () {
                     } else {
                         $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
                         jModel.getActiveDocument().isSaved = true;
+                        console.log(jModel.getActiveDocument());
                         if(false) { // if SFTP/ FTP then show
                             jambi.showNotification('Successfully uploaded to server');
                         }
