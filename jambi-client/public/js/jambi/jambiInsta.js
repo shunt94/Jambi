@@ -54,19 +54,21 @@ var jambiInsta = function () {
     };
 
     jambiInsta.prototype.insert = function (insta) {
-        instaEnd = jambi.getJambiEditor().getCursor();
-        // remove old insta code
-        instaStart.ch = instaStart.ch-1;
-        console.log(instaStart);
-        console.log(instaEnd);
+        try{
+            instaEnd = jambi.getJambiEditor().getCursor();
+            // remove old insta code
+            instaStart.ch = instaStart.ch-1;
 
-        jambi.getJambiEditor().setSelection(instaStart, instaEnd);
+            jambi.getJambiEditor().setSelection(instaStart, instaEnd);
 
-        // insert new snippet
-        //var iString = instaArray[instaString]
-		var iString = jambifs.readHTML("instas/" + instaArray[instaString]);
-        jambi.getJambiEditor().replaceSelection(iString);
-        instaStarted = false;
+            // insert new snippet
+            //var iString = instaArray[instaString]
+    		var iString = jambifs.readHTML("instas/" + instaArray[instaString]);
+            jambi.getJambiEditor().replaceSelection(iString);
+            instaStarted = false;
+        } catch(err) {
+
+        }
     };
 
 };
