@@ -91,11 +91,28 @@ var Jambi = function () {
             jambi.sass();
         };
 
-        jMenu.tools.toolsBeautifyJSON.click = function () {
+        jMenu.tools.toolsBeautifyJS.click = function () {
             var activeDoc = jModel.getActiveDocument();
-            alert(activeDoc);
             if(activeDoc.mode === "javascript") {
                 var beautify = require('js-beautify').js_beautify;
+                var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
+                jambi.getJambiEditor().setValue(code);
+            }
+        };
+
+        jMenu.tools.toolsBeautifyCSS.click = function () {
+            var activeDoc = jModel.getActiveDocument();
+            if(activeDoc.mode === "css") {
+                var beautify = require('js-beautify').css;
+                var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
+                jambi.getJambiEditor().setValue(code);
+            }
+        };
+
+        jMenu.tools.toolsBeautifyHTML.click = function () {
+            var activeDoc = jModel.getActiveDocument();
+            if(activeDoc.mode === "htmlmixed") {
+                var beautify = require('js-beautify').html;
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
             }
@@ -211,11 +228,7 @@ var Jambi = function () {
 
         jambi.renderEditor();
 
-        function updateCursorPosition() {
-            var cursorPos = jambiEditor.getCursor();
-            $('#jambiLine').text(cursorPos.line + 1);
-            $('#jambiColumn').text(cursorPos.ch + 1);
-        }
+
 
 
 
@@ -223,6 +236,12 @@ var Jambi = function () {
 
 
         jambi.setListeners();
+    };
+
+    Jambi.prototype.updateCursorPosition = function () {
+        var cursorPos = jambiEditor.getCursor();
+        $('#jambiLine').text(cursorPos.line + 1);
+        $('#jambiColumn').text(cursorPos.ch + 1);
     };
 
 
@@ -281,12 +300,8 @@ var Jambi = function () {
         jambiEditor.off("keyup");
         jambiEditor.off("gutterClick");
 
-        jambiEditor.on("change", function(e) {
-            updateCursorPosition();
-        });
-
         jambiEditor.on("cursorActivity", function(e) {
-            updateCursorPosition();
+            jambi.updateCursorPosition();
         });
         var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
         jambiEditor.on("gutterClick", foldLine);
@@ -348,100 +363,35 @@ var Jambi = function () {
 
         }
 
-        jambiEditor.on("change", function() {
+        jambiEditor.on("change", function(keyevent) {
+            jambi.updateCursorPosition();
             if(jModel.getActiveDocument()) {
                 if(jModel.getActiveDocument().isSaved) {
-                    $('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
-                    jModel.getActiveDocument().isSaved = false;
+                    //$('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
+                    //jModel.getActiveDocument().isSaved = false;
                 }
             }
         });
 
+        var delay = (function(){
+          var timer = 0;
+          return function(callback, ms){
+          clearTimeout (timer);
+          timer = setTimeout(callback, ms);
+         };
+        })();
 
         jambiEditor.on("keyup", function(editor, keyevent) {
             var code = keyevent.keyCode;
-
             // if insta has been init then build string
-
             checkInstas(code, keyevent);
-
-
-            // REALLY Naive way of doing this
-/*
-            if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && event.which != 8 && isNaN(String.fromCharCode(event.which))) {
-                if(jModel.getActiveDocument().isSaved) {
-                    $('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
-                    jModel.getActiveDocument().isSaved = false;
-                }
-            }
-*/
-
-
-
-
-
-
-
-
-
-/*
-
-            if(keyevent.keyCode === 8) {
-                jambi.removeLastBuiltLetter();
-            }
-
-
-
-            // dollar sign ready for instas
-            if(instaStarted && !popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()]) {
-
-                jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
-                console.log(Object.keys(instaArray)[0]);
-                for(var i = 0; i < 2; i++) {
-                    if(builtWord === Object.keys(instaArray)[i]) {
-                        alert("Insta caught: " + instaArray[Object.keys(instaArray)[i]]);
-                        // delete insta code
-
-                        // insert new insta
-                        jambi.insertAtCursor(instaArray[Object.keys(instaArray)[i]]);
-
-                    }
-                }
-            }
-            else if(!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && !editor.state.completionActive) {
-                jambi.createBuiltWord(String.fromCharCode(keyevent.keyCode).toLowerCase());
-                jambiAC.filterResults(builtWord);
-
-                if(timeout) clearTimeout(timeout);
-                timeout = setTimeout(function() {
-                    jambiAC.show();
-                }, 200);
-            }
-            else {
-                jambiAC.hide();
-                jambi.destroyBuiltWord();
-                console.log("setting insta to false");
-//                instaStarted = false;
-            }
-
-            if(keyevent.shiftKey && keyevent.keyCode === 52) {
-                alert("insta");
-                jambi.destroyBuiltWord();
-                instaStarted = true;
-
-            }
-*/
-
         });
 
-
-
-        function updateCursorPosition() {
-            jambiAC.hide();
-            var cursorPos = jambiEditor.getCursor();
-            $('#jambiLine').text(cursorPos.line + 1);
-            $('#jambiColumn').text(cursorPos.ch + 1);
-        }
+        jambiEditor.on("keydown", function(editor, keyevent) {
+            if (!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && isNaN(String.fromCharCode(keyevent.which))) {
+                delay(function(){jambiEditor.showHint(keyevent);}, 100);
+            }
+        });
 
 
     };
@@ -533,7 +483,6 @@ var Jambi = function () {
                     if (error) {
                         alert(error);
                     } else {
-
                         var fileLocation = openFileLocation.substring(0,openFileLocation.lastIndexOf("/")+1);
                         var fileName = openFileLocation.replace(/^.*[\\\/]/, '');
                         var filetype = fileName.substr(fileName.lastIndexOf('.') + 1, fileName.length);
@@ -559,6 +508,13 @@ var Jambi = function () {
                     } else {
                         $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
                         jModel.getActiveDocument().isSaved = true;
+                        if(false) { // if SFTP/ FTP then show
+                            jambi.showNotification('Successfully uploaded to server');
+                        }
+                        if(false) { //if less and auto compile is on
+                            var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
+                            jambi.compileLess(file.fileLocation + fileNameWithoutType + ".css");
+                        }
                     }
                 });
             } else {
@@ -626,6 +582,33 @@ var Jambi = function () {
     Jambi.prototype.saveUserSetting = function (setting, value) {
 
     };
+
+    Jambi.prototype.compileLess = function (fileLocation) {
+        var less = require('less');
+
+        less.render(jambi.getJambiEditor().getValue(), {
+              paths: ['.', './lib'],  // Specify search paths for @import directives
+              filename: fileLocation, // Specify a filename, for better error messages
+              compress: false          // Minify CSS output
+            }, function (e, output) {
+               console.log(output.css);
+            });
+    };
+
+    Jambi.prototype.showNotification = function(msg) {
+        var notifier = require('node-notifier');
+        notifier.notify({
+            title: 'Jambi',
+            message: msg,
+            icon: 'public/img/logo.png',
+            sound: false,
+            wait: false
+        }, function (err, response) {
+
+        });
+    };
+
+
 
     /*
 		Function to handle the web (stackoverflow.com) search box
@@ -731,7 +714,6 @@ var Jambi = function () {
                 console.log('Exit code:', code);
             }
             if(div) {
-                console.log(output[0]);
                 div.text(output);
             }
             return output;
@@ -752,7 +734,11 @@ var Jambi = function () {
     Jambi.prototype.flowCode = function (fileLocation, filename) {
         jambi.saveFile();
         if(fileLocation && filename) {
-            jambi.runCommand('cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename, $('#flowcontent'));
+            var command = 'cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename;
+            shell.exec(command, function(code, output) {
+                console.log(output);
+                console.log(output.indexOf(":"));
+            });
         }
     };
 

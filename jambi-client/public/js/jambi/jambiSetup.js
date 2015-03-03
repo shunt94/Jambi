@@ -72,7 +72,9 @@ var jambiSetup = function() {
 			toolsFlowFlowSettings:  new gui.MenuItem({ label: 'Settings' }),
 			toolsSass:              new gui.MenuItem({ label: 'Compile Sass' }),
 			toolsBeautify:          new gui.MenuItem({ label: 'Beautify..' , submenu: beautifySubmenu}),
-			toolsBeautifyJSON:      new gui.MenuItem({ label: 'JSON' })
+			toolsBeautifyJS:        new gui.MenuItem({ label: 'Javascript/JSON' }),
+			toolsBeautifyHTML:      new gui.MenuItem({ label: 'Html' }),
+			toolsBeautifyCSS:       new gui.MenuItem({ label: 'Css' })
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -139,7 +141,9 @@ var jambiSetup = function() {
 		toolsSubmenu.append(jambiMenu.tools.toolsFlow);
 		toolsSubmenu.append(jambiMenu.tools.toolsSass);
 
-		beautifySubmenu.append(jambiMenu.tools.toolsBeautifyJSON);
+        beautifySubmenu.append(jambiMenu.tools.toolsBeautifyHTML);
+        beautifySubmenu.append(jambiMenu.tools.toolsBeautifyCSS);
+		beautifySubmenu.append(jambiMenu.tools.toolsBeautifyJS);
 
 		toolsSubmenu.append(jambiMenu.tools.toolsBeautify);
 	})();

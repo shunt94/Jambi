@@ -282,6 +282,13 @@ h1, h2, h3 {
     margin-left: -311px;
     margin-top: -157px; }
 
+.projects-pc {
+  background-image: url('../img/showcase/pc.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 700px;
+  width: auto; }
+
 iframe {
   -webkit-transform: scale(0.5);
   transform: scale(0.5); }
@@ -379,17 +386,6 @@ iframe {
 .hidden {
   display: none; }
 
-.addproject-card-container {
-  width: 500px;
-  height: 600px;
-  position: absolute;
-  right: 0;
-  left: 0;
-  margin-left: auto;
-  margin-right: auto;
-  background: #fff;
-  color: #333; }
-
 #jambiAutoCompleteBox {
   background-color: #fff;
   min-height: 10px;
@@ -406,22 +402,3 @@ iframe {
     list-style: none;
     margin: 0;
     padding: 0; }
-
-.jambi-terminal {
-  background: #060606;
-  width: calc(100% - 300px);
-  height: 200px;
-  position: absolute;
-  z-index: 99999;
-  bottom: 20px;
-  border-top: 1px solid #A86;
-  padding: 5px; }
-
-.jambi-terminal-controls {
-  position: absolute;
-  right: 10px;
-  top: -22px;
-  background: black;
-  width: 15px;
-  height: 20px;
-  text-align: center; }

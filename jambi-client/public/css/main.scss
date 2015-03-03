@@ -356,6 +356,14 @@ h1,h2,h3 { font-weight: 200;}
     }
 }
 
+.projects-pc {
+    background-image: url('../img/showcase/pc.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 700px;
+    width: auto;
+}
+
 iframe {
   -webkit-transform:scale(0.5);
   transform:scale(0.5);
@@ -402,85 +410,73 @@ iframe {
 }
 
 // Modal Stuff
-	.jambiModal {
-		position: fixed;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		background: rgba(0,0,0,0.8);
-		z-index: 99999;
-		opacity:0;
-		-webkit-transition: opacity 400ms ease-in;
-		transition: opacity 400ms ease-in;
-		pointer-events: none;
-	}
+.jambiModal {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+	z-index: 99999;
+	opacity:0;
+	-webkit-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
 
-	.jambiModal:target {
-		opacity:1;
-		pointer-events: auto;
-	}
+.jambiModal:target {
+	opacity:1;
+	pointer-events: auto;
+}
 
-	.jambiModal > .jambiModal-modal {
-		width: 500px;
-		position: relative;
-		margin: 10% auto;
-		border-radius: $modal-border-radius;
-		background: #eaeaea;
-		color: #333;
-		word-wrap: break-word;
-	}
+.jambiModal > .jambiModal-modal {
+	width: 500px;
+	position: relative;
+	margin: 10% auto;
+	border-radius: $modal-border-radius;
+	background: #eaeaea;
+	color: #333;
+	word-wrap: break-word;
+}
 
-	.jambiModalClose {
-		color: #333;
-		line-height: 25px;
-		position: absolute;
-		right: 0;
-		text-align: center;
-		top: 0px;
-		width: 24px;
-	}
+.jambiModalClose {
+	color: #333;
+	line-height: 25px;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	top: 0px;
+	width: 24px;
+}
 
-	.jambiModalClose:hover { color: #8a8a8a; }
+.jambiModalClose:hover { color: #8a8a8a; }
 
-	.jambiModal-head {
-		background-color: #c2c2c2;
-		border-top-left-radius: $modal-border-radius;
-		border-top-right-radius: $modal-border-radius;
-		padding: 5px 10px 5px 10px;
-		font-size: 24px;
-	}
+.jambiModal-head {
+	background-color: #c2c2c2;
+	border-top-left-radius: $modal-border-radius;
+	border-top-right-radius: $modal-border-radius;
+	padding: 5px 10px 5px 10px;
+	font-size: 24px;
+}
 
-	.jambiModal-body {
-		padding: 15px;
+.jambiModal-body {
+	padding: 15px;
 
-	}
+}
 
-	.jambiModal-footer {
-        background-color: #c2c2c2;
-		border-bottom-left-radius: $modal-border-radius;
-		border-bottom-right-radius: $modal-border-radius;
-		padding: 5px 10px 5px 10px;
-		font-size: 24px;
-        margin-top: 60px;
-	}
+.jambiModal-footer {
+    background-color: #c2c2c2;
+	border-bottom-left-radius: $modal-border-radius;
+	border-bottom-right-radius: $modal-border-radius;
+	padding: 5px 10px 5px 10px;
+	font-size: 24px;
+    margin-top: 60px;
+}
 
 .hidden {
 	display: none;
 }
 
-
-.addproject-card-container {
-    width: 500px;
-	height: 600px;
-	position: absolute;
-    right: 0;
-    left: 0;
-    margin-left: auto;
-    margin-right: auto;
-    background: #fff;
-    color: #333;
-}
 
 #jambiAutoCompleteBox {
     background-color: #fff;
@@ -500,29 +496,4 @@ iframe {
         margin: 0;
         padding: 0;
     }
-}
-
-.jambi-terminal {
-    background: #060606;
-    width: calc(100% - 300px);
-    height: 200px;
-    position: absolute;
-    z-index: 99999;
-    bottom: 20px;
-    border-top: 1px solid #A86;
-    padding: 5px;
-}
-
-#terminal-text {
-
-}
-
-.jambi-terminal-controls {
-    position: absolute;
-    right: 10px;
-    top: -22px;
-    background: black;
-    width: 15px;
-    height: 20px;
-    text-align: center;
 }

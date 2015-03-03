@@ -15,6 +15,39 @@
   .addproject.active > .project-name {
     color: #fff !important; }
 
+.addproject-colum {
+  width: 45%;
+  display: inline-block;
+  position: relative; }
+
+.addproject-card-container {
+  width: 450px;
+  height: 500px;
+  position: absolute;
+  right: 0;
+  left: 0;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0 20px 20px 20px;
+  color: #333;
+  box-shadow: 0px 0px 10px #111;
+  -webkit-box-shadow: 0px 0px 10px #111; }
+
+.card-inputs {
+  text-align: right; }
+  .card-inputs input {
+    width: 80%;
+    margin-left: 5px; }
+
+.card-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0; }
+
 .project-image {
   width: 100%;
   height: 140px;
@@ -36,41 +69,6 @@
   float: left;
   padding-bottom: 35px; }
 
-.card-container {
-  -webkit-perspective: 800;
-  width: 260px;
-  height: 300px;
-  position: relative; }
-
-.card-container .card.flipped {
-  -webkit-transform: rotatey(-180deg); }
-
-.card-container .card {
-  width: 100%;
-  height: 100%;
-  -webkit-transform-style: preserve-3d;
-  -webkit-transition: 0.5s; }
-
-.card-container .card .face {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  -webkit-backface-visibility: hidden;
-  z-index: 2; }
-
-.card-container .card .front {
-  position: absolute;
-  z-index: 1;
-  background: black;
-  color: white; }
-
-.card-container .card .back {
-  -webkit-transform: rotatey(-180deg);
-  background: blue;
-  background: white;
-  color: black;
-  text-align: left; }
-
 .add-project {
   padding-top: 50%;
   font-size: 3em; }
@@ -86,6 +84,14 @@
 
 .project-info:hover {
   color: #fff; }
+
+tr:nth-of-type(even) {
+  background-color: #ccc; }
+
+#projectImage {
+  width: 89%;
+  margin-top: 6%;
+  margin-left: 5%; }
 
 @media (min-width: 768px) {
   .col-sm-6 {

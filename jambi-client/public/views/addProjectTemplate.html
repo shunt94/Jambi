@@ -1,13 +1,47 @@
-<div class="addproject" id="addprojectcard"> 
-	<div class="addproject-card-container"> 
-		<div class="card"> 
-    		Project Details <br>
-    		
-            <input type="text" id="addProjectLocation"> <input id="addProject_selectLocation" type="file" nwdirectory />  
-            <input type="text" id="addProjectName">
-            <button id="addProject" class="btn">Add Project</button>
-            <button id="closeAddProject" class="btn">Close</button>
-            
-		</div>  
-	</div> 
+<div class="addproject" id="addprojectcard">
+	<div class="addproject-card-container">
+		<div class="card">
+    		<h1>Project Details</h1>
+
+            <div class="card-inputs">
+                Name: <input type="text" id="addProjectName"> <br>
+                Location: <input type="text" id="addProjectLocation"> <br>
+                <input id="addProject_selectLocation" type="file" nwdirectory /> <br>
+            </div>
+            <div class="card-inputs">
+                <div class="spacer"></div>
+                Connect to server <br>
+                Host: <input type="text" id="addProject_host"> <br>
+                Username: <input type="text" id="addProject_user"> <br>
+                Password: <input type="text" id="addProject_pass"> <br>
+                RSA Key: <input id="addProject_selectLocation" type="file" nwdirectory /> <br>
+            </div>
+            <div class="card-checkboxs">
+                <h2>Project Addons</h2>
+                <div class="addproject-colum">
+                    <input type="checkbox"> jQuery <br>
+                    <input type="checkbox"> Grunt <br>
+                    <input type="checkbox"> Backbone App <br>
+                    <input type="checkbox"> Angular.js App <br>
+                    <input type="checkbox"> Compass <br>
+                    <input type="checkbox"> SASS/SCSS <br>
+                    <input type="checkbox"> LESS <br>
+                </div>
+                <div class="addproject-colum">
+                    <input type="checkbox"> Jambi Templating <br>
+                    <input type="checkbox"> Grunt <br>
+                    <input type="checkbox"> Backbone App <br>
+                    <input type="checkbox"> Angular.js App <br>
+                    <input type="checkbox"> Compass <br>
+                    <input type="checkbox"> SASS/SCSS <br>
+                    <input type="checkbox"> LESS <br>
+                </div>
+
+            </div>
+            <div class="card-footer">
+                <button id="addProject" class="inline">Add Project</button>
+                <button id="closeAddProject" class=" inline">Close</button> <br>
+            </div>
+		</div>
+	</div>
 </div>

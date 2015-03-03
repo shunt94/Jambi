@@ -20,7 +20,12 @@ var JambiFS = function() {
     };
 
     JambiFS.prototype.readDir = function(path) {
-        return fs.readdirSync(path);
+        try {
+            return fs.readdirSync(path);
+        } catch(err) {
+            console.log(err);
+            return false;
+        }
     };
 }
 

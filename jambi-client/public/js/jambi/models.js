@@ -1,3 +1,4 @@
+/* @flow */
 var jambiModel = function() {
 	var jTimer = new jambiTimer('#jambi_timer_secs', '#jambi_timer_mins', '#jambi_timer_hours');
 	var programTimer = new jambiTimer('#global_timer_secs', '#global_timer_mins', '#global_timer_hours');
@@ -30,7 +31,6 @@ var jambiModel = function() {
 		history_object: {},
 		flowInitialised: false,
 		isSaved: true,
-
 		initialize: function () {
 			this.set('id', globalCounter);
 			globalCounter += 1;
@@ -473,18 +473,54 @@ var jambiModel = function() {
         switch(fileTypeString) {
             case "html":
                 return "htmlmixed";
+            case "css":
+                return "css";
             case "js":
                 return "javascript";
 			case "json":
-				return "javascript"
+				return "javascript";
         }
     }
 
 
 
+    function setupSSH(host, port, username, password) {
+        try {
+            var Client = require('ssh2').Client;
+            var conn = new Client();
+
+
+            conn.on('error', function(e) {
+                console.log(e);
+            });
+
+
+
+            conn.on('ready', function() {
+              console.log('Client :: ready');
+              conn.sftp(function(err, sftp) {
+                if (err) throw err;
+                sftp.readdir('foo', function(err, list) {
+                  if (err) throw err;
+                  console.dir(list);
+                  conn.end();
+                });
+              });
+            }).connect({
+              host: host,
+              port: port,
+              username: username,
+              password: password
+            });
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
+    //setupSSH("192.168.1.1", 80, "user", "password");
 
     function populateProjects() {
-        $('#projects').empty();
+        $('#projectsTable > tbody').empty();
         if(Projects.length > 0) {
             var activeProjectIndex = Projects.at(0).attributes.active;
     		// Render Projects into page
@@ -550,6 +586,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
     		$('#addProject').on('click', function() {
     		    if($('#addProjectName').val() && $('#addProjectLocation').val()) {
                     addProject($('#addProjectName').val(), $('#addProjectLocation').val());
+                    $('#addprojectcard').fadeOut();
                 }
     		});
 
@@ -585,6 +622,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
         var projectsJSON;
 
+
         jambifs.readJSON('projects.json', function(err, data){
             projectsJSON = data;
             projectsJSON[Projects.length-1] = newProject.attributes;
@@ -618,9 +656,9 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
             console.log(clickedCard);
         };
 
-        $('#jambi-body').on("contextmenu", '.project-card' ,function(e){
+        $('#jambi-body').on("contextmenu", '.project' ,function(e){
            card_menu.popup(e.pageX, e.pageY);
-           clickedCard = $(this).parent().parent();
+           clickedCard = $(this);
            return false;
         });
 
@@ -659,7 +697,6 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 			});
 			connectToServer();
 			$('#jambi-editor').css('font-size', jambi.getFontSize());
-
 
 		}
 	});
@@ -701,8 +738,6 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
     function sideBarMenus() {
         var $el = $('#sidebarcontent');
         var sidebarContent = $('.sidebarMenuItem');
-
-
 
         $('#sidebar_home').off('click');
         $('#sidebar_list').off('click');
@@ -855,7 +890,3 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 };
 
 var jModel = new jambiModel();
-
-
-
-
