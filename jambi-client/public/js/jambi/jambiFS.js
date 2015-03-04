@@ -27,6 +27,10 @@ var JambiFS = function() {
             return false;
         }
     };
+
+    JambiFS.prototype.stat = function(path) {
+        return fs.statSync(path);
+    };
 }
 
 var jambifs = new JambiFS();

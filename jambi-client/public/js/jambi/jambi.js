@@ -827,9 +827,9 @@ var Jambi = function () {
         if(fileLocation && filename) {
             var command = 'cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename;
             shell.exec(command, function(code, output) {
-                //console.log(output);
+                console.log(output);
                 var flowResults = output.match(/(\:)(\d)*(\:)(\d)*(\,)(\d)*(\:)(\s)*((\w)*(\s)*)/g);
-
+                console.log(flowResults);
                 var errorType = "";
                 var errorCol1;
                 var errorCol2;
@@ -837,35 +837,33 @@ var Jambi = function () {
                 $('#flowcontent').empty();
 
 
+                if(flowResults.length > 1) {
+                    for(var i=0; i<flowResults.length; i++) {
 
+                        var temp = flowResults[i].substr(1, flowResults[i].length);
+                        var flowLine = temp.substr(0, temp.indexOf(":"));
+                        var flowCol1 = temp.match(/(\d)*(\,)(\d)*/g)[0];
+                        var col1 = flowCol1.substr(0, flowCol1.indexOf(","));
+                        var col2 = flowCol1.substr(flowCol1.indexOf(",")+1, flowCol1.length);
 
-                for(var i=0; i<flowResults.length; i++) {
+                        var errorString = temp.match(/(\s)(\w)*/)[0];
 
-                    var temp = flowResults[i].substr(1, flowResults[i].length);
-                    var flowLine = temp.substr(0, temp.indexOf(":"));
-                    var flowCol1 = temp.match(/(\d)*(\,)(\d)*/g)[0];
-                    var col1 = flowCol1.substr(0, flowCol1.indexOf(","));
-                    var col2 = flowCol1.substr(flowCol1.indexOf(",")+1, flowCol1.length);
+                        errorString = errorString.substr(1, errorString.length);
 
-                    var errorString = temp.match(/(\s)(\w)*/)[0];
-
-                    errorString = errorString.substr(1, errorString.length);
-
-                    if(i % 2 == 1) {
-                        $('#flowcontent').append("Line " + errorLine + " Column " + errorCol1 + ", " +
-                                        errorCol2 + " found " + errorType + " expected " + errorString + '<br>');
-                        var from = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol1) };
-                        var to = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol2) };
-                        console.log(from, to);
-                        jambiEditor.markText(from, to, {'css': "color: #fff"});
-                        jambiEditor.addLineClass(errorLine-1, "background", "test");
-                        console.log(jambiEditor.markText(from, to, {'css': "color: #fff"}));
-                        jambiEditor.refresh();
-                    } else {
-                        errorType = errorString;
-                        errorCol1 = col1;
-                        errorCol2 = col2;
-                        errorLine = flowLine;
+                        if(i % 2 == 1) {
+                            $('#flowcontent').append("Line " + errorLine + " Column " + errorCol1 + ", " +
+                                            errorCol2 + " found " + errorType + " expected " + errorString + '<br>');
+                            var from = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol1) };
+                            var to = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol2) };
+                            jambiEditor.markText(from, to, {'css': "color: #fff"});
+                            jambiEditor.addLineClass(errorLine-1, "background", "test");
+                            jambiEditor.refresh();
+                        } else {
+                            errorType = errorString;
+                            errorCol1 = col1;
+                            errorCol2 = col2;
+                            errorLine = flowLine;
+                        }
                     }
                 }
 

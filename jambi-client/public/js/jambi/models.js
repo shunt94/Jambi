@@ -767,6 +767,71 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         });
     }
 
+    var currentDirectory;
+    function generateFilSystem() {
+        if(activeProject) {
+            currentDirectory = activeProject.root;
+            function getFiles(filespath) {
+                currentDirectory = filespath;
+                $('#fb_files').empty();
+                var files = jambifs.readDir(filespath);
+                for(var i = 0; i <files.length; i++) {
+
+                    var path = filespath + "/" + files[i];
+                    var type = "";
+                    var fileIcon = '<i class="fa fa-file file-list-file"></i>';
+
+                    if(jambifs.stat(path).isFile()) {
+                        type = "file";
+                        fileIcon = '<i class="fa fa-file file-list-file"></i>';
+                    }
+                    if(jambifs.stat(path).isDirectory()) {
+                        type = "directory";
+                        fileIcon = '<i class="fa fa-folder file-list-folder"></i>';
+                    }
+
+
+                    $('#fb_files').append('<div class="file-list" data-type="' + type +'" data-path="' + filespath +'" data-filename="'+
+                        files[i] +'">' + fileIcon + files[i] +'</div>');
+
+                }
+            }
+
+            getFiles(currentDirectory);
+
+            $('#previousDir').on('dblclick', function(){
+                var newPath = currentDirectory.substr(0, currentDirectory.lastIndexOf('/'));
+                try{
+                    if(newPath !== "/") {
+                        getFiles(newPath);
+                    }
+                } catch(err) {
+                    alert(err);
+                }
+            });
+
+            $('#fb_files').on('click', '.file-list', function() {
+                $('.file-list').removeClass('active');
+                $(this).addClass('active');
+
+                var $this = $(this);
+                var path = $this.data('path');
+                var filename = $this.data('filename');
+                if(filename.match(/\.[^.]+$/)) {
+                    var filetype = filename.match(/\.[^.]+$/).toString();
+                }
+                var type = $this.data('type');
+
+                if(type === "file") {
+                    newDocument(filename, jambifs.readHTML(path + "/" + filename), checkFileType(filetype), path);
+                }
+                if(type === "directory") {
+                    getFiles(path + "/" + filename);
+                }
+            });
+        }
+    }
+
 
 
 
@@ -805,12 +870,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         $el.append(render('sidebar/connection', {}));
         sideBarMenus();
 
-        if(activeProject) {
-            var files = jambifs.readDir(activeProject.root);
-            for(var i = 0; i <files.length; i++) {
-                $('#fb_files').append('<div class="file-list"><i class="fa fa-file"></i><br>' + files[i] +'</div>');
-            }
-        }
+        generateFilSystem();
         showSidebarToggle();
 
 	});
