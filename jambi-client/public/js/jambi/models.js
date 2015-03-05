@@ -30,6 +30,10 @@ var jambiModel = function() {
 		fileLocation: "",
 		history_object: {},
 		flowInitialised: false,
+        vc: {
+            vcInitialised: false,
+            vcURL: ""
+        },
 		isSaved: true,
 		initialize: function () {
 			this.set('id', globalCounter);
