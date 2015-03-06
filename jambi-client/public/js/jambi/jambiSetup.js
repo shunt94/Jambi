@@ -11,6 +11,7 @@ var jambiSetup = function() {
 	// File Menus
 	var fileSubmenu = new gui.Menu();
 	var fileNewSub = new gui.Menu();
+    var openRecentMenu = new gui.Menu();
 
 	// View Menus
 	var viewSubmenu = new gui.Menu();
@@ -48,13 +49,12 @@ var jambiSetup = function() {
 			],
 			fileNewProject:		new gui.MenuItem({ label: 'New Project' }),
 			fileOpen:			new gui.MenuItem({ label: 'Open', key: "o", modifiers: "cmd" }),
-			fileOpenRecent:		new gui.MenuItem({ label: 'Open Recent' }),
+			fileOpenRecent:		new gui.MenuItem({ label: 'Open Recent', submenu: openRecentMenu }),
 			fileClose:			new gui.MenuItem({ label: 'Close' }),
 			fileCloseAll:		new gui.MenuItem({ label: 'Close All' }),
 			fileSave:			new gui.MenuItem({ label: 'Save', key: "s", modifiers: "cmd" }),
 			fileSaveAll:		new gui.MenuItem({ label: 'Save All' }),
-			fileSaveAs:			new gui.MenuItem({ label: 'Save As...', key: "s",modifiers: "cmd-shift" }),
-			fileClearSettings:	new gui.MenuItem({ label: 'Clear Settings' })
+			fileSaveAs:			new gui.MenuItem({ label: 'Save As...', key: "s",modifiers: "cmd-shift" })
 		},
 		view: {
 			viewProjects:  new gui.MenuItem({ label: 'Projects' }),
@@ -86,7 +86,8 @@ var jambiSetup = function() {
 		settings: {
 			settingsFont:       new gui.MenuItem({ label: 'Font Options'}),
 			settingsSyntax:     new gui.MenuItem({ label: 'Syntax Mode'}),
-			settingsTheme:      new gui.MenuItem({ label: 'Theme'})
+			settingsTheme:      new gui.MenuItem({ label: 'Theme'}),
+			settingsClearSettings:	new gui.MenuItem({ label: 'Clear Settings' })
 		}
 	};
 
@@ -114,8 +115,6 @@ var jambiSetup = function() {
 		fileSubmenu.append(jambiMenu.file.fileSave);
 		fileSubmenu.append(jambiMenu.file.fileSaveAs);
 		fileSubmenu.append(jambiMenu.file.fileSaveAll);
-		fileSubmenu.append(new gui.MenuItem({ type: 'separator' }));
-		fileSubmenu.append(jambiMenu.file.fileClearSettings);
 	})();
 
 	var generateViewMenu = (function() {
@@ -161,6 +160,8 @@ var jambiSetup = function() {
 		settingsSubmenu.append(jambiMenu.settings.settingsFont);
 		settingsSubmenu.append(jambiMenu.settings.settingsSyntax);
 		settingsSubmenu.append(jambiMenu.settings.settingsTheme);
+		settingsSubmenu.append(new gui.MenuItem({ type: 'separator' }));
+		settingsSubmenu.append(jambiMenu.settings.settingsClearSettings);
 	})();
 
 
@@ -204,6 +205,7 @@ var jambiSetup = function() {
 		    }
             addonSubmenu.append(mItem);
             return mItem;
-        }
+        },
+        openRecentMenu: openRecentMenu
 	};
 };

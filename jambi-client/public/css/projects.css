@@ -85,8 +85,11 @@
 .project-info:hover {
   color: #fff; }
 
-tr:nth-of-type(even) {
-  background-color: #ccc; }
+tr.project:nth-of-type(even) {
+  background-color: rgba(228, 228, 228, 0.2); }
+
+.project.active {
+  background-color: rgba(16, 115, 235, 0.66) !important; }
 
 #projectImage {
   width: 89%;

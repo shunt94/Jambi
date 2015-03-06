@@ -63,6 +63,7 @@ var jambiModel = function() {
 		},
 		error: function(){
 			alert("Error! - Could not fetch project list!");
+			// TO DO: make project json if file does not exist!
 		}
 	});
 	$.ajaxSetup({
@@ -483,6 +484,26 @@ var jambiModel = function() {
                 return "javascript";
 			case "json":
 				return "javascript";
+            case "xhtml":
+                return "htmlmixed";
+            case "py":
+                return "python";
+            case "sass":
+                return "text/x-sass";
+            case "scss":
+                return "text/x-scss";
+            case "less":
+                return "text/x-less";
+            case "rb":
+                return "ruby";
+            case "":
+                return "";
+            case "":
+                return "";
+            case "":
+                return "";
+            case "":
+                return "";
         }
     }
 
@@ -573,6 +594,11 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
                 var projectIndex = $(this).data("projectindex");
                 activeProject = Projects.at(projectIndex).attributes.project;
                 openProject($(this).data("name"), activeProject);
+            });
+
+            $('.project').on('click', function() {
+                $('.project').removeClass('active');
+                $(this).addClass('active');
             });
 
     		$(document).on('click', function(event){
