@@ -739,11 +739,11 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		}
 	});
 
-	var FileBrowserView = Backbone.View.extend({
+	var ToolsView = Backbone.View.extend({
 		el: '#jambi-body',
 
 		render: function(){
-			this.$el.html(render('filebrowser', {}));
+			this.$el.html(render('tools', {}));
 		}
 	});
 
@@ -871,7 +871,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		routes: {
 			'home': 'home',
 			'project': 'projects',
-			'files' : 'files',
+			'tools' : 'tools',
 			'showcase': 'showcase'
 		}
 	});
@@ -879,7 +879,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 	var editorView = new EditorView();
 	var projectView = new ProjectView();
-	var fileBrowserView = new FileBrowserView();
+	var toolsView = new ToolsView();
 	var showcaseView = new ShowcaseView();
 
 	var router = new Router();
@@ -905,19 +905,12 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 	});
 
-	router.on('route:files', function() {
+	router.on('route:tools', function() {
 		setActiveDocument();
 		if(activeDocument !== undefined) {
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
-		fileBrowserView.render();
-
-		if(activeProject) {
-            var files = jambifs.readDir(activeProject.root);
-            for(var i = 0; i <files.length; i++) {
-                $('#fb_files').append('<div class="col-sm-2"><i class="fa fa-file"></i><br>' + files[i] +'</div>');
-            }
-        }
+        toolsView.render();
         hideSidebarToggle()
 		isEditorOpen = false;
 	});

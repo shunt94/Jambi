@@ -27,8 +27,7 @@ html, body {
   overflow: hidden; }
 
 body > div {
-  height: 100%;
-  overflow: scroll; }
+  height: 100%; }
 
 ::-webkit-scrollbar {
   width: 5px;
