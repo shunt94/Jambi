@@ -1,11 +1,38 @@
 .projects {
-    padding-top: 100px;
+    padding-top: 45px;
 }
 
 .project-container {
     padding-left: 20px;
     padding-right: 20px;
     padding-top: 80px;
+}
+
+.projets-table-container {
+    border-right: 1px solid #333;
+    z-index: 1;
+    overflow-y: auto;
+}
+
+#projectsTable {
+    width: 100%;
+    overflow-y: auto;
+
+    & thead {
+        background: #111;
+
+        & th {
+            border-right: 1px solid #999;
+
+            &:last-child {
+                border-right: 1px solid #111;
+            }
+        }
+
+
+    }
+
+
 }
 
 
@@ -108,8 +135,8 @@
 }
 
 
-tr.project:nth-of-type(even) {
-    background-color:rgba(228, 228, 228, 0.2);
+#projectsTable tr:nth-of-type(even) {
+    background-color:rgba(0, 0, 0, 0.1);
 }
 
 
@@ -122,7 +149,7 @@ tr.project:nth-of-type(even) {
 
 #projectImage {
     width: 89%;
-    margin-top: 6%;
+    margin-top: 12.5%;
     margin-left: 5%;
 }
 

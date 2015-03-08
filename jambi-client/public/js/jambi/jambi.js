@@ -152,14 +152,11 @@ var Jambi = function () {
             function modalFunction() {
 
             }
-            jambi.createModal("Setup Version Control", "", "<p>VC test</p>", "Ok", modalFunction);
+            var modalhtml = jambifs.readHTML('public/views/vcsetup.html');
+            jambi.createModal("Setup Version Control", "", modalhtml, "Ok", modalFunction);
         };
 
-        if(true) { // Change this to if VC is setup
-            jMenu.vc.vcPull.enabled = false;
-            jMenu.vc.vcPush.enabled = false;
-            jMenu.vc.vcCommit.enabled = false;
-        }
+
 
 
         jSetup.gui.Window.get().on('close', function () {
@@ -210,7 +207,7 @@ var Jambi = function () {
                 cm.indentSelection("add");
             } else {
                 cm.replaceSelection(cm.getOption("indentWithTabs")? "\t":
-                                    Array(cm.getOption("indentUnit") + 1).join(" "), "end", "+input");
+                Array(cm.getOption("indentUnit") + 1).join(" "), "end", "+input");
             }
         }
 
@@ -627,7 +624,7 @@ var Jambi = function () {
                         jModel.getActiveDocument().isSaved = true;
                         console.log(jModel.getActiveDocument());
                         if(false) { // if SFTP/ FTP then show
-                            jambi.showNotification('Successfully uploaded to server');
+                            jambi.showNotification('Jambi', 'Successfully uploaded to server');
                         }
                         if(false) { //if less and auto compile is on
                             var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
@@ -710,21 +707,25 @@ var Jambi = function () {
             }, function (e, output) {
                 if(!e) {
                     jambifs.writeJSON(fileLocationWithName, output.css);
+                    jambi.showNotification('Jambi LESS', 'Successfully compiled to css');
                 }
             });
     };
 
-    Jambi.prototype.showNotification = function(msg) {
+    Jambi.prototype.showNotification = function(ttl, msg, resp) {
         var notifier = require('node-notifier');
         notifier.notify({
-            title: 'Jambi',
+            title: ttl,
             message: msg,
             icon: 'public/img/logo.png',
             sound: false,
             wait: false
-        }, function (err, response) {
-
-        });
+            }, function (err, response) {
+                if(response && resp && !err) {
+                    resp();
+                }
+            }
+        );
     };
 
 
@@ -825,10 +826,9 @@ var Jambi = function () {
             if(code !== 0) {
                 console.log('Exit code:', code);
             }
-            if(div) {
+            if(div && output) {
                 div.text(output);
             }
-            return output;
         });
     };
 
@@ -929,6 +929,26 @@ var Jambi = function () {
             });
         }
     };
+
+
+    Jambi.prototype.vcStatus = function(div, vcType) {
+        var command;
+
+        if(vcType === "git") {
+            command = "git status";
+        }
+        if(vcType === "hg") {
+            command = "hg status";
+        }
+
+        shell.exec(command, function(code, output) {
+            console.log(output);
+            if(div && output) {
+                div.html(output);
+            }
+        });
+    };
+
 
 
 

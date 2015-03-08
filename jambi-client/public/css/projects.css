@@ -1,10 +1,25 @@
 .projects {
-  padding-top: 100px; }
+  padding-top: 45px; }
 
 .project-container {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 80px; }
+
+.projets-table-container {
+  border-right: 1px solid #333;
+  z-index: 1;
+  overflow-y: auto; }
+
+#projectsTable {
+  width: 100%;
+  overflow-y: auto; }
+  #projectsTable thead {
+    background: #111; }
+    #projectsTable thead th {
+      border-right: 1px solid #999; }
+      #projectsTable thead th:last-child {
+        border-right: 1px solid #111; }
 
 .addproject {
   display: inline-block;
@@ -85,15 +100,15 @@
 .project-info:hover {
   color: #fff; }
 
-tr.project:nth-of-type(even) {
-  background-color: rgba(228, 228, 228, 0.2); }
+#projectsTable tr:nth-of-type(even) {
+  background-color: rgba(0, 0, 0, 0.1); }
 
 .project.active {
   background-color: rgba(16, 115, 235, 0.66) !important; }
 
 #projectImage {
   width: 89%;
-  margin-top: 6%;
+  margin-top: 12.5%;
   margin-left: 5%; }
 
 @media (min-width: 768px) {

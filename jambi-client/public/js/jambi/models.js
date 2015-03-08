@@ -16,7 +16,12 @@ var jambiModel = function() {
         	"root": "",
         	"openfiles": [],
         	"currentfile": {},
-        	"flowInitialised": false
+        	"flowInitialised": false,
+        	"vc": {
+                "vcInitialised": false,
+                "vcType": "git",
+                "vcURL": ""
+            }
         }
 	});
 
@@ -30,10 +35,6 @@ var jambiModel = function() {
 		fileLocation: "",
 		history_object: {},
 		flowInitialised: false,
-        vc: {
-            vcInitialised: false,
-            vcURL: ""
-        },
 		isSaved: true,
 		initialize: function () {
 			this.set('id', globalCounter);
@@ -54,6 +55,8 @@ var jambiModel = function() {
 	var Projects = new ProjectsCollection();
 
 
+    // Check to see if projects json exists
+
 	$.ajaxSetup({
 		async: false
 	});
@@ -62,7 +65,7 @@ var jambiModel = function() {
 //			console.log("JSON file load was successful", Projects);
 		},
 		error: function(){
-			alert("Error! - Could not fetch project list!");
+			jambi.showNotification('Jambi - Error', 'Could not fetch projects');
 			// TO DO: make project json if file does not exist!
 		}
 	});
@@ -373,15 +376,8 @@ var jambiModel = function() {
 	}
 
 
-	function openProject(name, projectData) {
+	function openProject(name, projectData, index) {
 	    if(projectData) {
-        	// if project open save all open files
-        	if(activeProject !== 0) {
-                // Save all files to disk...
-        	}
-
-        	// else
-        	// close all current docuements, asking to save them first... make a new method (if unsaved/ isSaved() )
             for(var i = 0; i<= openDocuments.length; i++) {
         	    openDocuments.pop();
         	}
@@ -390,6 +386,9 @@ var jambiModel = function() {
             var projectActiveDocument;
             var fileRoot;
             var fileName;
+
+            Projects.at(0).attributes.active = index;
+            saveProjectsJSON();
 
         	// For loop through all open files in that project
         	for(var k = 0; k < projectData.openfiles.length; k++) {
@@ -550,11 +549,13 @@ var jambiModel = function() {
             var activeProjectIndex = Projects.at(0).attributes.active;
     		// Render Projects into page
     		for(var i = 1; i < Projects.length; i++) {
-    			var active = "";
+    			/*
+var active = "";
     			if(i === activeProjectIndex) {
     			    activeProject = Projects.at(i).attributes.project;
     				active = "active";
     			}
+*/
 
     			$('#projectsTable > tbody:last').append('<tr class="project" data-name="' + Projects.at(i).attributes.project.name +
     			'" data-projectindex="' + i + '">' +
@@ -587,13 +588,22 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 */
     		}
 
+
+    		for(var k = 0; k < 40-Projects.length; k++) {
+                $('#projectsTable > tbody:last').append('<tr class="project-empty">' +
+        			'<td>&nbsp;</td>' +
+        			'<td></td>' +
+        			'<td></td>' +
+                    '</tr>');
+            }
+
     		$('.projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
 
 
-            $('.project').dblclick(function() {
+            $('.project').on('dblclick', function() {
                 var projectIndex = $(this).data("projectindex");
                 activeProject = Projects.at(projectIndex).attributes.project;
-                openProject($(this).data("name"), activeProject);
+                openProject($(this).data("name"), activeProject, $(this).data("projectindex"));
             });
 
             $('.project').on('click', function() {
@@ -601,17 +611,15 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
                 $(this).addClass('active');
             });
 
+            $('.project-empty').on('click', function() {
+                $('.project').removeClass('active');
+            });
+
     		$(document).on('click', function(event){
-    			if(!$(event.target).closest('.card-container').length) {
-    				$('.card').removeClass('flipped');
+    			if(!$(event.target).closest('#addprojectcard').length) {
+                    $('#addprojectcard').fadeOut();
     			}
     		});
-
-    		$('.project-info').on('click', function(){
-    			$('.card').removeClass('flipped');
-    			$(this).parent().parent().parent().addClass('flipped');
-    		});
-
 
     		$('#addProject').on('click', function() {
     		    if($('#addProjectName').val() && $('#addProjectLocation').val()) {
@@ -682,7 +690,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         card_menu.items[0].click = function(e) {
             var projectIndex = clickedCard.data("projectindex");
             activeProject = Projects.at(projectIndex).attributes.project;
-            openProject(clickedCard.data("name"), activeProject);
+            openProject(clickedCard.data("name"), activeProject, projectIndex);
             console.log(clickedCard);
         };
 
@@ -797,6 +805,31 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         });
     }
 
+
+    function vcMenuSetup() {
+        var jMenu = jSetup.jambiMenu;
+        if(activeProject) {
+            if(activeProject.vc.vcInit) {
+                jMenu.vc.vc.enabled = true;
+                jMenu.vc.vcPull.enabled = true;
+                jMenu.vc.vcPush.enabled = true;
+                jMenu.vc.vcCommit.enabled = true;
+            }
+            else {
+                jMenu.vc.vc.enabled = true;
+                jMenu.vc.vcPull.enabled = false;
+                jMenu.vc.vcPush.enabled = false;
+                jMenu.vc.vcCommit.enabled = false;
+            }
+        }
+        else {
+            jMenu.vc.vc.enabled = false;
+            jMenu.vc.vcPull.enabled = false;
+            jMenu.vc.vcPush.enabled = false;
+            jMenu.vc.vcCommit.enabled = false;
+        }
+    }
+
     var currentDirectory;
     function generateFilSystem() {
         if(activeProject) {
@@ -843,7 +876,9 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
             $('#fb_files').on('click', '.file-list', function() {
                 $('.file-list').removeClass('active');
                 $(this).addClass('active');
+            });
 
+            $('#fb_files').on('dblclick', '.file-list', function() {
                 var $this = $(this);
                 var path = $this.data('path');
                 var filename = $this.data('filename');
@@ -859,6 +894,17 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
                     getFiles(path + "/" + filename);
                 }
             });
+        }
+    }
+
+    function vcInit() {
+        if(activeProject) {
+            if(activeProject.vc.vcInitialised) {
+                alert("vc init");
+                setTimeout(function() {
+                    jambi.gitStatus($('#versionControlOutput'), activeProject.vc.vcType);
+                }, 1000);
+            }
         }
     }
 
@@ -902,6 +948,10 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
         generateFilSystem();
         showSidebarToggle();
+        $('#jambi-body').css('background-color', '#444');
+
+        vcInit();
+        vcMenuSetup();
 
 	});
 
@@ -913,6 +963,51 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
         toolsView.render();
         hideSidebarToggle()
 		isEditorOpen = false;
+
+
+
+		$("#DateCountdown").TimeCircles({
+            "animation": "smooth",
+            "bg_width": 1.3,
+            "fg_width": 0.06,
+            "circle_bg_color": "#60686F",
+            "time": {
+                "Days": {
+                    "text": "Days",
+                    "color": "#FFCC66",
+                    "show": true
+                },
+                "Hours": {
+                    "text": "Hours",
+                    "color": "#99CCFF",
+                    "show": true
+                },
+                "Minutes": {
+                    "text": "Minutes",
+                    "color": "#BBFFBB",
+                    "show": true
+                },
+                "Seconds": {
+                    "text": "Seconds",
+                    "color": "#FF9999",
+                    "show": true
+                }
+            }
+        });
+
+
+        $('#jambi-body').css('background-color', '#fff');
+        vcMenuSetup();
+
+
+
+
+
+
+
+
+
+
 	});
 
 	router.on('route:projects', function() {
@@ -924,7 +1019,9 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		populateProjects();
 		isEditorOpen = false;
 		generateProjectsContextMenu();
-		hideSidebarToggle()
+		hideSidebarToggle();
+        $('#jambi-body').css('background-color', '#444');
+        vcMenuSetup();
     });
 
 
@@ -936,6 +1033,8 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		showcaseView.render();
         hideSidebarToggle()
 		isEditorOpen = false;
+        $('#jambi-body').css('background-color', '#444');
+        vcMenuSetup();
 	});
 
 

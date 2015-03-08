@@ -213,7 +213,7 @@ h1,h2,h3 { font-weight: 200;}
 	margin-top: -5px;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 300;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     box-shadow: 0px -1px 5px #111;
 }
@@ -255,7 +255,6 @@ h1,h2,h3 { font-weight: 200;}
 	height: 20px;
 	background-color: #727272;
 	z-index: 10;
-	display: inline-block;
 }
 
 .file-ul, .menuitems {
@@ -356,7 +355,7 @@ h1,h2,h3 { font-weight: 200;}
 }
 
 .projects-pc {
-    background-image: url('../img/showcase/pc.png');
+    background-image: url('../img/showcase/pc_reflect.png');
     background-size: contain;
     background-repeat: no-repeat;
     height: 700px;
@@ -515,4 +514,17 @@ iframe {
 
 .file-list-folder {
     color: #0c9aff;
+}
+
+.projects-info {
+    padding: 15px;
+}
+.tools {
+    background-color: #fff !important;
+}
+
+.project-info {
+    width: 40%;
+    background-color: rgba(116, 116, 116, 0.42);
+    border-radius: 5px;
 }
