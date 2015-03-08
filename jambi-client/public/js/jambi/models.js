@@ -20,7 +20,8 @@ var jambiModel = function() {
         	"vc": {
                 "vcInitialised": false,
                 "vcType": "git",
-                "vcURL": ""
+                "vcURL": "",
+                "vcUser": ""
             }
         }
 	});
@@ -809,7 +810,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
     function vcMenuSetup() {
         var jMenu = jSetup.jambiMenu;
         if(activeProject) {
-            if(activeProject.vc.vcInit) {
+            if(activeProject.vc.vcInitialised) {
                 jMenu.vc.vc.enabled = true;
                 jMenu.vc.vcPull.enabled = true;
                 jMenu.vc.vcPush.enabled = true;
@@ -900,13 +901,63 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
     function vcInit() {
         if(activeProject) {
             if(activeProject.vc.vcInitialised) {
-                alert("vc init");
-                setTimeout(function() {
-                    jambi.gitStatus($('#versionControlOutput'), activeProject.vc.vcType);
-                }, 1000);
+                setInterval(function() {
+                    //$('#versionControlOutput').empty();
+                    //jambi.vcStatus($('#versionControlOutput'), activeProject.vc.vcType);
+                }, 3000);
             }
         }
     }
+
+
+    function vcClick() {
+        jSetup.jambiMenu.vc.vc.click = function () {
+            function modalFunction() {
+                if(activeProject) {
+                    activeProject.vc.vcInitialised = true;
+                    activeProject.vc.vcType = $('.radioButtonType[name=group1]:checked').data('type');
+                    activeProject.vc.vcURL = $('#repo-url').val();
+                    activeProject.vc.vcUser = $('#repo-user').val();
+                    vcMenuSetup();
+                    saveProjectsJSON();
+                    console.log(activeProject.vc);
+                }
+            }
+            var modalhtml = jambifs.readHTML('public/views/vcsetup.html');
+            jambi.createModal("Setup Version Control", "", modalhtml, "Init Empty Repo", modalFunction, null, "Clone");
+            if(activeProject.vc.vcInitialised) {
+                $('#repo-url').val(activeProject.vc.vcURL);
+                $('#repo-user').val(activeProject.vc.vcUser);
+            }
+            $('#modalButtonExtra').off('click');
+            $('#modalButtonExtra').on('click',function(){
+                activeProject.vc.vcInitialised = true;
+                activeProject.vc.vcType = $('.radioButtonType[name=group1]:checked').data('type');
+                activeProject.vc.vcURL = $('#repo-url').val();
+                activeProject.vc.vcUser = $('#repo-user').val();
+                vcMenuSetup();
+                saveProjectsJSON();
+                console.log(activeProject.vc);
+               jambi.vcClone(activeProject.vc.vcURL, activeProject.vc.vcType);
+            });
+
+        };
+
+        jSetup.jambiMenu.vc.vcCommit.click = function () {
+            jambi.vcCommit(activeProject.vc.vcType);
+        };
+
+        jSetup.jambiMenu.vc.vcPull.click = function () {
+            jambi.vcPull(activeProject.vc.vcType);
+        };
+
+        jSetup.jambiMenu.vc.vcPush.click = function () {
+            jambi.vcPush(activeProject.vc.vcType);
+        };
+    }
+    vcClick();
+
+
 
 
 
@@ -952,6 +1003,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
         vcInit();
         vcMenuSetup();
+
 
 	});
 
@@ -1046,6 +1098,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 	// if in project then start home else start project
 	window.location.replace("#/project");
+
 
 
 

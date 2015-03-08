@@ -146,17 +146,6 @@ var Jambi = function () {
 
 
 
-        // Version Control
-
-        jMenu.vc.vc.click = function () {
-            function modalFunction() {
-
-            }
-            var modalhtml = jambifs.readHTML('public/views/vcsetup.html');
-            jambi.createModal("Setup Version Control", "", modalhtml, "Ok", modalFunction);
-        };
-
-
 
 
         jSetup.gui.Window.get().on('close', function () {
@@ -750,7 +739,7 @@ var Jambi = function () {
 		Function made to populate the modal in Jambi
 		There is one modal markup that gets populated via this function
 	*/
-    Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc, modalWidth) {
+    Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc, modalWidth, extraButton) {
         // If there is no modal type defined then we set the default button name - 'Save'
         if (modalType === undefined || modalType === null) {
             modalType = "Save";
@@ -773,6 +762,10 @@ var Jambi = function () {
         $('#modalTitle').html(modalTitle);
         $('#modalSubtitle').html(modalSubtitle);
         $('#modalContent').html(modalContent);
+
+        if(extraButton) {
+            $('.jambiModal-buttons').append('<a href="#" class="btn btn-blue" id="modalButtonExtra">' + extraButton + '</a>');
+        }
 
         // Open the modal
         jambi.openModal();
@@ -933,12 +926,12 @@ var Jambi = function () {
 
     Jambi.prototype.vcStatus = function(div, vcType) {
         var command;
-
+        var root = jModel.getActiveDocument().fileLocation;
         if(vcType === "git") {
-            command = "git status";
+            command = 'cd ' + root + ' &&  git status';
         }
         if(vcType === "hg") {
-            command = "hg status";
+            command = 'cd ' + root + ' &&  hg status';
         }
 
         shell.exec(command, function(code, output) {
@@ -946,6 +939,89 @@ var Jambi = function () {
             if(div && output) {
                 div.html(output);
             }
+        });
+    };
+
+
+    Jambi.prototype.vcPull = function (vcType) {
+        var command;
+        var root = jModel.getActiveDocument().fileLocation;
+        if(vcType === "git") {
+            command = 'cd ' + root + ' &&  git pull origin master';
+        }
+        if(vcType === "hg") {
+            command = 'cd ' + root + ' && hg pull -u';
+        }
+
+        shell.exec(command, function(code, output) {
+            if(output) {
+                jambi.showNotification("Jambi VC", "Repository Pulled");
+            }
+        });
+    };
+
+    Jambi.prototype.vcPush = function (vcType) {
+        var command;
+        var root = jModel.getActiveDocument().fileLocation;
+        if(vcType === "git") {
+            command = 'cd ' + root + ' && git push';
+        }
+        if(vcType === "hg") {
+            command = 'cd ' + root + ' && hg push';
+        }
+
+        shell.exec(command, function(code, output) {
+            if(output){
+                console.log(output);
+                jambi.showNotification("Jambi VC", "Successfully Pushed");
+            }
+        });
+    };
+
+
+    Jambi.prototype.vcCommit = function (vcType, commitMsg) {
+        var command;
+        jambi.saveFile();
+        var root = jModel.getActiveDocument().fileLocation;
+        if(commitMsg) {
+            if(vcType === "git") {
+                command = 'cd ' + root + ' && git add ' + root + ' && git commit -m ' + '"' + commitMsg + '"';
+            }
+            if(vcType === "hg") {
+                command = 'cd ' + root + ' && hg add ' + root + ' &&  hg commit -m ' + '"' + commitMsg + '"';
+            }
+        }
+        else {
+            if(vcType === "git") {
+                command = 'cd ' + root + ' && git add ' + root + ' &&  git commit -m "Commiting changes to ' + jModel.getActiveDocument().title + '"';
+            }
+            if(vcType === "hg") {
+                command = 'cd ' + root + ' && hg add ' + root + ' &&  hg commit -m "Commiting changes to ' + jModel.getActiveDocument().title + '"';
+            }
+        }
+
+        shell.exec(command, function(code, output) {
+            if(output){
+                console.log(output);
+                jambi.showNotification("Jambi VC", "Files Commited");
+            }
+        });
+    };
+
+    Jambi.prototype.vcClone = function (url, vcType) {
+        var command;
+        var root = jModel.getActiveProject().root;
+        if(url) {
+            if(vcType === "git") {
+                command = 'cd ' + root + ' && git clone ' + url;
+            }
+            if(vcType === "hg") {
+                command = 'cd ' + root + ' && git clone ' + url;
+            }
+        }
+
+        shell.exec(command, function(code, output) {
+            console.log(output);
         });
     };
 
