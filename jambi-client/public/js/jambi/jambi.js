@@ -282,7 +282,7 @@ var Jambi = function () {
             lineWrapping: true,
             lineNumbers: true,
             tabSize: 4,
-            gutters: ["test1"],
+            gutters: ["test1", "test2"],
             indentUnit: 4,
             indentWithTabs: true,
             autoCloseTags: true,
@@ -402,7 +402,70 @@ var Jambi = function () {
             "17": "ctrl",
             "16": "shift",
             "20": "caps"
+        };
+
+
+        function generateJambiContextMenus() {
+
+            function doesFileExsit (tempfileLoc) {
+                try { fs.statSync(tempfileLoc); return true }
+                catch (er) { return false }
+            }
+
+            var code_menu = new gui.Menu();
+            var clickedCard;
+
+            code_menu.append(new gui.MenuItem({ label: 'Cut' }));
+            code_menu.append(new gui.MenuItem({ label: 'Copy' }));
+            code_menu.append(new gui.MenuItem({ label: 'Paste' }));
+            code_menu.append(new gui.MenuItem({ type: 'separator' }));
+            code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
+            code_menu.append(new gui.MenuItem({ label: 'Generate all files'}));
+
+            code_menu.items[4].click = function(e) {
+                var selection = jambi.getJambiEditor().getSelection();
+                if(jModel.getActiveDocument()) {
+                    if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
+                        var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
+                        var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
+                        var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
+                        var contents = "";
+                        if(doesFileExsit(fileLoc + "/" + filename)) {
+                            contents = jambi.openFileByDir(fileLoc + "/" + filename);
+                        }
+
+                        jModel.openFile(filename, contents, filetype, fileLoc + "/");
+                    }
+                } else {
+                    var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
+                    var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
+                    jModel.openFile(filename, "", filetype);
+                }
+            };
+
+
+            code_menu.items[5].click = function (){
+                var value = jambi.getJambiEditor().getValue();
+                var files = value.match(/((\/)*?(-)?(\w))*(\.)(\w)*/g);
+
+                for(var i = 0; i < files.length; i++) {
+                    console.log(files[i]);
+                }
+            };
+
+
+
+
+            $('#jambi-body').off("contextmenu");
+            $('#jambi-body').on("contextmenu", '.editor-container' ,function(e){
+               code_menu.popup(e.pageX, e.pageY);
+               clickedCard = $(this);
+               return false;
+            });
+
         }
+
+        generateJambiContextMenus();
 
 
         jambiAC.setMenuContext('html');
@@ -439,18 +502,6 @@ var Jambi = function () {
 
         }
 
-        jambiEditor.on("change", function(keyevent) {
-            jambi.updateCursorPosition();
-            if(jModel.getActiveDocument()) {
-                if(jModel.getActiveDocument().isSaved) {
-                    //$('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
-                    //jModel.getActiveDocument().isSaved = false;
-                }
-            }
-
-
-        });
-
         var delay = (function(){
           var timer = 0;
           return function(callback, ms){
@@ -459,14 +510,40 @@ var Jambi = function () {
          };
         })();
 
+        jambiEditor.on("change", function(keyevent) {
+            jambi.updateCursorPosition();
+            setTimeout(function(){
+                var currentActiveDoc = jModel.getActiveDocument();
+                if(currentActiveDoc) {
+                    if(currentActiveDoc.isSaved) {
+                        //$('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
+                        //jModel.getActiveDocument().isSaved = false;
+                        if(jModel.getActiveProject().flowInitialised && currentActiveDoc.mode === "javascript") {
+                           delay(function(){
+                                jambi.flowCode(currentActiveDoc.fileLocation, currentActiveDoc.title);
+                                jambi.jsHint();
 
-        jambiEditor.on('keyup', function(editor, keyevent){
+                            }, 700);
+                        }
+                    }
+                }
+            }, 500);
+
+
+        });
+
+
+
+
+       /*
+ jambiEditor.on('keyup', function(editor, keyevent){
            if (!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && isNaN(String.fromCharCode(keyevent.which))) {
                 if(jambiEditor.mode !== 'htmlmixed' || jambiEditor.mode !== 'xml') {
                     delay(function(){jambiEditor.showHint(keyevent);}, 800);
                 }
             }
         });
+*/
 
         jambiEditor.on("keydown", function(editor, keyevent) {
             var code = keyevent.keyCode;
@@ -493,21 +570,38 @@ var Jambi = function () {
 	*/
     Jambi.prototype.jsHint = function () {
         function updateHints() {
-            jambiEditor.operation(function(){
-                for (var i = 0; i < widgets.length; ++i)
-                    jambiEditor.removeLineWidget(widgets[i]);
-                while (widgets.length) { widgets.pop(); }
-
+                jambiEditor.clearGutter("test2");
                 JSHINT(jambiEditor.getValue());
                 $('#jsErrors').empty();
                 for (var x = 0; x < JSHINT.errors.length; ++x) {
                     var err = JSHINT.errors[x];
                     if (!err) continue;
 
+
+                    var gutterLine = parseInt(err.line-1);
+
+
+                    jambiEditor.setGutterMarker(gutterLine, "test2", makeMarker(err.reason));
+
+                    function makeMarker(error) {
+                        var marker = document.createElement("div");
+                        marker.className = "test3";
+                        marker.setAttribute('data-error', error);
+                        marker.style.color = "#ff0000";
+                        marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                        return marker;
+                    }
+
+
+                    jambiEditor.refresh();
                     console.log("Error at line: " + err.line + " - " + err.reason);
                     $('#jsErrors').append("Error at line: " + err.line + " - " + err.reason);
                 }
-            });
+
+                $('.test3').off();
+                $('.test3').on('mouseover', function(){
+                    alert($(this).data('error'));
+                });
         }
 
 
@@ -603,7 +697,17 @@ var Jambi = function () {
         if(jModel.onEditorPage()){
             var file = jModel.getActiveDocument();
             var fileLocation = file.fileLocation;
+
+
+            function doesDirectoryExist (tempfileLoc) {
+              try { fs.statSync(tempfileLoc); return true }
+              catch (er) { return false }
+            }
+
             if (fileLocation) {
+                if(!doesDirectoryExist(fileLocation)) {
+                    fs.mkdirSync(fileLocation);
+                }
                 fileLocation = file.fileLocation + file.title;
                 fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
                     if (err) {
@@ -611,7 +715,6 @@ var Jambi = function () {
                     } else {
                         $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
                         jModel.getActiveDocument().isSaved = true;
-                        console.log(jModel.getActiveDocument());
                         if(false) { // if SFTP/ FTP then show
                             jambi.showNotification('Jambi', 'Successfully uploaded to server');
                         }
@@ -837,6 +940,12 @@ var Jambi = function () {
     };
 
     Jambi.prototype.flowCode = function (fileLocation, filename) {
+        var oldText = jambi.getJambiEditor().getValue();
+        if(fileLocation && filename) {
+            if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
+                jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
+            }
+        }
         jambi.saveFile();
         if(fileLocation && filename) {
             var command = 'cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename;
@@ -850,65 +959,71 @@ var Jambi = function () {
                 var errorMessage;
                 $('#flowcontent').empty();
                 jambiEditor.clearGutter('test1');
+                try{
+                    if(flowResults.length > 1) {
+                        for(var i=0; i<flowResults.length; i++) {
 
-                if(flowResults.length > 1) {
-                    for(var i=0; i<flowResults.length; i++) {
+                            flowFile[i] = flowFile[i].substr(1, flowFile[i].length-2);
 
-                        flowFile[i] = flowFile[i].substr(1, flowFile[i].length-2);
+                            if(flowFile[i] === filename) {
+                                var temp = flowResults[i].substr(1, flowResults[i].length);
+                                var flowLine = temp.substr(0, temp.indexOf(":"));
 
-                        if(flowFile[i] === filename) {
-                            var temp = flowResults[i].substr(1, flowResults[i].length);
-                            var flowLine = temp.substr(0, temp.indexOf(":"));
+                                var flowCol1 = temp.match(/(\d)*(\,)(\d)*/g)[0];
 
-                            var flowCol1 = temp.match(/(\d)*(\,)(\d)*/g)[0];
+                                var col1 = flowCol1.substr(0, flowCol1.indexOf(","));
+                                var col2 = flowCol1.substr(flowCol1.indexOf(",")+1, flowCol1.length);
 
-                            var col1 = flowCol1.substr(0, flowCol1.indexOf(","));
-                            var col2 = flowCol1.substr(flowCol1.indexOf(",")+1, flowCol1.length);
-
-                            var errorString = temp.match(/(:)(\s)(\w*)(\s)?((\w)*)?/)[0];
-
-                            errorString = errorString.substr(1, errorString.length);
-
-
-                            if(i % 2 === 0) {
-
-                                errorMessage = temp.match(/(\n)((\w)*(\s)*)*/g);
-                                errorType = errorString;
-                                errorCol1 = col1;
-                                errorCol2 = col2;
-                                errorLine = flowLine;
-                            }
-
-                            if(i % 2 === 1) {
-                               $('#flowcontent').append("Line " + errorLine + " Column " + errorCol1 + ", " +
-                                                errorCol2 + errorType + " - " + errorMessage  + " - " + errorString + '<br>');
-
-                                var from = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol1) };
-                                var to = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol2) };
-
-
-                                //jambiEditor.markText(from, to, {'css': "color: #fff"});
-                                //jambiEditor.addLineClass(errorLine-1, "background", "test");
-                                var gutterLine = parseInt(errorLine-1);
-
-                                var flowErrorMessage = "Line " + errorLine + " Column " + errorCol1 + ", " + errorCol2 +
-                                    errorType + " - " + errorMessage  + " - " + errorString + '<br>';
-
-                                jambiEditor.setGutterMarker(gutterLine, "test1", makeMarker(flowErrorMessage));
-
-                                function makeMarker(error) {
-                                  var marker = document.createElement("div");
-                                  marker.className = "test";
-                                  marker.setAttribute('data-error', error);
-                                  marker.style.color = "#ff0000";
-                                  marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                                  return marker;
+                                try{
+                                    var errorString = temp.match(/(:)(\s)(\w*)(\s)?((\w)*)?/)[0];
+                                } catch(err){
+                                    var errorString = "Error";
                                 }
-                                jambiEditor.refresh();
 
+                                errorString = errorString.substr(1, errorString.length);
+
+
+                                if(i % 2 === 0) {
+
+                                    errorMessage = temp.match(/(\n)((\w)*(\s)*)*/g);
+                                    errorType = errorString;
+                                    errorCol1 = col1;
+                                    errorCol2 = col2;
+                                    errorLine = flowLine;
+                                }
+
+                                if(i % 2 === 1) {
+                                   $('#flowcontent').append("Line " + errorLine + " Column " + errorCol1 + ", " +
+                                                    errorCol2 + errorType + " - " + errorMessage  + " - " + errorString + '<br>');
+
+                                    var from = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol1) };
+                                    var to = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol2) };
+
+
+                                    //jambiEditor.markText(from, to, {'css': "color: #fff"});
+                                    //jambiEditor.addLineClass(errorLine-1, "background", "test");
+                                    var gutterLine = parseInt(errorLine-1);
+
+                                    var flowErrorMessage = "Line " + errorLine + " Column " + errorCol1 + ", " + errorCol2 +
+                                        errorType + " - " + errorMessage  + " - " + errorString + '<br>';
+
+                                    jambiEditor.setGutterMarker(gutterLine, "test1", makeMarker(flowErrorMessage));
+
+                                    function makeMarker(error) {
+                                      var marker = document.createElement("div");
+                                      marker.className = "test";
+                                      marker.setAttribute('data-error', error);
+                                      marker.style.color = "#ff0000";
+                                      marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                                      return marker;
+                                    }
+                                    jambiEditor.refresh();
+                                }
                             }
                         }
                     }
+                } catch(err) {
+                    jambi.showNotification("Jambi Error", "Flow Error");
                 }
 
                 if($('#flowcontent').is(':empty')) {
@@ -920,6 +1035,7 @@ var Jambi = function () {
                     alert($(this).data('error'));
                 });
             });
+
         }
     };
 
