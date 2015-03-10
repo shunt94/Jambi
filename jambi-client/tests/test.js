@@ -6,7 +6,7 @@ function runTests() {
     $('#testResults').show();
     var jTest = new JambiTest($('#testResults'));
 
-    jTest.describe("AJAX To Server", function() {
+    jTest.describe("AJAX To Server", function(callback) {
         jTest.should("GET data from api", function(done){
             $.ajax({
                 type: 'GET',
@@ -16,7 +16,9 @@ function runTests() {
                 dataType: 'json',
                 success: function(data) {
                     if(data) {
+                        callback();
                         done();
+
                     }
                     else {
                         done("error");
@@ -31,7 +33,7 @@ function runTests() {
 
 
 
-    jTest.describe("Read in Local settings files", function(){
+    jTest.describe("Read in Local settings files", function(callback){
         jTest.should("Get settings file jambi.json", function(done){
             jambifs.readJSON('jambi.json', function(err, data) {
                 if(err) {
@@ -39,6 +41,7 @@ function runTests() {
                 }
                 else {
                     if(data) {
+                        callback();
                         done();
                     } else {
                         done("error");

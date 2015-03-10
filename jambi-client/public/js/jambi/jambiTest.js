@@ -1,15 +1,16 @@
 var JambiTest = function (htmlDoc) {
     var that = this;
     var fs = require('fs');
-    var output;
     var errorCounter = 0;
     var results = [];
 
     JambiTest.prototype.describe = function(label, tests){
-        output = "";
+        var output = "";
         output = "<br>" + label + "<br>";
-        tests();
-        //htmlDoc.append(output);
+        tests(function(){
+           htmlDoc.append(output);
+        });
+
     };
 
     JambiTest.prototype.should = function(label, test) {
