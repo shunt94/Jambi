@@ -468,7 +468,6 @@ var Jambi = function () {
         generateJambiContextMenus();
 
 
-        jambiAC.setMenuContext('html');
 
         var instaReady = false;
 

@@ -87,7 +87,8 @@ var jambiSetup = function() {
 			settingsFont:       new gui.MenuItem({ label: 'Font Options'}),
 			settingsSyntax:     new gui.MenuItem({ label: 'Syntax Mode'}),
 			settingsTheme:      new gui.MenuItem({ label: 'Theme'}),
-			settingsClearSettings:	new gui.MenuItem({ label: 'Clear Settings' })
+			settingsClearSettings:	new gui.MenuItem({ label: 'Clear Settings' }),
+            settingsRunTests:	new gui.MenuItem({ label: 'Run Tests' }),
 		}
 	};
 
@@ -162,6 +163,7 @@ var jambiSetup = function() {
 		settingsSubmenu.append(jambiMenu.settings.settingsTheme);
 		settingsSubmenu.append(new gui.MenuItem({ type: 'separator' }));
 		settingsSubmenu.append(jambiMenu.settings.settingsClearSettings);
+		settingsSubmenu.append(jambiMenu.settings.settingsRunTests);
 	})();
 
 
