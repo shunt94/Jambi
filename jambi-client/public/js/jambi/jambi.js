@@ -817,9 +817,7 @@ var Jambi = function () {
                 }
             }
         );
-        if(notifier) {
-            return true;
-        }
+        return notifier;
     };
 
 

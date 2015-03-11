@@ -135,7 +135,7 @@ function runTests() {
             }, 1000);
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode html", function(done){
+        jTest.should("Check the file type and return codemirror fileMode html", function(done){
            if(jModel.checkFileTypes("html") === "htmlmixed") {
                done();
            } else {
@@ -143,7 +143,7 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode css", function(done){
+        jTest.should("Check the file type and return codemirror fileMode css", function(done){
            if(jModel.checkFileTypes("css") === "css") {
                done();
            } else {
@@ -151,7 +151,7 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode javascript", function(done){
+        jTest.should("Check the file type and return codemirror fileMode javascript", function(done){
            if(jModel.checkFileTypes("js") === "javascript") {
                done();
            } else {
@@ -159,7 +159,7 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode python", function(done){
+        jTest.should("Check the file type and return codemirror fileMode python", function(done){
            if(jModel.checkFileTypes("py") === "python") {
                done();
            } else {
@@ -167,7 +167,7 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode sass", function(done){
+        jTest.should("Check the file type and return codemirror fileMode sass", function(done){
            if(jModel.checkFileTypes("sass") === "text/x-sass") {
                done();
            } else {
@@ -175,7 +175,7 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode scss", function(done){
+        jTest.should("Check the file type and return codemirror fileMode scss", function(done){
            if(jModel.checkFileTypes("scss") === "text/x-scss") {
                done();
            } else {
@@ -183,13 +183,104 @@ function runTests() {
            }
         });
 
-        jTest.should("Checks the file type and returns codemirror fileMode less", function(done){
+        jTest.should("Check the file type and return codemirror fileMode less", function(done){
            if(jModel.checkFileTypes("less") === "text/x-less") {
                done();
            } else {
                done("error");
            }
         });
+
+        jTest.should("Check the file type and return codemirror fileMode json", function(done){
+           if(jModel.checkFileTypes("json") === "javascript") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode ruby", function(done){
+           if(jModel.checkFileTypes("rb") === "ruby") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode coffee", function(done){
+           if(jModel.checkFileTypes("coffee") === "text/x-coffeescript") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode haskell", function(done){
+           if(jModel.checkFileTypes("hs") === "text/x-haskell") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode c", function(done){
+           if(jModel.checkFileTypes("c") === "text/x-csrc") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode c++", function(done){
+           if(jModel.checkFileTypes("cpp") === "text/x-c++src") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode java", function(done){
+           if(jModel.checkFileTypes("java") === "text/x-java") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode c#", function(done){
+           if(jModel.checkFileTypes("cs") === "text/x-csharp") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode objective C", function(done){
+           if(jModel.checkFileTypes("m") === "text/x-objectivec") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode lua", function(done){
+           if(jModel.checkFileTypes("lua") === "text/x-lua") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+        jTest.should("Check the file type and return codemirror fileMode php", function(done){
+           if(jModel.checkFileTypes("php") === "text/x-php") {
+               done();
+           } else {
+               done("error");
+           }
+        });
+
+
+
 
 
     });

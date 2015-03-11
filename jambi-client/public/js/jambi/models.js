@@ -499,14 +499,25 @@ var jambiModel = function() {
 				return "text/x-less";
 			case "rb":
 				return "ruby";
-			case "":
-				return "";
-			case "":
-				return "";
-			case "":
-				return "";
-			case "":
-				return "";
+			case "coffee":
+				return "text/x-coffeescript";
+			case "hs":
+				return "text/x-haskell";
+			case "c":
+				return "text/x-csrc";
+			case "cpp":
+				return "text/x-c++src";
+            case "java":
+                return "text/x-java";
+            case "cs":
+                return "text/x-csharp";
+            case "m":
+                return "text/x-objectivec";
+            case "lua":
+                return "text/x-lua";
+            case "php":
+                return "text/x-php";
+
 		}
 	}
 
