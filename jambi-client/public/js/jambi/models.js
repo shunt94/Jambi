@@ -178,6 +178,9 @@ var jambiModel = function() {
 			changeFileById(openFile);
 		}
 
+		if(jDoc) {
+		    return true;
+		}
 	}
 
 	function addFileToProjectJSON(filename, fileLocation, filemode) {
@@ -1107,22 +1110,22 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 
 	return {
-		newFile: function() { newDocument (); },
+		newFile: function() { return newDocument (); },
 		openFile: function(filename, filecontents, filemode, fileLocation) {
-			newDocument(filename, filecontents, filemode, fileLocation);
+			return newDocument(filename, filecontents, filemode, fileLocation);
 		},
-		closeCurrentDoc: function() { closeCurrentDocument(); },
-		closeAllDocs: function() { removeAllDocuments (); },
+		closeCurrentDoc: function() { return closeCurrentDocument(); },
+		closeAllDocs: function() { return removeAllDocuments (); },
 		getActiveDocument: function() { return openDocuments.get(activeDocument); },
-		setDocLocation: function(loc) { openDocuments.get(activeDocument).fileLocation = loc; },
-		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
+		setDocLocation: function(loc) { return openDocuments.get(activeDocument).fileLocation = loc; },
+		setDocName: function(name) { return openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
 		onEditorPage: function() { return isEditorOpen; },
 		getActiveProject: function() { return activeProject; },
-		addFileToProject: function(filename, fileLocation, filemode) { addFileToProjectJSON(filename, fileLocation, filemode)},
+		addFileToProject: function(filename, fileLocation, filemode) { return addFileToProjectJSON(filename, fileLocation, filemode)},
 		checkFileTypes: function (fileType) { return checkFileType(fileType); },
 
 		saveAllProjects: function() {
-			saveProjectsJSON();
+			return saveProjectsJSON();
 		}
 	};
 };

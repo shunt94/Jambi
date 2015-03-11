@@ -2,18 +2,19 @@ var JambiTest = function (htmlDoc) {
     var that = this;
     var fs = require('fs');
     var errorCounter = 0;
+    var testCounter = 0;
     var results = [];
 
     JambiTest.prototype.describe = function(label, tests){
-        var output = "";
-        output = "<br>" + label + "<br>";
-        tests(function(){
-           htmlDoc.append(output);
-        });
+        //var output = "";
+        //output = "<br>" + label + "<br>";
+        //htmlDoc.append(output);
 
+        tests();
     };
 
     JambiTest.prototype.should = function(label, test) {
+        testCounter++;
         var done = function(err) {
             if (err) {
                 that.fail(label);
@@ -25,7 +26,6 @@ var JambiTest = function (htmlDoc) {
         };
 
         test(done);
-
     };
 
     JambiTest.prototype.pass = function(label) {
@@ -46,4 +46,9 @@ var JambiTest = function (htmlDoc) {
         htmlDoc.append(print);
     };
 
+    JambiTest.prototype.end = function (){
+        setTimeout(function(){
+            htmlDoc.append('<br><br> Ran ' + testCounter + ' tests with ' + errorCounter + ' errors.');
+        }, 5000);
+    };
 };

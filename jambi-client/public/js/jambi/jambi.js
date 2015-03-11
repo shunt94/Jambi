@@ -15,7 +15,6 @@ var Jambi = function () {
 
     readJambiSettings();
 
-
     function readJambiSettings() {
         jambifs.readJSON('jambi.json', function(err, data) {
             if(err) {
@@ -513,11 +512,12 @@ var Jambi = function () {
             jambi.updateCursorPosition();
             setTimeout(function(){
                 var currentActiveDoc = jModel.getActiveDocument();
-                if(currentActiveDoc) {
+                var currentActiveProject = jModel.getActiveProject();
+                if(currentActiveDoc && currentActiveProject) {
                     if(currentActiveDoc.isSaved) {
                         //$('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
                         //jModel.getActiveDocument().isSaved = false;
-                        if(jModel.getActiveProject().flowInitialised && currentActiveDoc.mode === "javascript") {
+                        if(currentActiveProject.flowInitialised && currentActiveDoc.mode === "javascript") {
                            delay(function(){
                                 jambi.flowCode(currentActiveDoc.fileLocation, currentActiveDoc.title);
                                 jambi.jsHint();
@@ -817,6 +817,9 @@ var Jambi = function () {
                 }
             }
         );
+        if(notifier) {
+            return true;
+        }
     };
 
 
