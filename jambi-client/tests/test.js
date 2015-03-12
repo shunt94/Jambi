@@ -1,11 +1,7 @@
-//$('#testResults').hide();
+$('#testResults').hide();
 jSetup.jambiMenu.settings.settingsRunTests.click = function () {
     runTests();
 }
-setTimeout(function(){
-    runTests();
-}, 1000);
-
 function runTests() {
     $('#testResults').empty();
     $('#testResults').show();
@@ -278,6 +274,265 @@ function runTests() {
                done("error");
            }
         });
+    });
+
+    jTest.describe("Jambi Menu Setup", function(){
+        jTest.should("return the jambi setup model", function(done){
+            if(jSetup) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the gui model", function(done){
+            if(jSetup.gui) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the jambiMenu model", function(done){
+            if(jSetup.jambiMenu) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the openRecentMenu model", function(done){
+            if(jSetup.openRecentMenu) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App model", function(done){
+            if(jSetup.gui.App) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App dataPath model", function(done){
+            if(jSetup.gui.App.dataPath) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest model", function(done){
+            if(jSetup.gui.App.manifest) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest dependencies model", function(done){
+            if(jSetup.gui.App.manifest.dependencies) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest description model", function(done){
+            if(jSetup.gui.App.manifest.description) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest main model", function(done){
+            if(jSetup.gui.App.manifest.main === "editor.html") {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers model", function(done){
+            if(jSetup.gui.App.manifest.maintainers) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers email model", function(done){
+            if(jSetup.gui.App.manifest.maintainers[0].email) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers name model", function(done){
+            if(jSetup.gui.App.manifest.maintainers[0].name) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers web model", function(done){
+            if(jSetup.gui.App.manifest.maintainers[0].web) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers name model", function(done){
+            if(jSetup.gui.App.manifest.name) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest maintainers version model", function(done){
+            if(jSetup.gui.App.manifest.version) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window model", function(done){
+            if(jSetup.gui.App.manifest.window) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window frame model", function(done){
+            if(jSetup.gui.App.manifest.window.frame) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window height model", function(done){
+            if(jSetup.gui.App.manifest.window.height) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window icon model", function(done){
+            if(jSetup.gui.App.manifest.window.icon) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window min-height model", function(done){
+            if(jSetup.gui.App.manifest.window.min_height) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window min width model", function(done){
+            if(jSetup.gui.App.manifest.window.min_width) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window position model", function(done){
+            if(jSetup.gui.App.manifest.window.position) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window title model", function(done){
+            if(jSetup.gui.App.manifest.window.title) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window toolbar model", function(done){
+            if(jSetup.gui.App.manifest.window.toolbar) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the App manifest window width model", function(done){
+            if(jSetup.gui.App.manifest.window.width) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the screen model", function(done){
+            if(jSetup.gui.Screen) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the screen model", function(done){
+            if(jSetup.gui.Screen) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the shell model", function(done){
+            if(jSetup.gui.Shell) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the Shortcut model", function(done){
+            if(jSetup.gui.Shortcut) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the tray model", function(done){
+            if(jSetup.gui.Tray) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
+        jTest.should("return the window model", function(done){
+            if(jSetup.gui.Window) {
+                done();
+            } else {
+                done("error");
+            }
+        });
+
 
 
 
@@ -290,7 +545,7 @@ function runTests() {
 
 
     setTimeout(function(){
-      //  $('#testResults').hide();
+        $('#testResults').hide();
     }, 3000);
 }
 

@@ -527,6 +527,7 @@ var jambiModel = function() {
 		try {
 			var Client = require('ssh2').Client;
 			var conn = new Client();
+			var fs = require('fs');
 
 
 			conn.on('error', function(e) {
@@ -539,10 +540,26 @@ var jambiModel = function() {
 				console.log('Client :: ready');
 				conn.sftp(function(err, sftp) {
 					if (err) throw err;
-					sftp.readdir('foo', function(err, list) {
+
+					sftp.readdir('./public_html', function(err, list) {
 						if (err) throw err;
-						console.dir(list);
-						conn.end();
+						//console.dir(list);
+						for(var i = 0; i < list.length; i++) {
+    						if(list[i].filename === "index.html") {
+                                console.log(list[i].filename);
+        						sftp.readFile('./public_html/index.html', [], function(err,contents) {
+            						console.log(err);
+            						console.log(contents.toString('utf-8'));
+            						newDocument("index.html", contents.toString('utf-8'), checkFileType("html"), host + "./public_html/");
+            						conn.end();
+        						});
+    						}
+						}
+
+						console.log(sftp);
+
+
+
 					});
 				});
 			}).connect({
@@ -556,7 +573,7 @@ var jambiModel = function() {
 		}
 	}
 
-	//setupSSH("192.168.1.1", 80, "user", "password");
+	//setupSSH("unix.sussex.ac.uk", 22, "", "");
 
 	function populateProjects() {
 		$('#projectsTable > tbody').empty();
@@ -668,12 +685,20 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 				"name": name,
 				"root": root,
 				"openfiles": [],
-				"flowInitialised":false
+				"flowInitialised":false,
+				"vc": {
+    				"vcInitialised": false,
+    				"vcType": "git",
+    				"vcURL": "",
+    				"vcUser": ""
+    			}
 			}
 		});
 		Projects.add(newProject);
 
 		var projectsJSON;
+
+        // Project addons
 
 
 		jambifs.readJSON('projects.json', function(err, data){
@@ -682,9 +707,8 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 			jambifs.writeJSON('projects.json', JSON.stringify(projectsJSON));
 		});
 
+        openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
 
-
-		populateProjects();
 	}
 
 
