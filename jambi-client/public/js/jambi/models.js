@@ -1153,7 +1153,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		closeAllDocs: function() { return removeAllDocuments (); },
 		getActiveDocument: function() { return openDocuments.get(activeDocument); },
 		setDocLocation: function(loc) { return openDocuments.get(activeDocument).fileLocation = loc; },
-		setDocName: function(name) { return openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
+		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
 		onEditorPage: function() { return isEditorOpen; },
 		getActiveProject: function() { return activeProject; },
 		addFileToProject: function(filename, fileLocation, filemode) { return addFileToProjectJSON(filename, fileLocation, filemode)},
