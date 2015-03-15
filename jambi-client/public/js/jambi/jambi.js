@@ -24,6 +24,7 @@ var Jambi = function () {
             else {
                 version = data.version;
                 editorFontSize = data.editor_settings.fontsize;
+                $('#instyled').append(".CodeMirror { font-size:" + editorFontSize + "px; }");
             }
         });
     }
@@ -116,7 +117,15 @@ jambi.templateTest(jambiEditor.doc.getValue());
 
 
         jMenu.instas.instasMenu.click = function () {
+            var content = jInsta.getInstaValues();
+            var modalContent = "";
+            for(var i = 0; i < content.length; i++) {
+                modalContent += '$' +  content[i] + '<br>'
+            }
+            var modalFunction = function () {
 
+            };
+            jambi.createModal("Instas", "List of Instas", modalContent, "Add", modalFunction);
         };
 
         jMenu.instas.instasNew.click = function () {

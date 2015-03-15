@@ -38,6 +38,10 @@ var jambiInsta = function () {
         jambifs.writeJSON('instas/instas.json', JSON.stringify(instaArray));
     };
 
+    jambiInsta.prototype.getInstaValues = function () {
+        return Object.keys(instaArray);
+    };
+
     jambiInsta.prototype.getString = function () {
         return instaString;
     };
