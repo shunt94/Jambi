@@ -115,6 +115,32 @@ jambi.templateTest(jambiEditor.doc.getValue());
         };
 
 
+        jMenu.instas.instasMenu.click = function () {
+
+        };
+
+        jMenu.instas.instasNew.click = function () {
+            var editor;
+            function modalFunction() {
+                jInsta.addNew($('#instaKeys').val(), editor.getValue());
+            }
+
+            var modalContent;
+             $.ajax({
+                 dataType : "html",
+                 url : "public/views/modal/insta.html",
+                 success : function(results) {
+                     modalContent = results;
+                     jambi.createModal("Create New Insta", "", modalContent, "Add", modalFunction);
+
+                    editor = CodeMirror(document.getElementById('instaCode'), {
+                        mode:  "htmlmixed",
+                       lineNumbers: true
+                    });
+                 }
+            });
+        };
+
 
         // Themes
 
@@ -149,10 +175,10 @@ jambi.templateTest(jambiEditor.doc.getValue());
 
 
         jSetup.gui.Window.get().on('close', function () {
-            // show warning if you want
-            jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){});
+            var that = this;
+            jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){that.close(true);});
             jambi.openModal();
-            this.close(true);
+            return false;
         });
     };
 
@@ -420,7 +446,19 @@ jambi.templateTest(jambiEditor.doc.getValue());
             code_menu.append(new gui.MenuItem({ label: 'Paste' }));
             code_menu.append(new gui.MenuItem({ type: 'separator' }));
             code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
-            code_menu.append(new gui.MenuItem({ label: 'Generate all files'}));
+
+
+            code_menu.items[0].click = function(){
+                 document.execCommand("cut");
+            };
+
+            code_menu.items[1].click = function(){
+                 document.execCommand("copy");
+            };
+
+            code_menu.items[2].click = function(){
+                 document.execCommand("paste");
+            };
 
             code_menu.items[4].click = function(e) {
                 var selection = jambi.getJambiEditor().getSelection();
@@ -440,16 +478,6 @@ jambi.templateTest(jambiEditor.doc.getValue());
                     var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
                     var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
                     jModel.openFile(filename, "", filetype);
-                }
-            };
-
-
-            code_menu.items[5].click = function (){
-                var value = jambi.getJambiEditor().getValue();
-                var files = value.match(/((\/)*?(-)?(\w))*(\.)(\w)*/g);
-
-                for(var i = 0; i < files.length; i++) {
-                    console.log(files[i]);
                 }
             };
 
@@ -520,8 +548,11 @@ jambi.templateTest(jambiEditor.doc.getValue());
                         //jModel.getActiveDocument().isSaved = false;
                         if(currentActiveProject.flowInitialised && currentActiveDoc.mode === "javascript") {
                            delay(function(){
-                                jambi.flowCode(currentActiveDoc.fileLocation, currentActiveDoc.title);
-                                jambi.jsHint();
+                                setTimeout(function(){
+                                    jambi.flowCode(currentActiveDoc.fileLocation, currentActiveDoc.title);
+                                    //jambi.jsHint();
+                                }, 100);
+
 
                             }, 700);
                         }

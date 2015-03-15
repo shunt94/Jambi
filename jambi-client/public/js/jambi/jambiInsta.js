@@ -5,12 +5,37 @@ var jambiInsta = function () {
     var instaStart;
     var instaEnd;
     var instaString = "";
-
+    var counter = 0;
+    var fs = require('fs');
     jambiInsta.prototype.getInstas = function () {
         // get instas from json file
         jambifs.readJSON('instas/instas.json', function(err, data){
             instaArray = data;
         });
+    };
+
+    jambiInsta.prototype.addNew = function(name, code) {
+
+
+        function generateRandomString(length, chars) {
+            var result = '';
+            for (var i = length; i > 0; --i) {
+                result += chars[Math.round(Math.random() * (chars.length - 1))];
+            }
+            return result;
+        }
+        var filename = generateRandomString(16, '0123456789abcdefghijklmnopqrstuvwxyz') + ".html";
+        instaArray[name] = 'instas/' + filename;
+
+        fs.writeFile('instas/instas/' + filename, code.toString(), function (err) {
+            if (err) {
+                jambi.showNotification('Jambi Intas', 'Error - Could not make new insta');
+            } else {
+                jambi.showNotification('Jambi Intas', 'Successfully made new insta');
+            }
+        });
+
+        jambifs.writeJSON('instas/instas.json', JSON.stringify(instaArray));
     };
 
     jambiInsta.prototype.getString = function () {
