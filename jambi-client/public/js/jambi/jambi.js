@@ -56,8 +56,7 @@ var Jambi = function () {
             jambi.closeCurrentFile();
         };
         jMenu.file.fileCloseAll.click = function () {
-//            jambi.closeAllFiles();
-jambi.templateTest(jambiEditor.doc.getValue());
+            jambi.closeAllFiles();
         };
 
         jMenu.view.viewProjects.click = function () {
@@ -113,6 +112,10 @@ jambi.templateTest(jambiEditor.doc.getValue());
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
             }
+        };
+
+        jMenu.tools.toolsJambiTemplate.click = function () {
+            jambi.templateTest(jambiEditor.getValue());
         };
 
 
@@ -471,17 +474,23 @@ jambi.templateTest(jambiEditor.doc.getValue());
 
             code_menu.items[4].click = function(e) {
                 var selection = jambi.getJambiEditor().getSelection();
-                if(jModel.getActiveDocument()) {
-                    if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
-                        var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
-                        var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
-                        var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
-                        var contents = "";
-                        if(doesFileExsit(fileLoc + "/" + filename)) {
-                            contents = jambi.openFileByDir(fileLoc + "/" + filename);
-                        }
+                var activeDoc = jModel.getActiveDocument();
+                if(activeDoc) {
+                    if(activeDoc.fileLocation) {
+                        if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
+                            var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
+                            var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
+                            var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
+                            var contents = "";
+                            if(doesFileExsit(fileLoc + "/" + filename)) {
+                                contents = jambi.openFileByDir(fileLoc + "/" + filename);
+                            }
 
-                        jModel.openFile(filename, contents, filetype, fileLoc + "/");
+                            jModel.openFile(filename, contents, filetype, fileLoc + "/");
+                        }
+                    } else {
+                        alert("Save current file first");
+                        jambi.saveFile();
                     }
                 } else {
                     var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
@@ -762,6 +771,12 @@ jambi.templateTest(jambiEditor.doc.getValue());
                         if(false) { //if less and auto compile is on
                             var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
                             jambi.compileLess(file.fileLocation + fileNameWithoutType + ".css");
+                        }
+                        if(jModel.getActiveProject()) {
+                            if(jModel.getActiveProject().jTemplate){
+                                jambi.templateTest(jambiEditor.getValue());
+                            }
+
                         }
                     }
                 });
@@ -1212,6 +1227,7 @@ jambi.templateTest(jambiEditor.doc.getValue());
 
 
 	Jambi.prototype.templateTest = function (input) {
+    	var currentHistory = jambiEditor.doc.getHistory();
         var activeDoc = jModel.getActiveDocument();
         var activeProject = jModel.getActiveProject();
 
@@ -1224,44 +1240,49 @@ jambi.templateTest(jambiEditor.doc.getValue());
             var oldHTML = jambiEditor.getValue();
             var templateTags = /(\(%)(\s)?(')?(include|if)?(\s)(')?(.)*(')?(%)(\))/g;
 
-            var tag = input.match(templateTags)[0];
-
-            var asd = /(\')(.)*(\')/;
-            var filename = tag.match(asd)[0];
-
-            filename = filename.substr(1, filename.length-2);
+            var tag = input.match(templateTags);
+            if(tag) {
+                tag = tag[0];
 
 
-            var searchCursor = jambiEditor.getSearchCursor(templateTags,0,true);
-            if(searchCursor.findNext()) {
-        		var row = searchCursor.from().line;
-                var col = searchCursor.from().ch;
-                jambiEditor.setCursor(row,col);
-                var cursor = jambi.getJambiEditor().getCursor();
-                cursor.ch = 100;
-                jambiEditor.setSelection(searchCursor.from(), cursor);
-                if(!doesDirectoryExist (activeProject.root + "/templates")) {
-                    fs.mkdirSync(activeProject.root + "/templates");
+                var asd = /(\')(.)*(\')/;
+                var filename = tag.match(asd)[0];
+
+                filename = filename.substr(1, filename.length-2);
+
+
+                var searchCursor = jambiEditor.getSearchCursor(templateTags,0,true);
+                if(searchCursor.findNext()) {
+            		var row = searchCursor.from().line;
+                    var col = searchCursor.from().ch;
+                    jambiEditor.setCursor(row,col);
+                    var cursor = jambi.getJambiEditor().getCursor();
+                    cursor.ch = 100;
+                    jambiEditor.setSelection(searchCursor.from(), cursor);
+                    if(!doesDirectoryExist (activeProject.root + "/templates")) {
+                        fs.mkdirSync(activeProject.root + "/templates");
+                    }
+
+                    try{
+                        var newHtml = jambifs.readHTML(activeDoc.fileLocation + filename);
+
+
+
+                        jambi.getJambiEditor().replaceSelection(newHtml);
+                        jambifs.writeJSON(activeProject.root + "/templates/" + activeDoc.title, jambiEditor.getValue());
+
+                        jambiEditor.setValue(oldHTML);
+
+
+                    } catch(err) {
+                        alert(err);
+                    }
+
                 }
-
-                try{
-                    var newHtml = jambifs.readHTML(activeDoc.fileLocation + filename);
-
-
-
-                    jambi.getJambiEditor().replaceSelection(newHtml);
-                    jambifs.writeJSON(activeProject.root + "/templates/" + activeDoc.title, jambiEditor.getValue());
-
-                    jambiEditor.setValue(oldHTML);
-
-
-                } catch(err) {
-                    alert(err);
-                }
-
             }
 
         }
+        jambiEditor.doc.setHistory(currentHistory);
 
 	};
 
@@ -1270,4 +1291,3 @@ jambi.templateTest(jambiEditor.doc.getValue());
 
 var jambi = new Jambi();
 jambi.menuSetup();
-

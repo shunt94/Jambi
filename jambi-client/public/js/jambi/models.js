@@ -22,7 +22,8 @@ var jambiModel = function() {
 				"vcType": "git",
 				"vcURL": "",
 				"vcUser": ""
-			}
+			},
+			"jTemplate": false
 		}
 	});
 
