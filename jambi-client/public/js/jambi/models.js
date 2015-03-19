@@ -9,7 +9,7 @@ var jambiModel = function() {
 
 	var isEditorOpen = false;
 
-
+	
 	var Project = Backbone.Model.extend({
 		"project": {
 			"name": "",
@@ -1146,7 +1146,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 
 	return {
-		newFile: function() { return newDocument (); },
+		newFile: function() { newDocument (); },
 		openFile: function(filename, filecontents, filemode, fileLocation) {
 			return newDocument(filename, filecontents, filemode, fileLocation);
 		},

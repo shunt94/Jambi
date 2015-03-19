@@ -1004,67 +1004,85 @@ var Jambi = function () {
 
 
     Jambi.prototype.flowCode = function(fileLocation, filename) {
-         $('#flowcontent').empty();
-         jambiEditor.clearGutter('test1');
-
-        var oldText = jambi.getJambiEditor().getValue();
         if(fileLocation && filename) {
+
+            $('#jambi-body').off('mouseover', '.test');
+            var errorCount = 0;
+            var oldText = jambi.getJambiEditor().getValue();
             if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
                 jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
             }
-        }
+            jambi.saveFile();
 
-
-        var fullPath = fileLocation + filename;
-        if(fullPath.indexOf("./") === 1) {
-            fullPath = fullPath.substr(2, fullPath.length);
-        }
-
-        var listOfJSON = "";
-        var flowResults = terminal.spawn('/usr/local/bin/flow', ['status', '--json', fileLocation])
-        flowResults.stdout.on('data', function (data) {
-            return listOfJSON += data.toString();
-        });
-
-        setTimeout(function() {
-             try{
-                var results = JSON.parse(listOfJSON.toString()).errors;
-                for(var i = 0; i<results.length; i++) {
-                    if(results[i].message[0].path == fullPath) {
-                        var result = results[i];
-                        var desc = result.message[0].descr;
-                        if(result.message[1]) {
-                            desc = result.message[0].descr + " " + result.message[1].descr;
-                        }
-                        var start = {"line": result.message[0].line, "ch": result.message[0].start};
-                        var end = {"line": result.message[0].endline, "ch": result.message[0].end};
-
-                        jambiEditor.setGutterMarker(result.message[0].line-1, "test1", makeMarker(desc));
-
-                        function makeMarker(error) {
-                          var marker = document.createElement("div");
-                          marker.className = "test";
-                          marker.setAttribute('data-error', error);
-                          marker.style.color = "#ff0000";
-                          marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                          return marker;
-                        }
-
-                    }
-                }
-
-                $('.test').off();
-                $('.test').on('mouseover', function(){
-                    alert($(this).data('error'));
-                });
-            } catch(err) {
-                console.log(err);
-                jambi.showNotification("Jambi Error", "Flow Error");
+            var fullPath = fileLocation + filename;
+            if(fullPath.indexOf("./") === 1) {
+                fullPath = fullPath.substr(2, fullPath.length);
             }
-        }, 3000);
 
 
-        jambiEditor.refresh();
+            var listOfJSON = "";
+            var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation])
+            flowResults.stdout.on('data', function (data) {
+                console.log(data.toString());
+                return listOfJSON += data.toString();
+            });
+            flowResults.on('close', function (code) {
+                setTimeout(function() {
+                     try{
+                        jambiEditor.clearGutter('test1');
+                        var results = JSON.parse(listOfJSON.toString()).errors;
+                        for(var i = 0; i<results.length; i++) {
+                            if(results[i].message[0].path === fullPath) {
+                                errorCount += 1;
+                                var result = results[i];
+                                var desc = result.message[0].descr;
+                                if(result.message[1]) {
+                                    desc = result.message[0].descr + " " + result.message[1].descr;
+                                }
+                                var start = {"line": result.message[0].line, "ch": result.message[0].start};
+                                var end = {"line": result.message[0].endline, "ch": result.message[0].end};
+
+                                jambiEditor.setGutterMarker(result.message[0].line-1, "test1", makeMarker(desc));
+
+                                function makeMarker(error) {
+                                  var marker = document.createElement("div");
+                                  marker.className = "test";
+                                  marker.setAttribute('data-error', error);
+                                  marker.style.color = "#ff0000";
+                                  marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                                  return marker;
+                                }
+
+                            }
+                        }
+
+                    } catch(err) {
+                        console.log(err);
+                        jambi.showNotification("Jambi Error", "Flow Error");
+                    }
+
+                    var $errorMessageDiv = $('#flowErrorMessage');
+                    $('#jambi-body').off('mouseover', '.test');
+                    $('#jambi-body').on('mouseover', '.test', function(){
+                        var $that = $(this);
+                        var message = $that.data('error');
+                        var offTop = $that.offset().top;
+                        var offLeft = $that.offset().left;
+                        $errorMessageDiv.fadeIn();
+                        $errorMessageDiv.offset({top: offTop, left: offLeft+20});
+                        $errorMessageDiv.html(message);
+                    });
+                    $('#jambi-body').on('mouseleave', '.test', function(){
+                        $errorMessageDiv.fadeOut();
+                    });
+
+                    $('#flowcontent').html("Found " + errorCount + " errors");
+
+                }, 100);
+            });
+
+            jambiEditor.refresh();
+        }
     };
 
 

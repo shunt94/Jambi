@@ -556,3 +556,13 @@ iframe {
 #instaCode {
     background: #fff;
 }
+
+#flowErrorMessage {
+    background: #fff;
+    color: #333;
+    min-height: 40px;
+    max-height: 100px;
+    width: 150px;
+    position: absolute;
+    z-index: 99999;
+}
