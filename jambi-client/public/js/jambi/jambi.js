@@ -15,6 +15,10 @@ var Jambi = function () {
 
     readJambiSettings();
 
+    function simulateKeyPress(character) {
+      jQuery.event.trigger({ type : 'keypress', which : character.charCodeAt(0) });
+    }
+
 
     function readJambiSettings() {
         jambifs.readJSON('jambi.json', function(err, data) {
@@ -36,7 +40,6 @@ var Jambi = function () {
     Jambi.prototype.menuSetup = function () {
         var jMenu = jSetup.jambiMenu;
 
-
         // File Submenu
         jMenu.file.fileNewSubmenu[0].click = function () {
 
@@ -57,7 +60,8 @@ var Jambi = function () {
             jambi.closeCurrentFile();
         };
         jMenu.file.fileCloseAll.click = function () {
-            jambi.closeAllFiles();
+//            jambi.closeAllFiles();
+simulateKeyPress("a");
         };
 
         jMenu.view.viewProjects.click = function () {
@@ -1084,114 +1088,6 @@ var Jambi = function () {
             jambiEditor.refresh();
         }
     };
-
-
-
-
-
-
-
-
-    Jambi.prototype.flowCode2 = function (fileLocation, filename) {
-        var oldText = jambi.getJambiEditor().getValue();
-        if(fileLocation && filename) {
-            if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
-                jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
-            }
-        }
-        jambi.saveFile();
-        if(fileLocation && filename) {
-            var command = 'cd ' + '"' + fileLocation + '"' + ' && /usr/local/bin/flow ' + filename;
-            shell.exec(command, function(code, output) {
-                var flowResults = output.match(/(\:)(\d)*(\:)(\d)*(\,)(\d)*(\:)(\s)*((\w)*(\s)*)*/g);
-                var flowFile = output.match(/(\/)(\w)*(.)(\w)*(:)/g);
-                var errorType = "";
-                var errorCol1;
-                var errorCol2;
-                var errorLine;
-                var errorMessage;
-                $('#flowcontent').empty();
-                jambiEditor.clearGutter('test1');
-                try{
-                    if(flowResults.length > 1) {
-                        for(var i=0; i<flowResults.length; i++) {
-
-                            flowFile[i] = flowFile[i].substr(1, flowFile[i].length-2);
-
-                            if(flowFile[i] === filename) {
-                                var temp = flowResults[i].substr(1, flowResults[i].length);
-                                var flowLine = temp.substr(0, temp.indexOf(":"));
-
-                                var flowCol1 = temp.match(/(\d)*(\,)(\d)*/g)[0];
-
-                                var col1 = flowCol1.substr(0, flowCol1.indexOf(","));
-                                var col2 = flowCol1.substr(flowCol1.indexOf(",")+1, flowCol1.length);
-
-                                try{
-                                    var errorString = temp.match(/(:)(\s)(\w*)(\s)?((\w)*)?/)[0];
-                                } catch(err){
-                                    var errorString = "Error";
-                                }
-
-                                errorString = errorString.substr(1, errorString.length);
-
-
-                                if(i % 2 === 0) {
-
-                                    errorMessage = temp.match(/(\n)((\w)*(\s)*)*/g);
-                                    errorType = errorString;
-                                    errorCol1 = col1;
-                                    errorCol2 = col2;
-                                    errorLine = flowLine;
-                                }
-
-                                if(i % 2 === 1) {
-                                   $('#flowcontent').append("Line " + errorLine + " Column " + errorCol1 + ", " +
-                                                    errorCol2 + errorType + " - " + errorMessage  + " - " + errorString + '<br>');
-
-                                    var from = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol1) };
-                                    var to = {'line': parseInt(errorLine)-1, 'ch': parseInt(errorCol2) };
-
-
-                                    //jambiEditor.markText(from, to, {'css': "color: #fff"});
-                                    //jambiEditor.addLineClass(errorLine-1, "background", "test");
-                                    var gutterLine = parseInt(errorLine-1);
-
-                                    var flowErrorMessage = "Line " + errorLine + " Column " + errorCol1 + ", " + errorCol2 +
-                                        errorType + " - " + errorMessage  + " - " + errorString + '<br>';
-
-                                    jambiEditor.setGutterMarker(gutterLine, "test1", makeMarker(flowErrorMessage));
-
-                                    function makeMarker(error) {
-                                      var marker = document.createElement("div");
-                                      marker.className = "test";
-                                      marker.setAttribute('data-error', error);
-                                      marker.style.color = "#ff0000";
-                                      marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                                      return marker;
-                                    }
-                                    jambiEditor.refresh();
-                                }
-                            }
-                        }
-                    }
-                } catch(err) {
-                    jambi.showNotification("Jambi Error", "Flow Error");
-                }
-
-                if($('#flowcontent').is(':empty')) {
-                    $('#flowcontent').html("No Flow Errors!");
-                }
-
-                $('.test').off();
-                $('.test').on('mouseover', function(){
-                    alert($(this).data('error'));
-                });
-            });
-
-        }
-    };
-
 
     Jambi.prototype.vcStatus = function(div, vcType) {
         var command;
