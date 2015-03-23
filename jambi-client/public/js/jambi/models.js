@@ -9,7 +9,7 @@ var jambiModel = function() {
 
 	var isEditorOpen = false;
 
-	
+
 	var Project = Backbone.Model.extend({
 		"project": {
 			"name": "",
@@ -578,47 +578,29 @@ var jambiModel = function() {
 
 	function populateProjects() {
 		$('#projectsTable > tbody').empty();
+		var fs = require('fs');
+		 function doesDirectoryExist (tempfileLoc) {
+            try { fs.statSync(tempfileLoc); return true; }
+            catch (er) { return false; }
+        }
+
 		if(Projects.length > 0) {
 			var activeProjectIndex = Projects.at(0).attributes.active;
+
 			// Render Projects into page
 			for(var i = 1; i < Projects.length; i++) {
-				/*
-var active = "";
-    			if(i === activeProjectIndex) {
-    			    activeProject = Projects.at(i).attributes.project;
-    				active = "active";
+                if(!doesDirectoryExist (Projects.at(i).attributes.project.root + "/")) {
+    			   Projects.remove(Projects.at(i));
+    			   saveProjectsJSON();
     			}
-*/
-
-				$('#projectsTable > tbody:last').append('<tr class="project" data-name="' + Projects.at(i).attributes.project.name +
-														'" data-projectindex="' + i + '">' +
-
-														'<td>' + Projects.at(i).attributes.project.name + '</td>' +
-														'<td>' + Projects.at(i).attributes.project.root + '</td>' +
-														'<td>' + '' + '</td>' +
-
-														'</tr>');
-
-
-
-				/*
-$('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project" data-projectindex="' +
-    			                        i + '"' +
-                                        'data-name="' + Projects.at(i).attributes.project.name + '">' +
-    									'<div class="card-container">' +
-        									'<div class="card project-card">' +
-            									'<div class="face front">' +
-            									    '<div class="project-image"></div>' +
-            									    '<div class="project-name">' + Projects.at(i).attributes.project.name +
-            									        ' <i class="fa fa-info-circle project-info"></i></div>' +
-            									'</div>' +
-            									'<div class="face back">' +
-
-            									'</div>' +
-            									'</div>' +
-        									'</div>' +
-    									'</div>');
-*/
+    			else {
+    				$('#projectsTable > tbody:last').append('<tr class="project" data-name="' + Projects.at(i).attributes.project.name +
+    					'" data-projectindex="' + i + '">' +
+    					'<td>' + Projects.at(i).attributes.project.name + '</td>' +
+    					'<td>' + Projects.at(i).attributes.project.root + '</td>' +
+    					'<td>' + '' + '</td>' +
+    					'</tr>');
+    			}
 			}
 
 
@@ -632,6 +614,13 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 			$('.projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
 
+
+            $('.project').off('dblclick');
+            $('.project').off('click');
+            $('.project-empty').off('click');
+            $('#addProject').off('click');
+            $('#closeAddProject').off('click');
+            $('#addProject_selectLocation').off('change');
 
 			$('.project').on('dblclick', function() {
 				var projectIndex = $(this).data("projectindex");
@@ -656,7 +645,35 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 
 			$('#addProject').on('click', function() {
 				if($('#addProjectName').val() && $('#addProjectLocation').val()) {
-					addProject($('#addProjectName').val(), $('#addProjectLocation').val());
+    				var options = {
+        				grunt: false,
+        				bootstrap: false,
+        				jquery: false,
+        				backbone: false,
+        				angular: false,
+        				jambitemplate: false
+    				};
+
+    				if($('#newproject_jquery').prop('checked')) {
+        				options.jquery = true;
+    				}
+    				if($('#newproject_backbone').prop('checked')) {
+        				options.backbone = true;
+    				}
+    				if($('#newproject_angular').prop('checked')) {
+        				options.angular = true;
+    				}
+    				if($('#newproject_jambitemplate').prop('checked')) {
+        				options.jambitemplate = true;
+    				}
+    				if($('#newproject_grunt').prop('checked')) {
+        				options.grunt = true;
+    				}
+    				if($('#newproject_bootstrap').prop('checked')) {
+        				options.bootstrap = true;
+    				}
+
+					addProject($('#addProjectName').val(), $('#addProjectLocation').val(), options);
 					$('#addprojectcard').fadeOut();
 				}
 			});
@@ -672,6 +689,7 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 				var fileLocation = $(this).val();
 				$('#addProjectLocation').val(fileLocation);
 			});
+
 		}
 
 	}
@@ -680,8 +698,16 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		jambifs.writeJSON("projects.json", JSON.stringify(Projects.models));
 	}
 
-	function addProject(name, root) {
-		var newProject = new Project({
+	function npmInstall(app, root, callback) {
+        var exec = require('child_process').exec;
+    	console.log("cd " + root + " && /usr/local/bin/npm install -g " + app);
+    	exec("cd " + root + " && /usr/local/bin/npm install -g " + app, function(code, output, err) {
+                callback();
+        });
+	}
+
+	function addProject(name, root, options) {
+    	var newProject = new Project({
 			"project": {
 				"name": name,
 				"root": root,
@@ -692,15 +718,50 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
     				"vcType": "git",
     				"vcURL": "",
     				"vcUser": ""
-    			}
+    			},
+    			"jTemplate": false
 			}
 		});
 		Projects.add(newProject);
 
-		var projectsJSON;
+        if(options) {
+        	var fs = require('fs');
+        	var exec = require('child_process').exec;
+            if(options.grunt) {
+                npmInstall("grunt-cli", root, function(){
+                    exec("cd " + root + " && /usr/local/bin/npm install grunt --save-dev", function(code, output, err) {
+                        jambifs.writeHTML(root + "/Gruntfile.js", jambifs.readHTML('files/gruntfile.js'));
+                        jambifs.writeHTML(root + "/package.json", jambifs.readHTML('files/package.json'));
+                    });
+
+                });
+
+            }
+
+            if(options.jquery) {
+                jambifs.writeHTML(root + "/jquery.js", jambifs.readHTML('files/jquery.js'));
+            }
+
+            if(options.bootstrap) {
+                jambifs.writeHTML(root + "/bootstrap.css", jambifs.readHTML('files/bootstrap/bootstrap.css'));
+                jambifs.writeHTML(root + "/bootstrap.js", jambifs.readHTML('files/bootstrap/bootstrap.js'));
+            }
+
+            if(options.angular) {
+                jambifs.writeHTML(root + "/angular.js", jambifs.readHTML('files/angular/angular.js'));
+            }
+
+            if(options.backbone) {
+                jambifs.writeHTML(root + "/backbone.js", jambifs.readHTML('files/backbone/backbone.js'));
+            }
+
+            if(options.jambitemplate) {
+                newProject.jTemplate = true;
+            }
+    	}
 
         // Project addons
-
+        var projectsJSON;
 
 		jambifs.readJSON('projects.json', function(err, data){
 			projectsJSON = data;
@@ -734,6 +795,18 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 			console.log(clickedCard);
 		};
 
+		card_menu.items[3].click = function(e) {
+			var projectIndex = clickedCard.data("projectindex");
+			if(projectIndex >= 0) {
+			    Projects.remove(Projects.at(projectIndex));
+			    saveProjectsJSON();
+			    populateProjects();
+			    setTimeout(function(){
+    			    $('#addprojectcard').hide();
+    			 }, 100);
+			}
+		};
+
 		$('#jambi-body').on("contextmenu", '.project' ,function(e){
 			card_menu.popup(e.pageX, e.pageY);
 			clickedCard = $(this);
@@ -744,7 +817,6 @@ $('#projects').append('<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 project"
 		project_menu.append(new gui.MenuItem({ label: 'Add Project...' }));
 
 		project_menu.items[0].click = function(e) {
-			// addProject("Project Test", "./");
 			$('#addprojectcard').fadeIn();
 		};
 

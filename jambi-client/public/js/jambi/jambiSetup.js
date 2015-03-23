@@ -75,7 +75,8 @@ var jambiSetup = function() {
 			toolsBeautifyJS:        new gui.MenuItem({ label: 'Javascript/JSON' }),
 			toolsBeautifyHTML:      new gui.MenuItem({ label: 'Html' }),
 			toolsBeautifyCSS:       new gui.MenuItem({ label: 'Css' }),
-			toolsJambiTemplate:     new gui.MenuItem({ label: 'Compile Jambi Template' })
+			toolsJambiTemplate:     new gui.MenuItem({ label: 'Compile Jambi Template' }),
+            toolsStartServer:       new gui.MenuItem({ label: 'Start Server (:8000)' }),
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -148,6 +149,7 @@ var jambiSetup = function() {
 
 		toolsSubmenu.append(jambiMenu.tools.toolsBeautify);
 		toolsSubmenu.append(jambiMenu.tools.toolsJambiTemplate);
+		toolsSubmenu.append(jambiMenu.tools.toolsStartServer);
 	})();
 
 	var generateVCMenu = (function(){

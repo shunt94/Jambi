@@ -15,6 +15,10 @@ var JambiFS = function() {
         fs.writeFileSync(fileLocation, data);
     };
 
+    JambiFS.prototype.writeHTML = function(fileLocation, data) {
+        fs.writeFileSync(fileLocation, data);
+    };
+
     JambiFS.prototype.readHTML = function(fileLocation, callback) {
         return fs.readFileSync(fileLocation, "utf8");
     };

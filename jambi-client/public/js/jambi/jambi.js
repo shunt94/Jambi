@@ -123,6 +123,24 @@ simulateKeyPress("a");
             jambi.templateTest(jambiEditor.getValue());
         };
 
+        jMenu.tools.toolsStartServer.click = function () {
+            console.log(this.label);
+            var http = require('http');
+            var visits = 0;
+            http.createServer(function (req, res) {
+                res.writeHead(200, {'Content-Type': 'text/plain'});
+                visits += 1;
+                var msg = 'Visits: ' + visits;
+                res.end(msg + '\n'); console.log(msg);
+                this.label = "Stop Server"
+                if(visits == 5) {
+                    process.exit();
+                    this.label = "Start server (8000)"
+                }
+            }).listen(8000, '0.0.0.0');
+            console.log('Server running at http://localhost:8000/');
+        };
+
 
         jMenu.instas.instasMenu.click = function () {
             var content = jInsta.getInstaValues();
@@ -1023,7 +1041,6 @@ simulateKeyPress("a");
                 fullPath = fullPath.substr(2, fullPath.length);
             }
 
-
             var listOfJSON = "";
             var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation])
             flowResults.stdout.on('data', function (data) {
@@ -1257,9 +1274,6 @@ simulateKeyPress("a");
 
                     try{
                         var newHtml = jambifs.readHTML(activeDoc.fileLocation + filename);
-
-
-
                         jambi.getJambiEditor().replaceSelection(newHtml);
                         jambifs.writeJSON(activeProject.root + "/templates/" + activeDoc.title, jambiEditor.getValue());
 

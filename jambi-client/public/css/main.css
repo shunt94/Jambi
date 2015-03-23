@@ -349,7 +349,9 @@ iframe {
   border-radius: 3px;
   background: #eaeaea;
   color: #333;
-  word-wrap: break-word; }
+  word-wrap: break-word;
+  max-height: 600px;
+  overflow-y: scroll; }
 
 .jambiModalClose {
   color: #333;
