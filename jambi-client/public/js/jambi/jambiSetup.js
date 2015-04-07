@@ -77,6 +77,7 @@ var jambiSetup = function() {
 			toolsBeautifyCSS:       new gui.MenuItem({ label: 'Css' }),
 			toolsJambiTemplate:     new gui.MenuItem({ label: 'Compile Jambi Template' }),
             toolsStartServer:       new gui.MenuItem({ label: 'Start Server (:8000)' }),
+            toolsCompileJava:       new gui.MenuItem({ label: 'Java Compile' }),
 		},
 		vc: {
 			vc:       new gui.MenuItem({ label: 'Setup Version Control'}),
@@ -150,6 +151,7 @@ var jambiSetup = function() {
 		toolsSubmenu.append(jambiMenu.tools.toolsBeautify);
 		toolsSubmenu.append(jambiMenu.tools.toolsJambiTemplate);
 		toolsSubmenu.append(jambiMenu.tools.toolsStartServer);
+		toolsSubmenu.append(jambiMenu.tools.toolsCompileJava);
 	})();
 
 	var generateVCMenu = (function(){

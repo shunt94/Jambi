@@ -354,6 +354,12 @@ h1,h2,h3 { font-weight: 200;}
     }
 }
 
+.showcase-iframe {
+    width: 100%;
+    height: 100%;
+    margin-top: 45px;
+}
+
 .projects-pc {
     background-image: url('../img/showcase/pc_reflect.png');
     background-size: contain;
@@ -363,8 +369,8 @@ h1,h2,h3 { font-weight: 200;}
 }
 
 iframe {
-  -webkit-transform:scale(0.5);
-  transform:scale(0.5);
+//  -webkit-transform:scale(0.5);
+//  transform:scale(0.5);
 }
 
 
@@ -567,4 +573,26 @@ iframe {
     width: 150px;
     position: absolute;
     z-index: 99999;
+}
+
+#fb_files {
+    padding: 5px;
+}
+
+#sidebarMenuItem {
+    padding: 15px;
+}
+
+.cdn-list,
+.cdn-list-2 {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    &.active {
+        background-color: rgba(199, 199, 204, 0.5);
+    }
+
+    & i {
+        padding-right: 5px;
+    }
 }

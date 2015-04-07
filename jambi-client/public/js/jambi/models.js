@@ -271,12 +271,15 @@ var jambiModel = function() {
 	}
 
 	function changeFile(fileToChange) {
-		saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
-		console.log((openDocuments.get(openDocuments.get(activeDocument))));
-		var currentDoc = openDocuments.get(openDocuments.get(fileToChange.data('modelid')));
-		populateTopBar(currentDoc.id);
-		setDocOptions(currentDoc);
-		setActiveDocument();
+    	try{
+		    saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
+    		var currentDoc = openDocuments.get(openDocuments.get(fileToChange.data('modelid')));
+    		populateTopBar(currentDoc.id);
+    		setDocOptions(currentDoc);
+    		setActiveDocument();
+		} catch(err) {
+    		console.log(err);
+		}
 	}
 
 	function changeFileById(file) {
@@ -367,16 +370,23 @@ var jambiModel = function() {
 	}
 
 	function setDocOptions(model) {
-		if(model) {
-			jambi.getJambiEditor().doc.setValue(model.text);
-			jambi.getJambiEditor().clearHistory();
-			if(!($.isEmptyObject(model.history_object))) {
-				jambi.getJambiEditor().setHistory(model.history_object);
-			}
-			jambi.getJambiEditor().focus();
-			jambi.getJambiEditor().setCursor(model.line, model.col);
-			jambi.getJambiEditor().setOption("mode", model.mode);
-			jambi.getJambiEditor().scrollIntoView();
+    	try {
+    		if(model) {
+        		var fileType = model.title;
+        		fileType = fileType.substr((fileType.lastIndexOf(".")+1), fileType.length);
+        		checkFileType(fileType);
+    			jambi.getJambiEditor().doc.setValue(model.text);
+    			jambi.getJambiEditor().clearHistory();
+    			if(!($.isEmptyObject(model.history_object))) {
+    				jambi.getJambiEditor().setHistory(model.history_object);
+    			}
+    			jambi.getJambiEditor().focus();
+    			jambi.getJambiEditor().setCursor(model.line, model.col);
+    			jambi.getJambiEditor().setOption("mode", model.mode);
+    			jambi.getJambiEditor().scrollIntoView();
+    		}
+		} catch(err) {
+
 		}
 	}
 
@@ -481,7 +491,7 @@ var jambiModel = function() {
 	function checkFileType(fileTypeString) {
 		switch(fileTypeString) {
 			case "html":
-				return "htmlmixed";
+                return "htmlmixed";
 			case "css":
 				return "css";
 			case "js":
@@ -756,7 +766,15 @@ var jambiModel = function() {
             }
 
             if(options.jambitemplate) {
-                newProject.jTemplate = true;
+                newProject.project.jTemplate = true;
+                var fs = require('fs');
+        		 function doesDirectoryExist (templateFolder) {
+                    try { fs.statSync(templateFolder); return true; }
+                    catch (er) { return false; }
+                }
+                if(!doesDirectoryExist (root + "/templates")) {
+                    fs.mkdirSync(root + "/templates");
+                }
             }
     	}
 
@@ -792,7 +810,6 @@ var jambiModel = function() {
 			var projectIndex = clickedCard.data("projectindex");
 			activeProject = Projects.at(projectIndex).attributes.project;
 			openProject(clickedCard.data("name"), activeProject, projectIndex);
-			console.log(clickedCard);
 		};
 
 		card_menu.items[3].click = function(e) {
@@ -1034,7 +1051,6 @@ var jambiModel = function() {
 					activeProject.vc.vcUser = $('#repo-user').val();
 					vcMenuSetup();
 					saveProjectsJSON();
-					console.log(activeProject.vc);
 				}
 			}
 			var modalhtml = jambifs.readHTML('public/views/vcsetup.html');
@@ -1051,8 +1067,10 @@ var jambiModel = function() {
 				activeProject.vc.vcUser = $('#repo-user').val();
 				vcMenuSetup();
 				saveProjectsJSON();
-				console.log(activeProject.vc);
 				jambi.vcClone(activeProject.vc.vcURL, activeProject.vc.vcType);
+				$('#vcPush').attr('disabled','false');
+                $('#vcPull').attr('disabled','false');
+                $('#commitAll').attr('disabled','false');
 			});
 
 		};
@@ -1072,7 +1090,59 @@ var jambiModel = function() {
 	vcClick();
 
 
+    function listFunctions() {
+        var options = {
+            "bootstrap_css": '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">',
+            "bootstrap_js": '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>',
+            "jquery": '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>',
+            "angular": '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>',
+            "ajax_get": '',
+            "ajax_post": ''
+        }
 
+        $('#sideListForLoop').off('dblclick');
+        $('.cdn-list').on('click');
+        $('.cdn-list').on('click', function(){
+            $('.cdn-list').removeClass('active');
+            $(this).addClass('active');
+        });
+        $('.cdn-list').on('dblclick', function(){
+            var x = $(this).data('option');
+            jambi.insertAtCursor(options[x]);
+        });
+
+        $('#sideListForLoop').on('dblclick', function(){
+            var loopCount = prompt("Loop up to:", "10");
+            if(loopCount != null) {
+                jambi.insertAtCursor("for(var i = 0; i <= " + loopCount + "; i++) {\n\n}");
+            }
+        });
+        $('#commitAll').off('click');
+        $('#vcPull').off('click');
+        $('#vcPush').off('click');
+
+        if(activeProject.vc.vcInitialised) {
+            $('#commitAll').on('click', function(){
+                if(activeProject.vc.vcInitialised) {
+                    jambi.vcCommit(activeProject.vc.vcType);
+                }
+            });
+            $('#vcPull').on('click', function(){
+                if(activeProject.vc.vcInitialised) {
+                    jambi.vcPull(activeProject.vc.vcType);
+                }
+            });
+            $('#vcPush').on('click', function(){
+                if(activeProject.vc.vcInitialised) {
+                    jambi.vcPush(activeProject.vc.vcType);
+                }
+            });
+        } else {
+            $('#vcPush').attr('disabled','disabled');
+            $('#vcPull').attr('disabled','disabled');
+            $('#commitAll').attr('disabled','disabled');
+        }
+    }
 
 
 
@@ -1117,11 +1187,13 @@ var jambiModel = function() {
 
 		vcInit();
 		vcMenuSetup();
-
+		listFunctions();
+        $('#showcaseLink').show();
 
 	});
 
 	router.on('route:tools', function() {
+    	$('#showcaseLink').show();
 		setActiveDocument();
 		if(activeDocument !== undefined) {
 			saveCurrentDocument(openDocuments.get(activeDocument));
@@ -1166,14 +1238,6 @@ var jambiModel = function() {
 		vcMenuSetup();
 
 
-
-
-
-
-
-
-
-
 	});
 
 	router.on('route:projects', function() {
@@ -1188,6 +1252,7 @@ var jambiModel = function() {
 		hideSidebarToggle();
 		$('#jambi-body').css('background-color', '#444');
 		vcMenuSetup();
+		$('#showcaseLink').hide();
 	});
 
 
@@ -1196,13 +1261,26 @@ var jambiModel = function() {
 		if(activeDocument !== undefined) {
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
-		showcaseView.render();
-		hideSidebarToggle()
-		isEditorOpen = false;
-		$('#jambi-body').css('background-color', '#444');
-		vcMenuSetup();
-	});
+		var spawn = require('child_process').spawn;
+        var shell = require('shelljs');
+        if(jModel.getActiveProject()) {
+            var child = shell.exec('cd ' + jModel.getActiveProject().root + '&& python -m SimpleHTTPServer', function(code, output) {
+                setTimeout(function(){
+                    showcaseView.render();
+            		hideSidebarToggle()
+            		isEditorOpen = false;
+            		$('#jambi-body').css('background-color', '#444');
+                    vcMenuSetup();
+                }, 1000);
+            });
+            setTimeout(function () {
+                child.kill();
+            }, 10000);
+        }
 
+
+
+	});
 
 
 

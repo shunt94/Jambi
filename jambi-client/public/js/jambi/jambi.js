@@ -15,11 +15,6 @@ var Jambi = function () {
 
     readJambiSettings();
 
-    function simulateKeyPress(character) {
-      jQuery.event.trigger({ type : 'keypress', which : character.charCodeAt(0) });
-    }
-
-
     function readJambiSettings() {
         jambifs.readJSON('jambi.json', function(err, data) {
             if(err) {
@@ -60,8 +55,7 @@ var Jambi = function () {
             jambi.closeCurrentFile();
         };
         jMenu.file.fileCloseAll.click = function () {
-//            jambi.closeAllFiles();
-simulateKeyPress("a");
+            jambi.closeAllFiles();
         };
 
         jMenu.view.viewProjects.click = function () {
@@ -101,6 +95,10 @@ simulateKeyPress("a");
             }
         };
 
+        jMenu.tools.toolsCompileJava.click = function () {
+            jambi.compieleJava();
+        };
+
         jMenu.tools.toolsBeautifyCSS.click = function () {
             var activeDoc = jModel.getActiveDocument();
             if(activeDoc.mode === "css") {
@@ -120,25 +118,19 @@ simulateKeyPress("a");
         };
 
         jMenu.tools.toolsJambiTemplate.click = function () {
-            jambi.templateTest(jambiEditor.getValue());
+            jambi.jambiTemplate(jambiEditor.getValue());
         };
 
         jMenu.tools.toolsStartServer.click = function () {
-            console.log(this.label);
-            var http = require('http');
-            var visits = 0;
-            http.createServer(function (req, res) {
-                res.writeHead(200, {'Content-Type': 'text/plain'});
-                visits += 1;
-                var msg = 'Visits: ' + visits;
-                res.end(msg + '\n'); console.log(msg);
-                this.label = "Stop Server"
-                if(visits == 5) {
-                    process.exit();
-                    this.label = "Start server (8000)"
-                }
-            }).listen(8000, '0.0.0.0');
-            console.log('Server running at http://localhost:8000/');
+            var spawn = require('child_process').spawn;
+            if(jModel.getActiveProject()) {
+                var child = shell.exec('cd ' + jModel.getActiveProject().root + '&& python -m SimpleHTTPServer', function(code, output) {
+
+                });
+                setTimeout(function () {
+                    child.kill();
+                }, 10000);
+            }
         };
 
 
@@ -633,6 +625,7 @@ simulateKeyPress("a");
 
     Jambi.prototype.insertAtCursor = function (text) {
         jambi.getJambiEditor().replaceSelection(text);
+        jambi.getJambiEditor().focus();
     }
 
 
@@ -666,7 +659,6 @@ simulateKeyPress("a");
 
 
                     jambiEditor.refresh();
-                    console.log("Error at line: " + err.line + " - " + err.reason);
                     $('#jsErrors').append("Error at line: " + err.line + " - " + err.reason);
                 }
 
@@ -694,7 +686,6 @@ simulateKeyPress("a");
             contentType: "application/json",
             dataType: 'json',
             success: function(data) {
-                console.log(data);
                 jambiEditor.setValue('<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_css + '"> \n' +'<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_theme + '"> \n' + '<script type="text/javascript" src="' + data.cdns.jquery + '"></script> \n' + '<script type="text/javascript" src="' + data.cdns.bootstrap_js + '"></script> \n');
             },
             error: function(e) {
@@ -797,7 +788,7 @@ simulateKeyPress("a");
                         }
                         if(jModel.getActiveProject()) {
                             if(jModel.getActiveProject().jTemplate){
-                                jambi.templateTest(jambiEditor.getValue());
+                                jambi.jambiTemplate(jambiEditor.getValue());
                             }
 
                         }
@@ -1044,7 +1035,6 @@ simulateKeyPress("a");
             var listOfJSON = "";
             var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation])
             flowResults.stdout.on('data', function (data) {
-                console.log(data.toString());
                 return listOfJSON += data.toString();
             });
             flowResults.on('close', function (code) {
@@ -1109,15 +1099,9 @@ simulateKeyPress("a");
     Jambi.prototype.vcStatus = function(div, vcType) {
         var command;
         var root = jModel.getActiveDocument().fileLocation;
-        if(vcType === "git") {
-            command = 'cd ' + root + ' &&  git status';
-        }
-        if(vcType === "hg") {
-            command = 'cd ' + root + ' &&  hg status';
-        }
+        command = 'cd ' + root + ' && ' + vcType + ' status';
 
         shell.exec(command, function(code, output) {
-            console.log(output);
             if(div && output) {
                 div.html(output);
             }
@@ -1145,12 +1129,7 @@ simulateKeyPress("a");
     Jambi.prototype.vcPush = function (vcType) {
         var command;
         var root = jModel.getActiveDocument().fileLocation;
-        if(vcType === "git") {
-            command = 'cd ' + root + ' && git push';
-        }
-        if(vcType === "hg") {
-            command = 'cd ' + root + ' && hg push';
-        }
+        command = 'cd ' + root + ' && ' + vcType + ' push';
 
         shell.exec(command, function(code, output) {
             if(output){
@@ -1166,20 +1145,11 @@ simulateKeyPress("a");
         jambi.saveFile();
         var root = jModel.getActiveDocument().fileLocation;
         if(commitMsg) {
-            if(vcType === "git") {
-                command = 'cd ' + root + ' && git add ' + root + ' && git commit -m ' + '"' + commitMsg + '"';
-            }
-            if(vcType === "hg") {
-                command = 'cd ' + root + ' && hg add ' + root + ' &&  hg commit -m ' + '"' + commitMsg + '"';
-            }
+            command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m ' + '"' + commitMsg + '"';
         }
         else {
-            if(vcType === "git") {
-                command = 'cd ' + root + ' && git add ' + root + ' &&  git commit -m "Commiting changes to ' + jModel.getActiveDocument().title + '"';
-            }
-            if(vcType === "hg") {
-                command = 'cd ' + root + ' && hg add ' + root + ' &&  hg commit -m "Commiting changes to ' + jModel.getActiveDocument().title + '"';
-            }
+            command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m "Commiting changes to ' +
+            jModel.getActiveDocument().title + '"';
         }
 
         shell.exec(command, function(code, output) {
@@ -1194,12 +1164,7 @@ simulateKeyPress("a");
         var command;
         var root = jModel.getActiveProject().root;
         if(url) {
-            if(vcType === "git") {
-                command = 'cd ' + root + ' && git clone ' + url;
-            }
-            if(vcType === "hg") {
-                command = 'cd ' + root + ' && git clone ' + url;
-            }
+            command = 'cd ' + root + ' && ' +  vcType + ' clone ' + url;
         }
 
         shell.exec(command, function(code, output) {
@@ -1208,34 +1173,7 @@ simulateKeyPress("a");
     };
 
 
-
-
-    /* SASS/SCSS */
-    Jambi.prototype.sass = function () {
-        var sass = require('node-sass');
-        var currentFile = jModel.getActiveDocument();
-        var fileName = currentFile.fileLocation;
-        sass.render({
-            file: fileName,
-            success: function(result) {
-                // result is an object: v2 change
-                console.log(result.css);
-                console.log(result.stats);
-                console.log(result.map)
-            },
-            error: function(error) {
-                // error is an object: v2 change
-                console.log(error.message);
-                console.log(error.code);
-                console.log(error.line);
-                console.log(error.column); // new in v2
-            },
-            outputStyle: 'nested'
-        });
-    };
-
-
-	Jambi.prototype.templateTest = function (input) {
+	Jambi.prototype.jambiTemplate = function (input) {
     	var currentHistory = jambiEditor.doc.getHistory();
         var activeDoc = jModel.getActiveDocument();
         var activeProject = jModel.getActiveProject();
@@ -1275,7 +1213,7 @@ simulateKeyPress("a");
                     try{
                         var newHtml = jambifs.readHTML(activeDoc.fileLocation + filename);
                         jambi.getJambiEditor().replaceSelection(newHtml);
-                        jambifs.writeJSON(activeProject.root + "/templates/" + activeDoc.title, jambiEditor.getValue());
+                        jambifs.writeJSON(activeProject.root + "/" + activeDoc.title, jambiEditor.getValue());
 
                         jambiEditor.setValue(oldHTML);
 
@@ -1283,13 +1221,44 @@ simulateKeyPress("a");
                     } catch(err) {
                         alert(err);
                     }
-
                 }
             }
-
         }
         jambiEditor.doc.setHistory(currentHistory);
+	};
 
+    /*
+    * Java Compiler
+    * Compiles Java files when clicked on the item in the menu bar
+    */
+	Jambi.prototype.compieleJava = function () {
+    	// get the active document
+        var activeDoc = jModel.getActiveDocument();
+        if(activeDoc) {
+            var fileLocation = activeDoc.fileLocation;
+            if(fileLocation) {
+                var filename = fileLocation + activeDoc.title;
+                var fileType = filename.substr((filename.lastIndexOf(".")+1), filename.length);
+                console.log(filename);
+                console.log(fileType);
+                if(fileType === "java") {
+                    var command = "javac " + filename;
+                    shell.exec(command, function(code, output) {
+                        if(code === 0) {
+                            jambi.showNotification("Jambi Java Compiler", "Successfully Compiled");
+                            $('#javaReporter').html("No errors");
+                        } else {
+                            // Error reporting
+                            $('#javaReporter').empty();
+                            var errors = output.match(/error:(\s)(.)*/g);
+                            for(var i = 0; i < errors.length; i++){
+                                $('#javaReporter').append(errors[i] + "<br>");
+                            }
+                        }
+                    });
+                }
+            }
+        }
 	};
 
 

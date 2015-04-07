@@ -58,12 +58,6 @@ var jambiInsta = function () {
         instaString = "";
     };
 
-    jambiInsta.prototype.addInsta = function (instaName, instaCode) {
-        // add insta to json
-
-        // fetch new list
-    };
-
     jambiInsta.prototype.checkInsta = function () {
         if(instaArray[instaString]) {
             return true;
@@ -91,7 +85,6 @@ var jambiInsta = function () {
             jambi.getJambiEditor().setSelection(instaStart, instaEnd);
 
             // insert new snippet
-            //var iString = instaArray[instaString]
     		var iString = jambifs.readHTML("instas/" + instaArray[instaString]);
             jambi.getJambiEditor().replaceSelection(iString);
             instaStarted = false;

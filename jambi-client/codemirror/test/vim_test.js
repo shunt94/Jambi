@@ -679,6 +679,16 @@ testVim('dw_word', function(cm, vim, helpers) {
   is(!register.linewise);
   eqPos(curStart, cm.getCursor());
 }, { value: ' word1 word2' });
+testVim('dw_unicode_word', function(cm, vim, helpers) {
+  helpers.doKeys('d', 'w');
+  eq(cm.getValue().length, 10);
+  helpers.doKeys('d', 'w');
+  eq(cm.getValue().length, 6);
+  helpers.doKeys('d', 'w');
+  eq(cm.getValue().length, 5);
+  helpers.doKeys('d', 'e');
+  eq(cm.getValue().length, 2);
+}, { value: '  \u0562\u0561\u0580\u0587\xbbe\xb5g  ' });
 testVim('dw_only_word', function(cm, vim, helpers) {
   // Test that if there is only 1 word left, dw deletes till the end of the
   // line.
@@ -2176,6 +2186,15 @@ testVim('S_visual', function(cm, vim, helpers) {
   eq('\ncc', cm.getValue());
 }, { value: 'aa\nbb\ncc'});
 
+testVim('d_/', function(cm, vim, helpers) {
+  cm.openDialog = helpers.fakeOpenDialog('match');
+  helpers.doKeys('2', 'd', '/');
+  helpers.assertCursorAt(0, 0);
+  eq('match \n next', cm.getValue());
+  cm.openDialog = helpers.fakeOpenDialog('2');
+  helpers.doKeys('d', ':');
+  // TODO eq(' next', cm.getValue());
+}, { value: 'text match match \n next' });
 testVim('/ and n/N', function(cm, vim, helpers) {
   cm.openDialog = helpers.fakeOpenDialog('match');
   helpers.doKeys('/');

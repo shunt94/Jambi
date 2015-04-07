@@ -63,7 +63,7 @@
 <section class=first id=overview>
     <h2 style="position: relative">
       User manual and reference guide
-      <span style="color: #888; font-size: 1rem; position: absolute; right: 0; bottom: 0">version 5.0.0</span>
+      <span style="color: #888; font-size: 1rem; position: absolute; right: 0; bottom: 0">version 5.1.0</span>
     </h2>
 
     <p>CodeMirror is a code-editor component that can be embedded in
@@ -256,7 +256,7 @@
       should be replaced by a
       special <a href="#option_specialCharPlaceholder">placeholder</a>.
       Mostly useful for non-printing special characters. The default
-      is <code>/[\u0000-\u0019\u00ad\u200b\u2028\u2029\ufeff]/</code>.</dd>
+      is <code>/[\u0000-\u0019\u00ad\u200b-\u200f\u2028\u2029\ufeff]/</code>.</dd>
       <dt id="option_specialCharPlaceholder"><code><strong>specialCharPlaceholder</strong>: function(char) → Element</code></dt>
       <dd>A function that, given a special character identified by
       the <a href="#option_specialChars"><code>specialChars</code></a>
@@ -1622,6 +1622,11 @@ editor.setOption("extraKeys", {
         <dt><code><strong>shared</strong>: boolean</code></dt><dd>See
         the corresponding <a href="#mark_shared">option</a>
         to <code>markText</code>.</dd>
+        <dt><code><strong>handleMouseEvents</strong>: boolean</code></dt>
+        <dd>As with <a href="#markText"><code>markText</code></a>,
+        this determines whether mouse events on the widget inserted
+        for this bookmark are handled by CodeMirror. The default is
+        false.</dd>
       </dl></dd>
 
       <dt id="findMarks"><code><strong>doc.findMarks</strong>(from: {line, ch}, to: {line, ch}) → array&lt;TextMarker&gt;</code></dt>
@@ -1691,7 +1696,7 @@ editor.setOption("extraKeys", {
       widget again, simply use DOM methods (move it somewhere else, or
       call <code>removeChild</code> on its parent).</dd>
 
-      <dt id="addLineWidget"><code><strong>cm.addLineWidget</strong>(line: integer|LineHandle, node: Element, ?options: object) → LineWidget</code></dt>
+      <dt id="addLineWidget"><code><strong>doc.addLineWidget</strong>(line: integer|LineHandle, node: Element, ?options: object) → LineWidget</code></dt>
       <dd>Adds a line widget, an element shown below a line, spanning
       the whole of the editor's width, and moving the lines below it
       downwards. <code>line</code> should be either an integer or a
@@ -2634,8 +2639,14 @@ editor.setOption("extraKeys", {
       to <code>true</code>, in which
       case <a href="#getHelper"><code>getHelper</code></a> with
       type <code>"lint"</code> is used to determined a validator
-      function. Depends on <code>addon/lint/lint.css</code>. A demo
-      can be found <a href="../demo/lint.html">here</a>.</dd>
+      function. Such a function should, when given a document string,
+      an options object, and an editor instance, return an array of <code>{message,
+      severity, from, to}</code> objects representing problems. When
+      the function has an <code>async</code> property with a truthy
+      value, it will be called with an additional second argument,
+      which is a callback to pass the array to. Depends
+      on <code>addon/lint/lint.css</code>. A demo can be
+      found <a href="../demo/lint.html">here</a>.</dd>
 
       <dt id="addon_mark-selection"><a href="../addon/selection/mark-selection.js"><code>selection/mark-selection.js</code></a></dt>
       <dd>Causes the selected text to be marked with the CSS class
@@ -2830,7 +2841,10 @@ editor.setOption("extraKeys", {
           <dd>When true (the default), changed pieces of text are
           highlighted.</dd>
         </dl>
-        <a href="../demo/merge.html">Demo here</a>.</dd>
+        The addon also defines commands <code>"goNextDiff"</code>
+        and <code>"goPrevDiff"</code> to quickly jump to the next
+        changed chunk. <a href="../demo/merge.html">Demo
+        here</a>.</dd>
 
       <dt id="addon_tern"><a href="../addon/tern/tern.js"><code>tern/tern.js</code></a></dt>
       <dd>Provides integration with
