@@ -23,7 +23,8 @@ var jambiModel = function() {
 				"vcURL": "",
 				"vcUser": ""
 			},
-			"jTemplate": false
+			"jTemplate": false,
+			"ssh": false
 		}
 	});
 
@@ -533,6 +534,30 @@ var jambiModel = function() {
 	}
 
 
+	function saveSFTP() {
+    	if(activeProject && activeDocument) {
+        	if(activeProject.ssh){
+            	var Client = require('ssh2').Client;
+                var conn = new Client();
+                var fs = require('fs');
+                conn.on('error', function(e) {
+                    jambi.showNotification("Jambi SFTP", "Error connecting to server");
+                });
+
+                conn.on('ready', function() {
+                    conn.sftp(function(err, sftp) {
+                        var filename = activeDocument.fileLocation + activeDocument.title;
+                        var contents = activeDocument.text;
+                        sftp.writeFile('./' + filename, contents, [], function(){
+                            conn.end();
+                        });
+                    });
+                });
+            }
+        }
+	}
+
+
 
 	function setupSSH(host, port, username, password) {
 		try {
@@ -540,12 +565,9 @@ var jambiModel = function() {
 			var conn = new Client();
 			var fs = require('fs');
 
-
 			conn.on('error', function(e) {
 				console.log(e);
 			});
-
-
 
 			conn.on('ready', function() {
 				console.log('Client :: ready');
@@ -554,23 +576,31 @@ var jambiModel = function() {
 
 					sftp.readdir('./public_html', function(err, list) {
 						if (err) throw err;
-						//console.dir(list);
+						console.dir(list);
+
+
+
 						for(var i = 0; i < list.length; i++) {
+
+
     						if(list[i].filename === "index.html") {
-                                console.log(list[i].filename);
-        						sftp.readFile('./public_html/index.html', [], function(err,contents) {
-            						console.log(err);
-            						console.log(contents.toString('utf-8'));
-            						newDocument("index.html", contents.toString('utf-8'), checkFileType("html"), host + "./public_html/");
-            						conn.end();
-        						});
+                                //console.log(list[i].filename);
+        						//sftp.readFile('./public_html/index.html', [], function(err,contents) {
+            						//console.log(err);
+            						//console.log(contents.toString('utf-8'));
+            					//	newDocument("index.html", contents.toString('utf-8'), checkFileType("html"), host + "./public_html/");
+
+
+
+        						//});
+
+
+
+
     						}
 						}
 
 						console.log(sftp);
-
-
-
 					});
 				});
 			}).connect({
@@ -584,7 +614,7 @@ var jambiModel = function() {
 		}
 	}
 
-	//setupSSH("unix.sussex.ac.uk", 22, "", "");
+//	setupSSH("unix.sussex.ac.uk", 22, "", "");
 
 	function populateProjects() {
 		$('#projectsTable > tbody').empty();
@@ -1029,18 +1059,6 @@ var jambiModel = function() {
 		}
 	}
 
-	function vcInit() {
-		if(activeProject) {
-			if(activeProject.vc.vcInitialised) {
-				setInterval(function() {
-					//$('#versionControlOutput').empty();
-					//jambi.vcStatus($('#versionControlOutput'), activeProject.vc.vcType);
-				}, 3000);
-			}
-		}
-	}
-
-
 	function vcClick() {
 		jSetup.jambiMenu.vc.vc.click = function () {
 			function modalFunction() {
@@ -1121,26 +1139,28 @@ var jambiModel = function() {
         $('#vcPull').off('click');
         $('#vcPush').off('click');
 
-        if(activeProject.vc.vcInitialised) {
-            $('#commitAll').on('click', function(){
-                if(activeProject.vc.vcInitialised) {
-                    jambi.vcCommit(activeProject.vc.vcType);
-                }
-            });
-            $('#vcPull').on('click', function(){
-                if(activeProject.vc.vcInitialised) {
-                    jambi.vcPull(activeProject.vc.vcType);
-                }
-            });
-            $('#vcPush').on('click', function(){
-                if(activeProject.vc.vcInitialised) {
-                    jambi.vcPush(activeProject.vc.vcType);
-                }
-            });
-        } else {
-            $('#vcPush').attr('disabled','disabled');
-            $('#vcPull').attr('disabled','disabled');
-            $('#commitAll').attr('disabled','disabled');
+        if(activeProject) {
+            if(activeProject.vc.vcInitialised) {
+                $('#commitAll').on('click', function(){
+                    if(activeProject.vc.vcInitialised) {
+                        jambi.vcCommit(activeProject.vc.vcType);
+                    }
+                });
+                $('#vcPull').on('click', function(){
+                    if(activeProject.vc.vcInitialised) {
+                        jambi.vcPull(activeProject.vc.vcType);
+                    }
+                });
+                $('#vcPush').on('click', function(){
+                    if(activeProject.vc.vcInitialised) {
+                        jambi.vcPush(activeProject.vc.vcType);
+                    }
+                });
+            } else {
+                $('#vcPush').attr('disabled','disabled');
+                $('#vcPull').attr('disabled','disabled');
+                $('#commitAll').attr('disabled','disabled');
+            }
         }
     }
 
@@ -1185,7 +1205,6 @@ var jambiModel = function() {
 		showSidebarToggle();
 		$('#jambi-body').css('background-color', '#444');
 
-		vcInit();
 		vcMenuSetup();
 		listFunctions();
         $('#showcaseLink').show();
