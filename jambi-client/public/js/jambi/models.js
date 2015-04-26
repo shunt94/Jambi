@@ -24,7 +24,13 @@ var jambiModel = function() {
 				"vcUser": ""
 			},
 			"jTemplate": false,
-			"ssh": false
+			"ssh":  {
+    		    "enabled" :	false,
+    		    "server": "",
+    		    "port": 22,
+    		    "username": "",
+    		    "password": ""
+            }
 		}
 	});
 
@@ -536,7 +542,7 @@ var jambiModel = function() {
 
 	function saveSFTP() {
     	if(activeProject && activeDocument) {
-        	if(activeProject.ssh){
+        	if(activeProject.ssh.enabled){
             	var Client = require('ssh2').Client;
                 var conn = new Client();
                 var fs = require('fs');
@@ -694,26 +700,30 @@ var jambiModel = function() {
         				jambitemplate: false
     				};
 
-    				if($('#newproject_jquery').prop('checked')) {
-        				options.jquery = true;
-    				}
-    				if($('#newproject_backbone').prop('checked')) {
-        				options.backbone = true;
-    				}
-    				if($('#newproject_angular').prop('checked')) {
-        				options.angular = true;
-    				}
-    				if($('#newproject_jambitemplate').prop('checked')) {
-        				options.jambitemplate = true;
-    				}
-    				if($('#newproject_grunt').prop('checked')) {
-        				options.grunt = true;
-    				}
-    				if($('#newproject_bootstrap').prop('checked')) {
-        				options.bootstrap = true;
+    				var sshOptions = {
+            		    "enabled" :	false,
+            		    "server": "",
+            		    "port": 22,
+            		    "username": "",
+            		    "password": ""
     				}
 
-					addProject($('#addProjectName').val(), $('#addProjectLocation').val(), options);
+    				if($('#newproject_jquery').prop('checked')) options.jquery = true;
+    				if($('#newproject_backbone').prop('checked')) options.backbone = true;
+    				if($('#newproject_angular').prop('checked')) options.angular = true;
+    				if($('#newproject_jambitemplate').prop('checked')) options.jambitemplate = true;
+    				if($('#newproject_grunt').prop('checked')) options.grunt = true;
+    				if($('#newproject_bootstrap').prop('checked')) options.bootstrap = true;
+
+
+    				// SSH OPTIONS
+    				if($('#addProject_ssh_host').val()) sshOptions.server = $('#addProject_ssh_host').val();
+    				if($('#addProject_ssh_port').val()) sshOptions.port = $('#addProject_ssh_port').val();
+    				if($('#addProject_ssh_user').val()) sshOptions.username = $('#addProject_ssh_user').val();
+    				if($('#addProject_ssh_pass').val()) sshOptions.password = $('#addProject_ssh_pass').val();
+
+
+					addProject($('#addProjectName').val(), $('#addProjectLocation').val(), options, sshOptions);
 					$('#addprojectcard').fadeOut();
 				}
 			});
@@ -746,21 +756,29 @@ var jambiModel = function() {
         });
 	}
 
-	function addProject(name, root, options) {
+	function addProject(name, root, options, sshOptions) {
     	var newProject = new Project({
 			"project": {
-				"name": name,
-				"root": root,
-				"openfiles": [],
-				"flowInitialised":false,
-				"vc": {
+    			"name": name,
+    			"root": root,
+    			"openfiles": [],
+    			"currentfile": {},
+    			"flowInitialised": false,
+    			"vc": {
     				"vcInitialised": false,
     				"vcType": "git",
     				"vcURL": "",
     				"vcUser": ""
     			},
-    			"jTemplate": false
-			}
+    			"jTemplate": false,
+    			"ssh":  {
+        		    "enabled" :	false,
+        		    "server": "",
+        		    "port": 22,
+        		    "username": "",
+        		    "password": ""
+                }
+    		}
 		});
 		Projects.add(newProject);
 
@@ -806,6 +824,15 @@ var jambiModel = function() {
                     fs.mkdirSync(root + "/templates");
                 }
             }
+    	}
+
+    	if(sshOptions.enabled) {
+            newProject.ssh.enabled = true;
+
+        	if(sshOptions.server) newProject.ssh.server = sshOptions.server;
+        	if(sshOptions.port) newProject.ssh.port = sshOptions.port;
+        	if(sshOptions.username) newProject.ssh.username = sshOptions.username;
+        	if(sshOptions.password) newProject.ssh.password = sshOptions.password;
     	}
 
         // Project addons

@@ -1187,19 +1187,23 @@ var Jambi = function () {
             var oldHTML = jambiEditor.getValue();
             var templateTags = /(\(%)(\s)?(')?(include|if)?(\s)(')?(.)*(')?(%)(\))/g;
 
-            var tag = input.match(templateTags);
-            if(tag) {
-                tag = tag[0];
+            var tags = input.match(templateTags);
+            for(var i = 0; i<tags.length; i++) alert(tags[i]);
+            if(tags) {
 
 
-                var asd = /(\')(.)*(\')/;
-                var filename = tag.match(asd)[0];
-
-                filename = filename.substr(1, filename.length-2);
-
-
+                var counter = 0;
                 var searchCursor = jambiEditor.getSearchCursor(templateTags,0,true);
-                if(searchCursor.findNext()) {
+                while(searchCursor.findNext()) {
+                    var tag = tags[counter];
+                    counter++;
+                    alert(tag);
+                    var asd = /(\')(.)*(\')/;
+                    var filename = tag.match(asd)[0];
+
+                    filename = filename.substr(1, filename.length-2);
+
+
             		var row = searchCursor.from().line;
                     var col = searchCursor.from().ch;
                     jambiEditor.setCursor(row,col);
@@ -1215,15 +1219,13 @@ var Jambi = function () {
                         jambi.getJambiEditor().replaceSelection(newHtml);
                         jambifs.writeJSON(activeProject.root + "/" + activeDoc.title, jambiEditor.getValue());
 
-                        jambiEditor.setValue(oldHTML);
-
-
                     } catch(err) {
                         alert(err);
                     }
                 }
             }
         }
+        jambiEditor.setValue(oldHTML);
         jambiEditor.doc.setHistory(currentHistory);
 	};
 
