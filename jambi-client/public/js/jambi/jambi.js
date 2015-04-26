@@ -1197,7 +1197,6 @@ var Jambi = function () {
                 while(searchCursor.findNext()) {
                     var tag = tags[counter];
                     counter++;
-                    alert(tag);
                     var asd = /(\')(.)*(\')/;
                     var filename = tag.match(asd)[0];
 
