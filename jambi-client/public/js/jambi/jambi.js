@@ -35,10 +35,6 @@ var Jambi = function () {
     Jambi.prototype.menuSetup = function () {
         var jMenu = jSetup.jambiMenu;
 
-        // File Submenu
-        jMenu.file.fileNewSubmenu[0].click = function () {
-
-        };
         jMenu.file.fileSave.click = function () {
             jambi.saveFile();
         };
@@ -588,16 +584,11 @@ var Jambi = function () {
                 var currentActiveProject = jModel.getActiveProject();
                 if(currentActiveDoc && currentActiveProject) {
                     if(currentActiveDoc.isSaved) {
-                        //$('.file.active .filesaved i').removeClass("fa-circle-o").addClass("fa-circle");
-                        //jModel.getActiveDocument().isSaved = false;
                         if(currentActiveProject.flowInitialised && currentActiveDoc.mode === "javascript") {
                            delay(function(){
                                 setTimeout(function(){
                                     jambi.flowCode(currentActiveDoc.fileLocation, currentActiveDoc.title);
-                                    //jambi.jsHint();
                                 }, 100);
-
-
                             }, 700);
                         }
                     }
@@ -608,26 +599,10 @@ var Jambi = function () {
         });
 
 
-
-
-       /*
- jambiEditor.on('keyup', function(editor, keyevent){
-           if (!popupKeyCodes[(keyevent.keyCode || keyevent.which).toString()] && isNaN(String.fromCharCode(keyevent.which))) {
-                if(jambiEditor.mode !== 'htmlmixed' || jambiEditor.mode !== 'xml') {
-                    delay(function(){jambiEditor.showHint(keyevent);}, 800);
-                }
-            }
-        });
-*/
-
         jambiEditor.on("keydown", function(editor, keyevent) {
             var code = keyevent.keyCode;
             // if insta has been init then build string
             checkInstas(code, keyevent);
-
-
-
-
         });
 
 
@@ -1199,7 +1174,6 @@ var Jambi = function () {
             var templateTags = /(\(%)(\s)?(')?(include|if)?(\s)(')?(.)*(')?(%)(\))/g;
 
             var tags = input.match(templateTags);
-            for(var i = 0; i<tags.length; i++) alert(tags[i]);
             if(tags) {
 
 
@@ -1234,8 +1208,9 @@ var Jambi = function () {
                     }
                 }
             }
+            jambiEditor.setValue(oldHTML);
         }
-        jambiEditor.setValue(oldHTML);
+
         jambiEditor.doc.setHistory(currentHistory);
 	};
 
