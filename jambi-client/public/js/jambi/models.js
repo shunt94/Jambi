@@ -1315,7 +1315,7 @@ var jambiModel = function() {
 
 
 	return {
-		newFile: function() { newDocument (); },
+		newFile: function() { newDocument (); return true;},
 		openFile: function(filename, filecontents, filemode, fileLocation) {
 			return newDocument(filename, filecontents, filemode, fileLocation);
 		},

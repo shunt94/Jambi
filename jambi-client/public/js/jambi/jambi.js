@@ -141,7 +141,7 @@ var Jambi = function () {
                 modalContent += '$' +  content[i] + '<br>'
             }
             var modalFunction = function () {
-
+                 jMenu.instas.instasNew.click();
             };
             jambi.createModal("Instas", "List of Instas", modalContent, "Add", modalFunction);
         };
@@ -229,7 +229,7 @@ var Jambi = function () {
         storedb('userSettings').find({ "setting": "theme" }, function (err, result) {
             if (err) {
                 console.log("Could not find theme");
-            } else if (result[0] !== null) {
+            } else if (result[0] !== null || result[0] !== undefined) {
                 codeMirrortheme = result[0].setTo;
             }
 
@@ -1237,10 +1237,9 @@ var Jambi = function () {
         if(activeDoc) {
             var fileLocation = activeDoc.fileLocation;
             if(fileLocation) {
+                jambi.saveFile();
                 var filename = fileLocation + activeDoc.title;
                 var fileType = filename.substr((filename.lastIndexOf(".")+1), filename.length);
-                console.log(filename);
-                console.log(fileType);
                 if(fileType === "java") {
                     var command = "javac " + filename;
                     shell.exec(command, function(code, output) {
@@ -1251,12 +1250,20 @@ var Jambi = function () {
                             // Error reporting
                             $('#javaReporter').empty();
                             var errors = output.match(/error:(\s)(.)*/g);
+                            var errorLines = output.match(/(:)\d(:)/g);
                             for(var i = 0; i < errors.length; i++){
-                                $('#javaReporter').append(errors[i] + "<br>");
+                                if(errorLines[i] !== undefined || errorLines[i] !== null ) {
+                                    var errorLine = errorLines[i].match(/\d/);
+                                    $('#javaReporter').append(errors[i] + " at line " + errorLine + "<br>");
+                                } else {
+                                    $('#javaReporter').append(errors[i] + "<br>");
+                                }
                             }
                         }
                     });
                 }
+            } else {
+                alert("Please save your current file");
             }
         }
 	};
