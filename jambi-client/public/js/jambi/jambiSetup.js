@@ -77,6 +77,7 @@ var jambiSetup = function() {
 			toolsBeautifyCSS:       new gui.MenuItem({ label: 'Css' }),
 			toolsJambiTemplate:     new gui.MenuItem({ label: 'Compile Jambi Template' }),
             toolsStartServer:       new gui.MenuItem({ label: 'Start Server (:8000)' }),
+            toolsSSHConnect:        new gui.MenuItem({ label: 'SSH Connect' }),
             toolsCompileJava:       new gui.MenuItem({ label: 'Java Compile' }),
 		},
 		vc: {

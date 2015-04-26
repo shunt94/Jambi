@@ -121,6 +121,17 @@ var Jambi = function () {
             jambi.jambiTemplate(jambiEditor.getValue());
         };
 
+        jMenu.tools.toolsSSHConnect.click = function () {
+            var activeProject = jModel.getActiveProject();
+            if(activeProject) {
+                if(activeProject.ssh.enabled) {
+                    jModel.showSSHFiles();
+                }
+            }
+        };
+        jMenu.tools.toolsSSHConnect.enabled = false;
+
+
         jMenu.tools.toolsStartServer.click = function () {
             var spawn = require('child_process').spawn;
             if(jModel.getActiveProject()) {

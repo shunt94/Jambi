@@ -459,6 +459,14 @@ var jambiModel = function() {
 				populateTopBar(openDocuments.at(0).id);
 			}
 			goToEditor();
+            if(activeProject !== undefined) {
+    			if(activeProject.ssh.enabled) {
+    			    jSetup.jambiMenu.tools.toolsSSHConnect.enabled = true;
+    			}
+    			else {
+                    jSetup.jambiMenu.tools.toolsSSHConnect.enabled = false;
+    			}
+			}
 		}
 	}
 
@@ -564,63 +572,65 @@ var jambiModel = function() {
 	}
 
 
+    function sshShowFiles() {
+        var host, port, username, password;
+        if(activeProject.ssh.enabled) {
+            host = activeProject.ssh.server;
+            port = activeProject.ssh.port;
+            username = activeProject.ssh.username;
+            password = activeProject.ssh.password;
+        	try {
+    			var Client = require('ssh2').Client;
+    			var conn = new Client();
+    			var fs = require('fs');
 
-	function setupSSH(host, port, username, password) {
-		try {
-			var Client = require('ssh2').Client;
-			var conn = new Client();
-			var fs = require('fs');
+    			conn.on('error', function(e) {
+    				console.log(e);
+    			});
 
-			conn.on('error', function(e) {
-				console.log(e);
-			});
+    			conn.on('ready', function() {
+    				console.log('Client :: ready');
+    				conn.sftp(function(err, sftp) {
+    					if (err) throw err;
 
-			conn.on('ready', function() {
-				console.log('Client :: ready');
-				conn.sftp(function(err, sftp) {
-					if (err) throw err;
-
-					sftp.readdir('./public_html', function(err, list) {
-						if (err) throw err;
-						console.dir(list);
-
-
-
-						for(var i = 0; i < list.length; i++) {
-
-
-    						if(list[i].filename === "index.html") {
-                                //console.log(list[i].filename);
-        						//sftp.readFile('./public_html/index.html', [], function(err,contents) {
-            						//console.log(err);
-            						//console.log(contents.toString('utf-8'));
-            					//	newDocument("index.html", contents.toString('utf-8'), checkFileType("html"), host + "./public_html/");
-
-
-
-        						//});
-
-
-
+    					sftp.readdir('./public_html', function(err, list) {
+    						if (err) throw err;
+                            var content = "";
+    						for(var i = 0; i < list.length; i++) {
+                                console.log(list[i].attrs.isFile());
+                                var type;
+                                if(list[i].attrs.isFile()) { type = "file"; } else { type = "folder" }
+                                content += '<div class="file-list ssh-file" data-type="' + type +'" data-path="' + "d" +'" data-filename="'+
+    										  list[i].filename +'">'+ list[i].filename +'</div>';
 
     						}
-						}
 
-						console.log(sftp);
-					});
-				});
-			}).connect({
-				host: host,
-				port: port,
-				username: username,
-				password: password
-			});
-		} catch(err) {
-			console.log(err);
-		}
+    						$('.ssh-file').on('dblclick', function(){
+        						var $filename = $(this).data("filename");
+        						var $contents;
+        						sftp.readFile('./public_html/' + $filename, [], function(err,contents) {
+                                    $contents = contents;
+            				    });
+                                openFile($filename, $contents, "html", "ssh:"+host);
+    						});
+
+    						jambi.createModal("SSH Files", host, content, "close");
+    					});
+    				});
+    			}).connect({
+    				host: host,
+    				port: port,
+    				username: username,
+    				password: password
+    			});
+    		} catch(err) {
+    			console.log(err);
+    		}
+    	}
 	}
 
-//	setupSSH("unix.sussex.ac.uk", 22, "", "");
+
+
 
 	function populateProjects() {
 		$('#projectsTable > tbody').empty();
@@ -1146,7 +1156,7 @@ var jambiModel = function() {
         }
 
         $('#sideListForLoop').off('dblclick');
-        $('.cdn-list').on('click');
+        $('.cdn-list').off('click');
         $('.cdn-list').on('click', function(){
             $('.cdn-list').removeClass('active');
             $(this).addClass('active');
@@ -1358,6 +1368,9 @@ var jambiModel = function() {
 
 		saveAllProjects: function() {
 			return saveProjectsJSON();
+		},
+		showSSHFiles: function () {
+    		sshShowFiles();
 		}
 	};
 };
