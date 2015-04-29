@@ -974,9 +974,6 @@ var Jambi = function () {
     };
 
 
-
-    // Facebook Flow
-
     Jambi.prototype.runCommand = function(command, div) {
         shell.exec(command, function(code, output) {
             if(code !== 0) {
@@ -1006,6 +1003,7 @@ var Jambi = function () {
         if(fileLocation && filename) {
 
             $('#jambi-body').off('mouseover', '.test');
+            $('#flowErrorMessage').hide();
             var errorCount = 0;
             var oldText = jambi.getJambiEditor().getValue();
             if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
