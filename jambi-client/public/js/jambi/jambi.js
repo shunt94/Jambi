@@ -1,28 +1,52 @@
+// setup the menu object - to add event listeners later
 var jSetup = new jambiSetup();
+
+/*
+    Class: Jambi
+    Purpose: All primary features are implemented here, the variable is then exported for use across Jambi
+*/
 var Jambi = function () {
 
+    // Imports and variable declarations
+
+    // Node File System
     var fs = require('fs');
+    // Child process - for executing terminal commands
     var terminal = require('child_process');
+    // shell as a different implementation from terminal commands
     var shell = require('shelljs');
+    // Define the editor object
     var jambiEditor;
+    // Define the editor configuration
     var jambiEditorConfig;
     var currentFileDir;
+    // Current Version of Jambi
     var version;
     var widgets = [];
     var areFilesUnsaved = false;
 
+    // Define the editor font size - default to 14px
     var editorFontSize = 14;
 
+    // Read in the Jambi settings
     readJambiSettings();
 
+    /*
+        Method: readJambiSettings
+        Purpose: Reads the settings file jambi.json that stores all user settings
+    */
     function readJambiSettings() {
+        // Call the jambi file system function to read in the json
         jambifs.readJSON('jambi.json', function(err, data) {
+            // if there was an error reading the file, alert the user and set the default version to 1.0
             if(err) {
                 alert("Failed to read Jambi settings");
                 version = "1.0";
             }
             else {
+                // else set the version to the user settings file - this gets updated/ checked with Jambi Servers
                 version = data.version;
+                // Set the editor font size and update inline CSS to override all other CSS
                 editorFontSize = data.editor_settings.fontsize;
                 $('#instyled').append(".CodeMirror { font-size:" + editorFontSize + "px; }");
             }
@@ -30,7 +54,8 @@ var Jambi = function () {
     }
 
     /*
-		Function used to setup all of the menu bar - Action listeners and populators
+        Method: menuSetup
+		Purpose: Function used to setup all of the menu bar - Action listeners and populators
 	*/
     Jambi.prototype.menuSetup = function () {
         var jMenu = jSetup.jambiMenu;
@@ -747,6 +772,7 @@ var Jambi = function () {
             var file = jModel.getActiveDocument();
             var fileLocation = file.fileLocation;
 
+            var cursorPos = jambiEditor.getCursor();
 
 
             function doesDirectoryExist (tempfileLoc) {
@@ -765,10 +791,7 @@ var Jambi = function () {
                     } else {
                         $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
                         jModel.getActiveDocument().isSaved = true;
-                        if(false) { // if SFTP/ FTP then show
-                            jambi.showNotification('Jambi', 'Successfully uploaded to server');
-                        }
-                        if(false) { //if less and auto compile is on
+                        if(file == "less") {
                             var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
                             jambi.compileLess(file.fileLocation + fileNameWithoutType + ".css");
                         }
@@ -776,8 +799,14 @@ var Jambi = function () {
                             if(jModel.getActiveProject().jTemplate){
                                 jambi.jambiTemplate(jambiEditor.getValue());
                             }
+                            if(jModel.getActiveDocument().ssh) {
+                                if(jModel.getActiveDocument().ssh.enabled) {
+                                    jambi.showNotification('Jambi', 'Successfully uploaded to server');
+                                }
+                            }
 
                         }
+                        jambiEditor.setCursor(cursorPos);
                     }
                 });
             } else {
@@ -1117,7 +1146,6 @@ var Jambi = function () {
 
         shell.exec(command, function(code, output) {
             if(output){
-                console.log(output);
                 jambi.showNotification("Jambi VC", "Successfully Pushed");
             }
         });
@@ -1138,7 +1166,6 @@ var Jambi = function () {
 
         shell.exec(command, function(code, output) {
             if(output){
-                console.log(output);
                 jambi.showNotification("Jambi VC", "Files Commited");
             }
         });
@@ -1152,7 +1179,6 @@ var Jambi = function () {
         }
 
         shell.exec(command, function(code, output) {
-            console.log(output);
         });
     };
 
@@ -1219,6 +1245,7 @@ var Jambi = function () {
 	Jambi.prototype.compieleJava = function () {
     	// get the active document
         var activeDoc = jModel.getActiveDocument();
+        $('#flowErrorMessage').hide();
         if(activeDoc) {
             var fileLocation = activeDoc.fileLocation;
             if(fileLocation) {
@@ -1240,10 +1267,43 @@ var Jambi = function () {
                                 if(errorLines[i] !== undefined || errorLines[i] !== null ) {
                                     var errorLine = errorLines[i].match(/\d/);
                                     $('#javaReporter').append(errors[i] + " at line " + errorLine + "<br>");
+                                    jambiEditor.setGutterMarker(parseInt((errorLine)-1), "test1", makeMarker(errors[i]));
                                 } else {
                                     $('#javaReporter').append(errors[i] + "<br>");
                                 }
                             }
+
+
+
+
+                            function makeMarker(error) {
+                              var marker = document.createElement("div");
+                              marker.className = "test";
+                              marker.setAttribute('data-error', error);
+                              marker.style.color = "#ff0000";
+                              marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                              return marker;
+                            }
+
+                            // add the errors to the line numbers
+                            var $errorMessageDiv = $('#flowErrorMessage');
+                            $('#jambi-body').off('mouseover', '.test');
+                            $('#jambi-body').on('mouseover', '.test', function(){
+                                var $that = $(this);
+                                var message = $that.data('error');
+                                var offTop = $that.offset().top;
+                                var offLeft = $that.offset().left;
+                                $errorMessageDiv.fadeIn();
+                                $errorMessageDiv.offset({top: offTop, left: offLeft+20});
+                                $errorMessageDiv.html(message);
+                            });
+                            $('#jambi-body').on('mouseleave', '.test', function(){
+                                $errorMessageDiv.fadeOut();
+                            });
+
+
+
+
                         }
                     });
                 }
