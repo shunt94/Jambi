@@ -1,15 +1,7 @@
-
-// to do
-// seperate router by naming function and calling that function.varName
-
-
-
-
-
 (function() {
 // This function is taken from StackOverflow - http://stackoverflow.com/questions/8366733/external-template-in-underscore
 function render(tmpl_name, tmpl_data) {
-    if ( !render.tmpl_cache ) { 
+    if ( !render.tmpl_cache ) {
         render.tmpl_cache = {};
     }
     if ( ! render.tmpl_cache[tmpl_name] ) {
@@ -34,9 +26,36 @@ function render(tmpl_name, tmpl_data) {
 }
 
 
+
+// Preload Images - Taken from Stackoverflow (http://stackoverflow.com/questions/10240110/how-do-you-cache-an-image-in-javascript)
+function preloadImages(array) {
+    if (!preloadImages.list) {
+        preloadImages.list = [];
+    }
+    var list = preloadImages.list;
+    for (var i = 0; i < array.length; i++) {
+        var img = new Image();
+        img.onload = function() {
+            var index = list.indexOf(this);
+            if (index !== -1) {
+                // remove image from the array once it's loaded
+                // for memory consumption reasons
+                list.splice(index, 1);
+            }
+        }
+        list.push(img);
+        img.src = array[i];
+    }
+}
+
+preloadImages(["/img/mbpro_jambi.jpg", "/img/codebg.jpg"]);
+
+
+
+
 function setActiveMenu(menuitem) {
     $('.navbar-nav li').removeClass('active');
-    var newItem = '#menuItem_' + menuitem; 
+    var newItem = '#menuItem_' + menuitem;
     $(newItem).addClass('active');
     window.scrollTo(0,0);
 }

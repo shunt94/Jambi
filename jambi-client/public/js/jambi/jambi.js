@@ -172,7 +172,7 @@ var Jambi = function () {
             if(jModel.getActiveProject()) {
                 // Execute the python simple server command
                 var child = shell.exec('cd ' + jModel.getActiveProject().root + '&& python -m SimpleHTTPServer', function(code, output) {
-
+                    jSetup.gui.Shell.openExternal("http://localhost:8000");
                 });
                 setTimeout(function () {
                     child.kill();
@@ -481,7 +481,7 @@ var Jambi = function () {
             code_menu.append(new gui.MenuItem({ label: 'Copy' }));
             code_menu.append(new gui.MenuItem({ label: 'Paste' }));
             code_menu.append(new gui.MenuItem({ type: 'separator' }));
-            code_menu.append(new gui.MenuItem({ label: 'Colour Chooser' }));
+            code_menu.append(new gui.MenuItem({ label: 'Colour Chooser..' }));
             code_menu.append(new gui.MenuItem({ type: 'separator' }));
             code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
 
@@ -580,18 +580,33 @@ var Jambi = function () {
         var delay = (function(){
           var timer = 0;
           return function(callback, ms){
-          clearTimeout (timer);
-          timer = setTimeout(callback, ms);
-         };
+                clearTimeout (timer);
+                timer = setTimeout(callback, ms);
+            };
+        })();
+
+         var delay2 = (function(){
+          var timer = 0;
+          return function(callback, ms){
+                clearTimeout (timer);
+                timer = setTimeout(callback, ms);
+            };
         })();
 
         jambiEditor.on("change", function(keyevent) {
             jambi.updateCursorPosition();
-            setTimeout(function(){
                 var currentActiveDoc = jModel.getActiveDocument();
                 var currentActiveProject = jModel.getActiveProject();
                 if(currentActiveDoc && currentActiveProject) {
                     if(currentActiveDoc.isSaved) {
+                        if(currentActiveDoc.mode === "javascript") {
+                             delay2(function(){
+                                setTimeout(function(){
+                                    jambi.findVariables();
+                                }, 100);
+                            }, 700);
+                        }
+
                         if(currentActiveProject.flowInitialised && currentActiveDoc.mode === "javascript") {
                            delay(function(){
                                 setTimeout(function(){
@@ -601,9 +616,6 @@ var Jambi = function () {
                         }
                     }
                 }
-            }, 500);
-
-
         });
 
 
@@ -931,6 +943,10 @@ var Jambi = function () {
         });
     };
 
+    Jambi.prototype.openServer = function () {
+       jModel.execServer();
+    };
+
     /*
 		Function made to populate the modal in Jambi
 		There is one modal markup that gets populated via this function
@@ -1051,7 +1067,8 @@ var Jambi = function () {
             }
 
             var listOfJSON = "";
-            var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation])
+            var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation]);
+
             flowResults.stdout.on('data', function (data) {
                 return listOfJSON += data.toString();
             });
@@ -1316,6 +1333,46 @@ var Jambi = function () {
                 alert("Please save your current file");
             }
         }
+	};
+
+
+	Jambi.prototype.findVariables = function () {
+        var $jsVars = $('#jsVariables');
+        $jsVars.empty();
+
+        var tags = [];
+        // find all var tags and their names
+        var vRegEx = /var(\s)[^(\s)]*(\s?)(;?)[^\s]*/g;
+        var listOfTags = jambi.getJambiEditor().getValue().match(vRegEx);
+
+
+        if(listOfTags !== null) {
+                for(var k = 0; k<listOfTags.length; k++) {
+                    console.log(listOfTags[k]);
+                    var tagName = listOfTags[k].substr(4, listOfTags[k].length);
+                    tagName = tagName.match(/[^\s=;]*/g)[0];
+                    console.log(tagName);
+
+
+                    var tagObject = {
+                        "name" : tagName
+                    }
+                    tags.push(tagObject);
+                }
+                // print that array to the sidebar
+
+                if(tags.length === 1) {
+                    $jsVars.prepend(tags.length + " tag found <br><hr>");
+                } else {
+                    $jsVars.prepend(tags.length + " tags found <br><hr>");
+                }
+
+                for(var i = 0; i<tags.length; i++) {
+                    $jsVars.append(tags[i].name + "<br>");
+                }
+                return tags;
+        }
+        //return null;
 	};
 
 

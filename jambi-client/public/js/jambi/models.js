@@ -943,22 +943,6 @@ var jambiModel = function() {
 		}
 	});
 
-	var ToolsView = Backbone.View.extend({
-		el: '#jambi-body',
-
-		render: function(){
-			this.$el.html(render('tools', {}));
-		}
-	});
-
-	var ShowcaseView = Backbone.View.extend({
-		el: '#jambi-body',
-		render: function(){
-			this.$el.html(render('showcase', {}));
-			$('#jambi-body').off("contextmenu");
-		}
-	});
-
 	function hideSidebarToggle() {
 		$('#sidebar_toggle').hide();
 	}
@@ -1146,14 +1130,22 @@ var jambiModel = function() {
 
 
     function listFunctions() {
+
+        var jambiVariableListFunction = "";
+
+        var tags = jambi.findVariables();
+
+        jambiVariableListFunction = '(function(){ /* make it safe to use console log - taken from (http://www.sitepoint.com/safe-console-log/) */ (function(a){function b(){}for(var c="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),d;!!(d=c.pop());){a[d]=a[d]||b;}}) (function(){try{console.log();return window.console;}catch(a){return (window.console={});}}()); var vars = ' + JSON.stringify(tags, 4, null) + '; for(var i = 0; i<vars.length; i++) { console.log("var: " + vars[i].name + " = " + window[vars[i].name]); } })();';
+
         var options = {
             "bootstrap_css": '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">',
             "bootstrap_js": '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>',
             "jquery": '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>',
             "angular": '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>',
             "ajax_get": '',
-            "ajax_post": ''
-        }
+            "ajax_post": '',
+            "var_list" : jambiVariableListFunction
+        };
 
         $('#sideListForLoop').off('dblclick');
         $('.cdn-list').off('click');
@@ -1161,6 +1153,7 @@ var jambiModel = function() {
             $('.cdn-list').removeClass('active');
             $(this).addClass('active');
         });
+
         $('.cdn-list').on('dblclick', function(){
             var x = $(this).data('option');
             jambi.insertAtCursor(options[x]);
@@ -1172,6 +1165,7 @@ var jambiModel = function() {
                 jambi.insertAtCursor("for(var i = 0; i <= " + loopCount + "; i++) {\n\n}");
             }
         });
+
         $('#commitAll').off('click');
         $('#vcPull').off('click');
         $('#vcPush').off('click');
@@ -1202,28 +1196,29 @@ var jambiModel = function() {
     }
 
 
+    function openServer() {
+        jSetup.jambiMenu.tools.toolsStartServer.click();
+    }
+
 
 	// Routers
 
 	var Router = Backbone.Router.extend({
 		routes: {
 			'home': 'home',
-			'project': 'projects',
-			'tools' : 'tools',
-			'showcase': 'showcase'
+			'project': 'projects'
 		}
 	});
 
 
 	var editorView = new EditorView();
 	var projectView = new ProjectView();
-	var toolsView = new ToolsView();
-	var showcaseView = new ShowcaseView();
 
 	var router = new Router();
 	var firstLoad = true;
 
 	router.on('route:home', function() {
+    	$("#showcaseLink").off('click');
 		editorView.render();
 		jambi.searchWeb();
 		jambi.renderEditor();
@@ -1246,55 +1241,15 @@ var jambiModel = function() {
 		listFunctions();
         $('#showcaseLink').show();
 
-	});
-
-	router.on('route:tools', function() {
-    	$('#showcaseLink').show();
-		setActiveDocument();
-		if(activeDocument !== undefined) {
-			saveCurrentDocument(openDocuments.get(activeDocument));
-		}
-		toolsView.render();
-		hideSidebarToggle()
-		isEditorOpen = false;
-
-
-
-		$("#DateCountdown").TimeCircles({
-			"animation": "smooth",
-			"bg_width": 1.3,
-			"fg_width": 0.06,
-			"circle_bg_color": "#60686F",
-			"time": {
-				"Days": {
-					"text": "Days",
-					"color": "#FFCC66",
-					"show": true
-				},
-				"Hours": {
-					"text": "Hours",
-					"color": "#99CCFF",
-					"show": true
-				},
-				"Minutes": {
-					"text": "Minutes",
-					"color": "#BBFFBB",
-					"show": true
-				},
-				"Seconds": {
-					"text": "Seconds",
-					"color": "#FF9999",
-					"show": true
-				}
-			}
-		});
-
-
-		$('#jambi-body').css('background-color', '#fff');
-		vcMenuSetup();
+        setTimeout(function() {
+            $("#showcaseLink").on('click', function() {
+                openServer();
+            });
+        }, 500);
 
 
 	});
+
 
 	router.on('route:projects', function() {
 		setActiveDocument();
@@ -1309,33 +1264,6 @@ var jambiModel = function() {
 		$('#jambi-body').css('background-color', '#444');
 		vcMenuSetup();
 		$('#showcaseLink').hide();
-	});
-
-
-	router.on('route:showcase', function() {
-		setActiveDocument();
-		if(activeDocument !== undefined) {
-			saveCurrentDocument(openDocuments.get(activeDocument));
-		}
-		var spawn = require('child_process').spawn;
-        var shell = require('shelljs');
-        if(jModel.getActiveProject()) {
-            var child = shell.exec('cd ' + jModel.getActiveProject().root + '&& python -m SimpleHTTPServer', function(code, output) {
-                setTimeout(function(){
-                    showcaseView.render();
-            		hideSidebarToggle()
-            		isEditorOpen = false;
-            		$('#jambi-body').css('background-color', '#444');
-                    vcMenuSetup();
-                }, 1000);
-            });
-            setTimeout(function () {
-                child.kill();
-            }, 10000);
-        }
-
-
-
 	});
 
 
@@ -1371,6 +1299,9 @@ var jambiModel = function() {
 		},
 		showSSHFiles: function () {
     		sshShowFiles();
+		},
+		execServer: function () {
+    		openServer();
 		}
 	};
 };
