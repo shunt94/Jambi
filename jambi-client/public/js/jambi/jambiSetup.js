@@ -1,4 +1,9 @@
+/*
+    Class: JambiSetup
+    Purpose: Setup the data structures used for the menu and other node webkit structures
+*/
 var jambiSetup = function() {
+    // Import modules
 	var gui = require('nw.gui');
 	var win = gui.Window.get();
 	var menuBar = new gui.Menu({ type: 'menubar' });

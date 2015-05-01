@@ -80,29 +80,36 @@ var Jambi = function () {
         };
 
         jMenu.view.viewProjects.click = function () {
+            // Change the view to the projects page
             window.location.replace("#/project");
         };
 
         jMenu.view.viewEditor.click = function () {
+            // Change the view to the editor page
             window.location.replace("#/home");
         };
 
         jMenu.view.viewShowcase.click = function () {
+            // Change the view to the showcase page
             window.location.replace("#/showcase");
         };
 
         jMenu.tools.toolsFlowFlowCode.click = function () {
+            // Check active document is a javascript file
             if(jModel.getActiveDocument().mode === "javascript" && jModel.getActiveProject()) {
+                // Initialise flow
                 jambi.initFlow(jModel.getActiveProject().root);
+                // Flow the code
                 jambi.flowCode(jModel.getActiveDocument().fileLocation, jModel.getActiveDocument().title);
             }
         };
 
         jMenu.tools.toolsLess.click = function () {
-
             if(jModel.getActiveDocument()) {
                 var file = jModel.getActiveDocument();
+                // Get the file name
                 var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
+                // call the less compile
                 jambi.compileLess(file.fileLocation + "/" + fileNameWithoutType + ".css");
             }
         };
@@ -110,7 +117,9 @@ var Jambi = function () {
         jMenu.tools.toolsBeautifyJS.click = function () {
             var activeDoc = jModel.getActiveDocument();
             if(activeDoc.mode === "javascript") {
+                // Import the beautify module
                 var beautify = require('js-beautify').js_beautify;
+                // Beautify the code and set the value of the editor to the output
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
             }
@@ -123,7 +132,9 @@ var Jambi = function () {
         jMenu.tools.toolsBeautifyCSS.click = function () {
             var activeDoc = jModel.getActiveDocument();
             if(activeDoc.mode === "css") {
+                // Import the beautify module
                 var beautify = require('js-beautify').css;
+                // Beautify the code and set the value of the editor to the output
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
             }
@@ -132,7 +143,9 @@ var Jambi = function () {
         jMenu.tools.toolsBeautifyHTML.click = function () {
             var activeDoc = jModel.getActiveDocument();
             if(activeDoc.mode === "htmlmixed") {
+                // Import the beautify module
                 var beautify = require('js-beautify').html;
+                // Beautify the code and set the value of the editor to the output
                 var code = beautify(jambi.getJambiEditor().getValue(), { indent_size: jambi.getJambiEditor().tabSize });
                 jambi.getJambiEditor().setValue(code);
             }
@@ -154,8 +167,10 @@ var Jambi = function () {
 
 
         jMenu.tools.toolsStartServer.click = function () {
+            // Import the terminal command prompt
             var spawn = require('child_process').spawn;
             if(jModel.getActiveProject()) {
+                // Execute the python simple server command
                 var child = shell.exec('cd ' + jModel.getActiveProject().root + '&& python -m SimpleHTTPServer', function(code, output) {
 
                 });
@@ -167,34 +182,41 @@ var Jambi = function () {
 
 
         jMenu.instas.instasMenu.click = function () {
+            // Get all Instas from the Jambi Insta module
             var content = jInsta.getInstaValues();
             var modalContent = "";
+            // List out all of the insta variables
             for(var i = 0; i < content.length; i++) {
                 modalContent += '$' +  content[i] + '<br>'
-            }
+            };
             var modalFunction = function () {
                  jMenu.instas.instasNew.click();
             };
+            // Spawn a new modal with the insta content
             jambi.createModal("Instas", "List of Instas", modalContent, "Add", modalFunction);
         };
 
         jMenu.instas.instasNew.click = function () {
             var editor;
+            // setup the modal to add a new insta
             function modalFunction() {
                 jInsta.addNew($('#instaKeys').val(), editor.getValue());
             }
 
             var modalContent;
+            // get the instas menu from a file
              $.ajax({
                  dataType : "html",
                  url : "public/views/modal/insta.html",
                  success : function(results) {
-                     modalContent = results;
-                     jambi.createModal("Create New Insta", "", modalContent, "Add", modalFunction);
+                    // Create the modal with
+                    modalContent = results;
+                    jambi.createModal("Create New Insta", "", modalContent, "Add", modalFunction);
 
+                    // Create a new CodeMirror instance for the insta editor
                     editor = CodeMirror(document.getElementById('instaCode'), {
                         mode:  "htmlmixed",
-                       lineNumbers: true
+                        lineNumbers: true
                     });
                  }
             });
@@ -202,19 +224,21 @@ var Jambi = function () {
 
 
         // Themes
-
         jMenu.settings.settingsTheme.click = function () {
             function modalFunction() {
 
             }
             var modalContent;
-             $.ajax({
-                 dataType : "html",
-                 url : "public/views/modal/theme.html",
-                 success : function(results) {
-                     modalContent = results;
-                     jambi.createModal("Select Theme", "", modalContent, "Ok", modalFunction);
-                 }
+            // Get the theme html modal content from a file
+            $.ajax({
+                dataType : "html",
+                url : "public/views/modal/theme.html",
+                success : function(results) {
+                    modalContent = results;
+
+                    // spawn the modal
+                    jambi.createModal("Select Theme", "", modalContent, "Ok", modalFunction);
+                }
             });
         };
 
@@ -229,10 +253,7 @@ var Jambi = function () {
                               modalFunction);
         };
 
-
-
-
-
+        // check when the user closes the application for any open files
         jSetup.gui.Window.get().on('close', function () {
             var that = this;
             jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){that.close(true);});
@@ -247,7 +268,7 @@ var Jambi = function () {
 
     Jambi.prototype.getFontSize = function () {
         return editorFontSize;
-    }
+    };
 
     Jambi.prototype.getJambiEditor = function () {
         return jambiEditor;
@@ -276,6 +297,7 @@ var Jambi = function () {
             name: "htmlmixed"
         };
 
+        // Function to use spaces/ tabs
         function betterTab(cm) {
             if (cm.somethingSelected()) {
                 cm.indentSelection("add");
@@ -285,49 +307,6 @@ var Jambi = function () {
             }
         }
 
-
-
-
-
-
-
-
-        var dummy = {
-        attrs: {
-          color: ["red", "green", "blue", "purple", "white", "black", "yellow"],
-          size: ["large", "medium", "small"],
-          description: null
-        },
-        children: []
-      };
-
-      var tags = {
-        "!top": ["top"],
-        "!attrs": {
-          id: null,
-          class: ["A", "B", "C"]
-        },
-        top: {
-          attrs: {
-            lang: ["en", "de", "fr", "nl"],
-            freeform: null
-          },
-          children: ["animal", "plant"]
-        },
-        animal: {
-          attrs: {
-            name: null,
-            isduck: ["yes", "no"]
-          },
-          children: ["wings", "feet", "body", "head", "tail"]
-        },
-        plant: {
-          attrs: {name: null},
-          children: ["leaves", "stem", "flowers"]
-        },
-        wings: dummy, feet: dummy, body: dummy, head: dummy, tail: dummy,
-        leaves: dummy, stem: dummy, flowers: dummy
-      };
 
       function completeAfter(cm, pred) {
         var cur = cm.getCursor();
@@ -355,11 +334,6 @@ var Jambi = function () {
       }
 
 
-
-
-
-
-
         var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
         jambiEditorConfig = {
             mode: mixedMode,
@@ -384,7 +358,8 @@ var Jambi = function () {
                 "'/'": completeIfAfterLt,
                 "' '": completeIfInTag,
                 "'='": completeIfInTag
-            }
+            },
+            profile: 'xhtml'
         };
 
         jambi.renderEditor();
@@ -456,6 +431,8 @@ var Jambi = function () {
         jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
         jambiEditor.focus();
 
+        emmetCodeMirror(jambiEditor);
+
         jambiEditor.off("cursorActivity");
         jambiEditor.off("change");
         jambiEditor.off("keyup");
@@ -504,6 +481,8 @@ var Jambi = function () {
             code_menu.append(new gui.MenuItem({ label: 'Copy' }));
             code_menu.append(new gui.MenuItem({ label: 'Paste' }));
             code_menu.append(new gui.MenuItem({ type: 'separator' }));
+            code_menu.append(new gui.MenuItem({ label: 'Colour Chooser' }));
+            code_menu.append(new gui.MenuItem({ type: 'separator' }));
             code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
 
 
@@ -519,7 +498,11 @@ var Jambi = function () {
                  document.execCommand("paste");
             };
 
-            code_menu.items[4].click = function(e) {
+            code_menu.items[4].click = function(){
+                jambi.colourChooser();
+            };
+
+            code_menu.items[6].click = function(e) {
                 var selection = jambi.getJambiEditor().getSelection();
                 var activeDoc = jModel.getActiveDocument();
                 if(activeDoc) {
@@ -638,6 +621,32 @@ var Jambi = function () {
         jambi.getJambiEditor().replaceSelection(text);
         jambi.getJambiEditor().focus();
     }
+
+
+    Jambi.prototype.colourChooser = function () {
+        function modalFunction() {
+            var colour = $('#colourChooserColour').val();
+            jambi.insertAtCursor(colour);
+        }
+
+         $.ajax({
+                dataType : "html",
+                url : "public/views/modal/colour.html",
+                success : function(results) {
+                    modalContent = results;
+
+                    // spawn the modal
+                    jambi.createModal("Colour Chooser",
+                                        "",
+                                        modalContent,
+                                        "Ok",
+                                        modalFunction);
+                }
+            });
+
+
+
+    };
 
 
 
@@ -852,19 +861,14 @@ var Jambi = function () {
                     		    activeProject.openfiles[i].active = false;
                     		    if(jModel.getActiveDocument().fileLocation === activeProject.openfiles[i].root &&
                     		        jModel.getActiveDocument().title === activeProject.openfiles[i].name) {
-                        		      activeIndex = i;
+                                        activeIndex = i;
                     		    }
                     		}
                             if(activeIndex < 0) {
                         		jModel.addFileToProject(filename, fileLocation, "htmlmixed");
                         		jModel.saveAllProjects();
-
                     		}
                         }
-
-
-
-                        // save animation
                     }
                 });
             });
@@ -963,7 +967,8 @@ var Jambi = function () {
         jambi.openModal();
 
         // Set the click function of the modal to the function given in the parameters
-        $('#modalButtonRight').click(function () {
+        $('#modalButtonRight').off('click');
+        $('#modalButtonRight').on('click', function () {
             modalFunc();
         });
     };
