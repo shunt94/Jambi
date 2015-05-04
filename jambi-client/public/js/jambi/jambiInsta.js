@@ -7,6 +7,9 @@ var jambiInsta = function () {
     var instaString = "";
     var counter = 0;
     var fs = require('fs');
+
+
+
     jambiInsta.prototype.getInstas = function () {
         // get instas from json file
         jambifs.readJSON('instas/instas.json', function(err, data){
@@ -15,8 +18,6 @@ var jambiInsta = function () {
     };
 
     jambiInsta.prototype.addNew = function(name, code) {
-
-
         function generateRandomString(length, chars) {
             var result = '';
             for (var i = length; i > 0; --i) {
@@ -24,7 +25,10 @@ var jambiInsta = function () {
             }
             return result;
         }
-        var filename = generateRandomString(16, '0123456789abcdefghijklmnopqrstuvwxyz') + ".html";
+        var filename = generateRandomString(8, '0123456789abcdefghijklmnopqrstuvwxyz');
+        var dateSeconds = new Date();
+        filename += dateSeconds.getTime() + ".html";
+
         instaArray[name] = 'instas/' + filename;
 
         fs.writeFile('instas/instas/' + filename, code.toString(), function (err) {

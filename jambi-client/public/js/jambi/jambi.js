@@ -152,10 +152,12 @@ var Jambi = function () {
         };
 
         jMenu.tools.toolsJambiTemplate.click = function () {
+            // Call the template engine with the value of the editor
             jambi.jambiTemplate(jambiEditor.getValue());
         };
 
         jMenu.tools.toolsSSHConnect.click = function () {
+            // if there is an active project and ssh is enabled, show the file browser
             var activeProject = jModel.getActiveProject();
             if(activeProject) {
                 if(activeProject.ssh.enabled) {
@@ -163,6 +165,7 @@ var Jambi = function () {
                 }
             }
         };
+
         jMenu.tools.toolsSSHConnect.enabled = false;
 
 
@@ -262,18 +265,34 @@ var Jambi = function () {
         });
     };
 
+    /*
+        Method: getVersion
+        Purpose: returns the version number of Jambi
+    */
     Jambi.prototype.getVersion = function () {
         return version;
     };
 
+    /*
+        Method: getFontSize
+        Purpose: returns the font size of the Jambi editor
+    */
     Jambi.prototype.getFontSize = function () {
         return editorFontSize;
     };
 
+    /*
+        Method: getJambiEditor
+        Purpose: returns the editor
+    */
     Jambi.prototype.getJambiEditor = function () {
         return jambiEditor;
     };
 
+    /*
+        Method: initCodeMirror
+        Purpose: Initialise the code mirror instance
+    */
     Jambi.prototype.initCodeMirror = function () {
         // User Settings
         var codeMirrortheme = "ambiance";
@@ -281,7 +300,7 @@ var Jambi = function () {
         // Find user settings using storeDB
         storedb('userSettings').find({ "setting": "theme" }, function (err, result) {
             if (err) {
-                console.log("Could not find theme");
+                jambi.showNotification("Jambi", "Could not find theme");
             } else if (result[0] !== null || result[0] !== undefined) {
                 codeMirrortheme = result[0].setTo;
             }
@@ -362,44 +381,48 @@ var Jambi = function () {
             profile: 'xhtml'
         };
 
+
+        // Render Editor
         jambi.renderEditor();
 
-
-
-
-
-        // Instas
-
-
+        // Set listeners
         jambi.setListeners();
     };
 
+    /*
+        Method: updateCursorPosition
+        Purpose: updates the cursor position text situated at the bottom of the editor
+    */
     Jambi.prototype.updateCursorPosition = function () {
         var cursorPos = jambiEditor.getCursor();
         $('#jambiLine').text(cursorPos.line + 1);
         $('#jambiColumn').text(cursorPos.ch + 1);
     };
 
-
+    /*
+        Method: setListeners
+        Purpose: set all the global action listeners of Jambi
+    */
     Jambi.prototype.setListeners = function () {
         // Changed the theme of the editor
         $('#themeselector').on('change', function () {
             var theme = $('#themeselector option:selected').text();
             jambiEditor.setOption("theme", theme);
 
+            // remove the old settings
             storedb('userSettings').remove({
                 "setting": "theme"
             }, function (err) {});
 
+            // store the new settings
             storedb('userSettings').insert({
                 "setting": "theme",
                 "setTo": theme
             }, function (err, result) {
                 if (err) {
-                    console.log("User Settings could not be saved..");
-                    console.log(err);
+                    jambi.showNotification("Jambi", "User settings could not be saved.. " + err);
                 } else {
-                    console.log("User Settings Saved.. Deleting old data");
+                    jambi.showNotification("Jambi", "User settings saved");
                 }
             });
 
@@ -408,44 +431,149 @@ var Jambi = function () {
         // Activates the JSHint-ing button on Javascript mode
         $('#modeSelector').on('change', function () {
             var mode = $("#modeSelector option:selected").attr('data-mode');
-            var $jsHintCode = $('#jshintcode');
             jambiEditor.setOption("mode", mode);
-            if(mode === "javascript") {
-                jambi.jsHint();
-                $jsHintCode.removeClass("hidden");
-            }
-            else {
-                jambi.stopJSHint();
-                $jsHintCode.addClass("hidden");
-            }
         });
     };
 
-    /*
-		Renders the same editor when the editor view is called - Used when the editor view is called and when the initial editor is made
-
-	*/
+	/*
+        Method: renderEditor
+        Purpose: Renders the same editor when the editor view is called - Used when the editor view is called and when the initial editor is made
+    */
 	var instaStarted = false;
     Jambi.prototype.renderEditor = function () {
 
+        // Create the CodeMirror instance
         jambiEditor = CodeMirror(document.getElementById('jambi-editor'), jambiEditorConfig);
+        // focus the editor
         jambiEditor.focus();
 
         emmetCodeMirror(jambiEditor);
 
+        // remove all the action listeners, ready for new listeners, avoids double functions be called
         jambiEditor.off("cursorActivity");
         jambiEditor.off("change");
         jambiEditor.off("keyup");
         jambiEditor.off("gutterClick");
 
+        // update the cursor position when the user clicks somewhere on the document
         jambiEditor.on("cursorActivity", function(e) {
             jambi.updateCursorPosition();
         });
+
+        // Setup the fold line function
         var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+        // on gutter click, fold the line
         jambiEditor.on("gutterClick", foldLine);
 
         var timeout;
-         var popupKeyCodes = {
+
+
+        /*
+            Function: generateJambiContextMenus
+            Purpose: Setup the context menu when a user right clicks on the editor
+        */
+        function generateJambiContextMenus() {
+
+
+            /*
+                Method: doesFileExist
+                Purpose: checks if a file or folder exists, returns true if so
+            */
+            function doesFileExist (tempfileLoc) {
+                try { fs.statSync(tempfileLoc); return true }
+                catch (er) { return false }
+            }
+
+
+            // create the new menu
+            var code_menu = new gui.Menu();
+
+            // append the items to the menu
+            code_menu.append(new gui.MenuItem({ label: 'Cut' }));
+            code_menu.append(new gui.MenuItem({ label: 'Copy' }));
+            code_menu.append(new gui.MenuItem({ label: 'Paste' }));
+            code_menu.append(new gui.MenuItem({ type: 'separator' }));
+            code_menu.append(new gui.MenuItem({ label: 'Colour chooser..' }));
+            code_menu.append(new gui.MenuItem({ type: 'separator' }));
+            code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
+            code_menu.append(new gui.MenuItem({ label: 'Open file in folder' }));
+
+            // Cut click function
+            code_menu.items[0].click = function(){
+                 document.execCommand("cut");
+            };
+
+            // Copy click function
+            code_menu.items[1].click = function(){
+                 document.execCommand("copy");
+            };
+
+            // Paste click function
+            code_menu.items[2].click = function(){
+                 document.execCommand("paste");
+            };
+
+            // colour chooser function
+            code_menu.items[4].click = function(){
+                jambi.colourChooser();
+            };
+
+            // goto file click function
+            code_menu.items[6].click = function(e) {
+                var selection = jambi.getJambiEditor().getSelection();
+                var activeDoc = jModel.getActiveDocument();
+                if(activeDoc) {
+                    if(activeDoc.fileLocation) {
+                        if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
+                            var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
+                            var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
+                            var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
+                            var contents = "";
+                            if(doesFileExist(fileLoc + "/" + filename)) {
+                                contents = jambi.openFileByDir(fileLoc + "/" + filename);
+                            }
+
+                            jModel.openFile(filename, contents, filetype, fileLoc + "/");
+                        }
+                    } else {
+                        alert("Save current file first");
+                        jambi.saveFile();
+                    }
+                } else {
+                    var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
+                    var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
+                    jModel.openFile(filename, "", filetype);
+                }
+            };
+
+            code_menu.items[7].click = function(e) {
+                var activeDoc = jModel.getActiveDocument();
+                if(activeDoc)
+                if(activeDoc.fileLocation) {
+                    var command = "cd " + activeDoc.fileLocation + " && open .";
+                    shell.exec(command, function(code, output) {
+
+                    });
+                }
+            };
+
+
+
+
+            $('#jambi-body').off("contextmenu");
+            $('#jambi-body').on("contextmenu", '.editor-container' ,function(e){
+               code_menu.popup(e.pageX, e.pageY);
+               return false;
+            });
+
+        }
+
+        generateJambiContextMenus();
+
+
+
+        var instaReady = false;
+        var popupKeyCodes = {
             "9": "tab",
             "13": "enter",
             "27": "escape",
@@ -465,87 +593,6 @@ var Jambi = function () {
             "16": "shift",
             "20": "caps"
         };
-
-
-        function generateJambiContextMenus() {
-
-            function doesFileExsit (tempfileLoc) {
-                try { fs.statSync(tempfileLoc); return true }
-                catch (er) { return false }
-            }
-
-            var code_menu = new gui.Menu();
-            var clickedCard;
-
-            code_menu.append(new gui.MenuItem({ label: 'Cut' }));
-            code_menu.append(new gui.MenuItem({ label: 'Copy' }));
-            code_menu.append(new gui.MenuItem({ label: 'Paste' }));
-            code_menu.append(new gui.MenuItem({ type: 'separator' }));
-            code_menu.append(new gui.MenuItem({ label: 'Colour Chooser..' }));
-            code_menu.append(new gui.MenuItem({ type: 'separator' }));
-            code_menu.append(new gui.MenuItem({ label: 'Goto this file' }));
-
-
-            code_menu.items[0].click = function(){
-                 document.execCommand("cut");
-            };
-
-            code_menu.items[1].click = function(){
-                 document.execCommand("copy");
-            };
-
-            code_menu.items[2].click = function(){
-                 document.execCommand("paste");
-            };
-
-            code_menu.items[4].click = function(){
-                jambi.colourChooser();
-            };
-
-            code_menu.items[6].click = function(e) {
-                var selection = jambi.getJambiEditor().getSelection();
-                var activeDoc = jModel.getActiveDocument();
-                if(activeDoc) {
-                    if(activeDoc.fileLocation) {
-                        if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
-                            var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
-                            var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
-                            var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
-                            var contents = "";
-                            if(doesFileExsit(fileLoc + "/" + filename)) {
-                                contents = jambi.openFileByDir(fileLoc + "/" + filename);
-                            }
-
-                            jModel.openFile(filename, contents, filetype, fileLoc + "/");
-                        }
-                    } else {
-                        alert("Save current file first");
-                        jambi.saveFile();
-                    }
-                } else {
-                    var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
-                    var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
-                    jModel.openFile(filename, "", filetype);
-                }
-            };
-
-
-
-
-            $('#jambi-body').off("contextmenu");
-            $('#jambi-body').on("contextmenu", '.editor-container' ,function(e){
-               code_menu.popup(e.pageX, e.pageY);
-               clickedCard = $(this);
-               return false;
-            });
-
-        }
-
-        generateJambiContextMenus();
-
-
-
-        var instaReady = false;
 
 
         function checkInstas(code, keyevent) {
@@ -1362,9 +1409,9 @@ var Jambi = function () {
                 // print that array to the sidebar
 
                 if(tags.length === 1) {
-                    $jsVars.prepend(tags.length + " tag found <br><hr>");
+                    $jsVars.prepend(tags.length + " variable found <br><hr>");
                 } else {
-                    $jsVars.prepend(tags.length + " tags found <br><hr>");
+                    $jsVars.prepend(tags.length + " variables found <br><hr>");
                 }
 
                 for(var i = 0; i<tags.length; i++) {
