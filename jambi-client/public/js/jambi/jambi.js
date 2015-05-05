@@ -299,10 +299,15 @@ var Jambi = function () {
 
         // Find user settings using storeDB
         storedb('userSettings').find({ "setting": "theme" }, function (err, result) {
+            try{
             if (err) {
                 jambi.showNotification("Jambi", "Could not find theme");
             } else if (result[0] !== null || result[0] !== undefined) {
                 codeMirrortheme = result[0].setTo;
+                console.log(result);
+            }
+            } catch(e) {
+
             }
 
             $("#themeselector option").filter(function () {
@@ -520,22 +525,27 @@ var Jambi = function () {
 
             // goto file click function
             code_menu.items[6].click = function(e) {
+                // Get the current code selection of the cursor
                 var selection = jambi.getJambiEditor().getSelection();
+                // Get the active document
                 var activeDoc = jModel.getActiveDocument();
                 if(activeDoc) {
                     if(activeDoc.fileLocation) {
+                        // Match the selection to a file location
                         if(selection.match(/((\/)?)(\w)*(\/)(\w)*(.)(\w)*/) || selection.match(/(\w)*(-)?(\w)*(\.)(\w{1,4})/)) {
                             var filename = selection.substr(selection.lastIndexOf("/")+1, selection.length);
                             var fileLoc = jModel.getActiveDocument().fileLocation + selection.substr(0, selection.lastIndexOf("/"));
                             var filetype = jModel.checkFileTypes(filename.substr(filename.lastIndexOf(".")+1, filename.length));
                             var contents = "";
+                            // check that the file exists
                             if(doesFileExist(fileLoc + "/" + filename)) {
                                 contents = jambi.openFileByDir(fileLoc + "/" + filename);
                             }
-
+                            // Open the file
                             jModel.openFile(filename, contents, filetype, fileLoc + "/");
                         }
                     } else {
+                        // File is not saved to alert the user
                         alert("Save current file first");
                         jambi.saveFile();
                     }
@@ -546,7 +556,9 @@ var Jambi = function () {
                 }
             };
 
+            // Click function for the 'open file in folder'
             code_menu.items[7].click = function(e) {
+                // get active document
                 var activeDoc = jModel.getActiveDocument();
                 if(activeDoc)
                 if(activeDoc.fileLocation) {
@@ -557,10 +569,9 @@ var Jambi = function () {
                 }
             };
 
-
-
-
+            // remove event listener
             $('#jambi-body').off("contextmenu");
+            // re add event listener
             $('#jambi-body').on("contextmenu", '.editor-container' ,function(e){
                code_menu.popup(e.pageX, e.pageY);
                return false;
