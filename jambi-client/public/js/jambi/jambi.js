@@ -1182,7 +1182,7 @@ var Jambi = function () {
 
                     $('#flowcontent').html("Found " + errorCount + " errors");
 
-                }, 100);
+                }, 500);
             });
 
             jambiEditor.refresh();
