@@ -1107,6 +1107,7 @@ var Jambi = function () {
 
 
     Jambi.prototype.flowCode = function(fileLocation, filename) {
+        try{
         if(fileLocation && filename) {
 
             $('#jambi-body').off('mouseover', '.test');
@@ -1185,6 +1186,9 @@ var Jambi = function () {
             });
 
             jambiEditor.refresh();
+        }
+        } catch(e) {
+            jambi.showNotification("Error", "Flow error");
         }
     };
 
