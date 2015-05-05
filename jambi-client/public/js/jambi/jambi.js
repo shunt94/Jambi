@@ -787,6 +787,9 @@ var Jambi = function () {
             dataType: 'json',
             success: function(data) {
                 jambiEditor.setValue('<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_css + '"> \n' +'<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_theme + '"> \n' + '<script type="text/javascript" src="' + data.cdns.jquery + '"></script> \n' + '<script type="text/javascript" src="' + data.cdns.bootstrap_js + '"></script> \n');
+
+                jModel.setCDNS(data.cdns);
+
             },
             error: function(e) {
                 alert("Error: " + e);
@@ -810,8 +813,7 @@ var Jambi = function () {
     Jambi.prototype.openFileByDir = function(dir) {
         try {
             return fs.readFileSync(dir,{"encoding":'utf8'});
-        }
-        catch(err) {
+        } catch(err) {
             return null;
         }
     };
@@ -955,10 +957,6 @@ var Jambi = function () {
         }
     };
 
-    Jambi.prototype.saveUserSetting = function (setting, value) {
-
-    };
-
     Jambi.prototype.compileLess = function (fileLocationWithName) {
         var less = require('less');
         less.render(jambi.getJambiEditor().getValue(), {
@@ -1006,7 +1004,7 @@ var Jambi = function () {
                     searchTerm +
                     '%20site%3Astackoverflow.com';
                 jSetup.gui.Shell.openExternal(searchURL);
-                $('#stackoverflow_search').val("");
+                $(this).val("");
             }
         });
     };
@@ -1093,14 +1091,18 @@ var Jambi = function () {
 
 
     Jambi.prototype.runCommand = function(command, div) {
-        shell.exec(command, function(code, output) {
-            if(code !== 0) {
-                //console.log('Exit code:', code);
-            }
-            if(div && output) {
-                div.text(output);
-            }
-        });
+        try{
+            shell.exec(command, function(code, output) {
+                if(code !== 0) {
+                    //console.log('Exit code:', code);
+                }
+                if(div && output) {
+                    div.text(output);
+                }
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Running Command");
+        }
     };
 
 
@@ -1204,76 +1206,95 @@ var Jambi = function () {
     };
 
     Jambi.prototype.vcStatus = function(div, vcType) {
-        var command;
-        var root = jModel.getActiveDocument().fileLocation;
-        command = 'cd ' + root + ' && ' + vcType + ' status';
+        try{
+            var command;
+            var root = jModel.getActiveDocument().fileLocation;
+            command = 'cd ' + root + ' && ' + vcType + ' status';
 
-        shell.exec(command, function(code, output) {
-            if(div && output) {
-                div.html(output);
-            }
-        });
+            shell.exec(command, function(code, output) {
+                if(div && output) {
+                    div.html(output);
+                }
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Showing Status");
+        }
     };
 
 
     Jambi.prototype.vcPull = function (vcType) {
-        var command;
-        var root = jModel.getActiveDocument().fileLocation;
-        if(vcType === "git") {
-            command = 'cd ' + root + ' &&  git pull origin master';
-        }
-        if(vcType === "hg") {
-            command = 'cd ' + root + ' && hg pull -u';
-        }
-
-        shell.exec(command, function(code, output) {
-            if(output) {
-                jambi.showNotification("Jambi VC", "Repository Pulled");
+        try {
+            var command;
+            var root = jModel.getActiveDocument().fileLocation;
+            if(vcType === "git") {
+                command = 'cd ' + root + ' &&  git pull origin master';
             }
-        });
+            if(vcType === "hg") {
+                command = 'cd ' + root + ' && hg pull -u';
+            }
+
+            shell.exec(command, function(code, output) {
+                if(output) {
+                    jambi.showNotification("Jambi VC", "Repository Pulled");
+                }
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Pulling Repo");
+        }
     };
 
     Jambi.prototype.vcPush = function (vcType) {
-        var command;
-        var root = jModel.getActiveDocument().fileLocation;
-        command = 'cd ' + root + ' && ' + vcType + ' push';
+        try{
+            var command;
+            var root = jModel.getActiveDocument().fileLocation;
+            command = 'cd ' + root + ' && ' + vcType + ' push';
 
-        shell.exec(command, function(code, output) {
-            if(output){
-                jambi.showNotification("Jambi VC", "Successfully Pushed");
-            }
-        });
+            shell.exec(command, function(code, output) {
+                if(output){
+                    jambi.showNotification("Jambi VC", "Successfully Pushed");
+                }
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Pushing Changes");
+        }
     };
 
 
     Jambi.prototype.vcCommit = function (vcType, commitMsg) {
-        var command;
-        jambi.saveFile();
-        var root = jModel.getActiveDocument().fileLocation;
-        if(commitMsg) {
-            command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m ' + '"' + commitMsg + '"';
-        }
-        else {
-            command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m "Commiting changes to ' +
-            jModel.getActiveDocument().title + '"';
-        }
-
-        shell.exec(command, function(code, output) {
-            if(output){
-                jambi.showNotification("Jambi VC", "Files Commited");
+        try{
+            var command;
+            jambi.saveFile();
+            var root = jModel.getActiveDocument().fileLocation;
+            if(commitMsg) {
+                command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m ' + '"' + commitMsg + '"';
             }
-        });
+            else {
+                command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m "Commiting changes to ' +
+                jModel.getActiveDocument().title + '"';
+            }
+
+            shell.exec(command, function(code, output) {
+                if(output){
+                    jambi.showNotification("Jambi VC", "Files Commited");
+                }
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Commiting changes");
+        }
     };
 
     Jambi.prototype.vcClone = function (url, vcType) {
-        var command;
-        var root = jModel.getActiveProject().root;
-        if(url) {
-            command = 'cd ' + root + ' && ' +  vcType + ' clone ' + url;
-        }
+        try{
+            var command;
+            var root = jModel.getActiveProject().root;
+            if(url) {
+                command = 'cd ' + root + ' && ' +  vcType + ' clone ' + url;
+            }
 
-        shell.exec(command, function(code, output) {
-        });
+            shell.exec(command, function(code, output) {});
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Cloning Repo");
+        }
     };
 
 

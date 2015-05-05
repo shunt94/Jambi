@@ -1129,6 +1129,11 @@ var jambiModel = function() {
 	vcClick();
 
 
+    var bootstrapCSS = '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">';
+    var bootstrapJS = '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>';
+    var jqueryJS = '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>';
+    var angularJS = '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>';
+
     function listFunctions() {
 
         var jambiVariableListFunction = "";
@@ -1138,10 +1143,10 @@ var jambiModel = function() {
         jambiVariableListFunction = '(function(){ /* make it safe to use console log - taken from (http://www.sitepoint.com/safe-console-log/) */ (function(a){function b(){}for(var c="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),d;!!(d=c.pop());){a[d]=a[d]||b;}}) (function(){try{console.log();return window.console;}catch(a){return (window.console={});}}()); var vars = ' + JSON.stringify(tags, 4, null) + '; for(var i = 0; i<vars.length; i++) { console.log("var: " + vars[i].name + " = " + window[vars[i].name]); } })();';
 
         var options = {
-            "bootstrap_css": '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">',
-            "bootstrap_js": '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>',
-            "jquery": '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>',
-            "angular": '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>',
+            "bootstrap_css": bootstrapCSS,
+            "bootstrap_js": bootstrapJS,
+            "jquery": jqueryJS,
+            "angular": angularJS,
             "ajax_get": '',
             "ajax_post": '',
             "var_list" : jambiVariableListFunction
@@ -1302,6 +1307,12 @@ var jambiModel = function() {
 		},
 		execServer: function () {
     		openServer();
+		},
+		setCDNS: function () {
+            bootstrapCSS = '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">';
+            bootstrapJS = '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>';
+            jqueryJS = '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>';
+            angularJS = '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>';
 		}
 	};
 };
