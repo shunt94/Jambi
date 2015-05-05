@@ -452,7 +452,6 @@ var Jambi = function () {
         // focus the editor
         jambiEditor.focus();
 
-        emmetCodeMirror(jambiEditor);
 
         // remove all the action listeners, ready for new listeners, avoids double functions be called
         jambiEditor.off("cursorActivity");
