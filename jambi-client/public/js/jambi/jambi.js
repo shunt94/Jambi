@@ -315,7 +315,7 @@ var Jambi = function () {
                 jambi.showNotification("Jambi", "Could not find theme");
             } else if (result[0] !== null || result[0] !== undefined) {
                 codeMirrortheme = result[0].setTo;
-                console.log(result);
+                //console.log(result);
             }
             } catch(e) {
 
@@ -1095,7 +1095,7 @@ var Jambi = function () {
     Jambi.prototype.runCommand = function(command, div) {
         shell.exec(command, function(code, output) {
             if(code !== 0) {
-                console.log('Exit code:', code);
+                //console.log('Exit code:', code);
             }
             if(div && output) {
                 div.text(output);
@@ -1172,7 +1172,7 @@ var Jambi = function () {
                         }
 
                     } catch(err) {
-                        console.log(err);
+                        //console.log(err);
                         jambi.showNotification("Jambi Error", "Flow Error");
                     }
 
@@ -1420,10 +1420,10 @@ var Jambi = function () {
 
         if(listOfTags !== null) {
                 for(var k = 0; k<listOfTags.length; k++) {
-                    console.log(listOfTags[k]);
+                    //console.log(listOfTags[k]);
                     var tagName = listOfTags[k].substr(4, listOfTags[k].length);
                     tagName = tagName.match(/[^\s=;]*/g)[0];
-                    console.log(tagName);
+                    //console.log(tagName);
 
 
                     var tagObject = {
