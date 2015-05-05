@@ -31,6 +31,11 @@ var Jambi = function () {
     // Read in the Jambi settings
     readJambiSettings();
 
+    try{
+        shell.exec("flow start", function(code, output) {});
+    } catch(er) {
+
+    }
     /*
         Method: readJambiSettings
         Purpose: Reads the settings file jambi.json that stores all user settings
@@ -258,6 +263,12 @@ var Jambi = function () {
 
         // check when the user closes the application for any open files
         jSetup.gui.Window.get().on('close', function () {
+            try{
+                shell.exec("flow stop", function(code, output) {});
+            } catch(er) {
+
+            }
+
             var that = this;
             jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){that.close(true);});
             jambi.openModal();
@@ -1182,7 +1193,7 @@ var Jambi = function () {
 
                     $('#flowcontent').html("Found " + errorCount + " errors");
 
-                }, 500);
+                }, 400);
             });
 
             jambiEditor.refresh();
