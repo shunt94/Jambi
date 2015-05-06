@@ -28,6 +28,7 @@ var Jambi = function () {
     // Define the editor font size - default to 14px
     var editorFontSize = 14;
 
+
     // Read in the Jambi settings
     readJambiSettings();
 
@@ -311,12 +312,12 @@ var Jambi = function () {
         // Find user settings using storeDB
         storedb('userSettings').find({ "setting": "theme" }, function (err, result) {
             try{
-            if (err) {
-                jambi.showNotification("Jambi", "Could not find theme");
-            } else if (result[0] !== null || result[0] !== undefined) {
-                codeMirrortheme = result[0].setTo;
-                //console.log(result);
-            }
+                if (err) {
+                    jambi.showNotification("Jambi", "Could not find theme");
+                } else if (result[0] !== null || result[0] !== undefined) {
+                    codeMirrortheme = result[0].setTo;
+                    //console.log(result);
+                }
             } catch(e) {
 
             }
@@ -370,6 +371,8 @@ var Jambi = function () {
 
 
         var foldLine = CodeMirror.newFoldFunction(CodeMirror.braceRangeFinder);
+
+        // Set up the main editor configuration
         jambiEditorConfig = {
             mode: mixedMode,
             theme: codeMirrortheme,
@@ -589,11 +592,14 @@ var Jambi = function () {
 
         }
 
+        // generate the context menu
         generateJambiContextMenus();
 
 
-
+        // Insta setup
         var instaReady = false;
+
+        // Map key codes of popular keys, used for instas
         var popupKeyCodes = {
             "9": "tab",
             "13": "enter",
@@ -616,6 +622,7 @@ var Jambi = function () {
         };
 
 
+        // Function used to check if an insta has been entered
         function checkInstas(code, keyevent) {
             if(instaReady && code === 13) {
                 jInsta.insert(jInsta.getString());
@@ -645,6 +652,7 @@ var Jambi = function () {
 
         }
 
+        // delay functions that only execute if the user stops typing
         var delay = (function(){
           var timer = 0;
           return function(callback, ms){
@@ -661,6 +669,7 @@ var Jambi = function () {
             };
         })();
 
+        // Set the functions that execute when the document changes
         jambiEditor.on("change", function(keyevent) {
             jambi.updateCursorPosition();
                 var currentActiveDoc = jModel.getActiveDocument();
@@ -686,58 +695,70 @@ var Jambi = function () {
                 }
         });
 
-
+        // Check instas on keydown
         jambiEditor.on("keydown", function(editor, keyevent) {
-            var code = keyevent.keyCode;
             // if insta has been init then build string
-            checkInstas(code, keyevent);
+            checkInstas(keyevent.keyCode, keyevent);
         });
 
 
     };
 
-
+    /*
+        Method: insertAtCursor
+        Purpose: Method used to insert a string of text at the cursor position
+    */
     Jambi.prototype.insertAtCursor = function (text) {
         jambi.getJambiEditor().replaceSelection(text);
         jambi.getJambiEditor().focus();
     }
 
-
+    /*
+        Method: colourChooser
+        Purpose: brings up a modal with the HTML5 colour chooser, it will then insert that hex colour at the cursor
+    */
     Jambi.prototype.colourChooser = function () {
         function modalFunction() {
+            // Get the colour
             var colour = $('#colourChooserColour').val();
+            // insert hex colour at cursor
             jambi.insertAtCursor(colour);
         }
 
-         $.ajax({
-                dataType : "html",
-                url : "public/views/modal/colour.html",
-                success : function(results) {
-                    modalContent = results;
+        // Get web pages to render the modal
+        $.ajax({
+            dataType : "html",
+            url : "public/views/modal/colour.html",
+            success : function(results) {
+                modalContent = results;
 
-                    // spawn the modal
-                    jambi.createModal("Colour Chooser",
-                                        "",
-                                        modalContent,
-                                        "Ok",
-                                        modalFunction);
-                }
-            });
+                // spawn the modal
+                jambi.createModal("Colour Chooser",
+                                    "",
+                                    modalContent,
+                                    "Ok",
+                                    modalFunction);
+            }
+        });
 
 
 
     };
 
 
-
-    /*
-		Handler for the JSHint function for the Javascript mode in the editor
-	*/
+	/*
+        Method: jsHint
+        Purpose: Handler for the JSHint function for the Javascript mode in the editor
+    */
     Jambi.prototype.jsHint = function () {
         function updateHints() {
+                // Clear the gutter of all messages
                 jambiEditor.clearGutter("test2");
+                //JSHINT the text editors value
                 JSHINT(jambiEditor.getValue());
                 $('#jsErrors').empty();
+
+                // Print off the errors
                 for (var x = 0; x < JSHINT.errors.length; ++x) {
                     var err = JSHINT.errors[x];
                     if (!err) continue;
@@ -745,7 +766,7 @@ var Jambi = function () {
 
                     var gutterLine = parseInt(err.line-1);
 
-
+                    // Add a widget at the gutter line
                     jambiEditor.setGutterMarker(gutterLine, "test2", makeMarker(err.reason));
 
                     function makeMarker(error) {
@@ -757,8 +778,9 @@ var Jambi = function () {
                         return marker;
                     }
 
-
+                    // refresh the editor
                     jambiEditor.refresh();
+                    // append the JS errors
                     $('#jsErrors').append("Error at line: " + err.line + " - " + err.reason);
                 }
 
@@ -767,18 +789,16 @@ var Jambi = function () {
                     alert($(this).data('error'));
                 });
         }
-
-
-        var waiting;
         updateHints();
 
     };
 
-    Jambi.prototype.stopJSHint = function () {
-
-    };
-
+    /*
+        Method: updateJambi
+        Purpose: fetches data from the server to update Jambi with
+    */
     Jambi.prototype.updateJambi = function () {
+        // Get data from server
         $.ajax({
             type: 'GET',
             url: "http://jambi.herokuapp.com/api",
@@ -786,30 +806,44 @@ var Jambi = function () {
             contentType: "application/json",
             dataType: 'json',
             success: function(data) {
-                jambiEditor.setValue('<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_css + '"> \n' +'<link rel="stylesheet" type="text/css" href="' + data.cdns.bootstrap_theme + '"> \n' + '<script type="text/javascript" src="' + data.cdns.jquery + '"></script> \n' + '<script type="text/javascript" src="' + data.cdns.bootstrap_js + '"></script> \n');
-
+                // Update the CDN Insta links
                 jModel.setCDNS(data.cdns);
-
             },
             error: function(e) {
+                // Alert if error
                 alert("Error: " + e);
             }
         });
     };
 
+    /*
+        Method: newFile
+        Purpose: Creates a new file using JambiModel
+    */
     Jambi.prototype.newFile = function () {
         jModel.newFile();
     };
 
+    /*
+        Method: closeCurrentFile
+        Purpose: Closes current file using JambiModel
+    */
     Jambi.prototype.closeCurrentFile = function () {
         jModel.closeCurrentDoc();
     };
 
+    /*
+        Method: closeAllFiles
+        Purpose: closes all files using JambiModel
+    */
     Jambi.prototype.closeAllFiles = function () {
         jModel.closeAllDocs();
     };
 
-
+    /*
+        Method: openFileByDir
+        Purpose: Opens a file by its directory
+    */
     Jambi.prototype.openFileByDir = function(dir) {
         try {
             return fs.readFileSync(dir,{"encoding":'utf8'});
@@ -818,12 +852,18 @@ var Jambi = function () {
         }
     };
 
+    /*
+        Method: addFileToRecents
+        Purpose: Adds opened files to the recently opened menu
+    */
     Jambi.prototype.addFileToRecents = function(file) {
+        // if there are more than 10 items, remove the first one until there is less than 10
         if(jSetup.openRecentMenu.items.length > 10) {
             while(jSetup.openRecentMenu.items.length > 10){
                 jSetup.openRecentMenu.removeAt(0);
             }
         }
+        // if not then add the new item
         if(jSetup.openRecentMenu.items.length <= 10) {
             var fileName = file.substr(file.lastIndexOf("/")+1, file.length);
             var filetype = fileName.substr(fileName.lastIndexOf('.') + 1, fileName.length);
@@ -835,18 +875,26 @@ var Jambi = function () {
         }
     };
 
-
+    /*
+        Method: openFile
+        Purpose: Opens a file using a file dialog
+    */
     Jambi.prototype.openFile = function () {
         try {
             $('#fileDialog').change(function (evt) {
+                // get file location
                 var openFileLocation = $(this).val();
+                // read the file using the location set by the dialog
                 fs.readFile(openFileLocation, "utf8", function (error, data) {
                     if (error) {
                         alert(error);
                     } else {
+                        // get file options
                         var fileLocation = openFileLocation.substring(0,openFileLocation.lastIndexOf("/")+1);
                         var fileName = openFileLocation.replace(/^.*[\\\/]/, '');
                         var filetype = fileName.substr(fileName.lastIndexOf('.') + 1, fileName.length);
+
+                        // open the file
                         jModel.openFile(fileName ,data, jModel.checkFileTypes(filetype), fileLocation);
                         jambi.addFileToRecents(openFileLocation);
                     }
@@ -858,8 +906,14 @@ var Jambi = function () {
         }
     };
 
+    /*
+        Method: saveFile
+        Purpose: Saves the current file
+    */
     Jambi.prototype.saveFile = function () {
+        // Check that the page is correct
         if(jModel.onEditorPage()){
+            // get active document and file location
             var file = jModel.getActiveDocument();
             var fileLocation = file.fileLocation;
 
@@ -870,26 +924,33 @@ var Jambi = function () {
               try { fs.statSync(tempfileLoc); return true }
               catch (er) { return false }
             }
-
+            // if the file has a location set, save that file to the same place
             if (fileLocation) {
+                // final Check, make the directory if it does not exist on the file system
                 if(!doesDirectoryExist(fileLocation)) {
                     fs.mkdirSync(fileLocation);
                 }
+                // create new file location with name and location
                 fileLocation = file.fileLocation + file.title;
+
+                // write the file
                 fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
                     if (err) {
                         alert(err);
                     } else {
                         $('.file.active .filesaved i').removeClass("fa-circle").addClass("fa-circle-o");
                         jModel.getActiveDocument().isSaved = true;
+                        // check for special file types
                         if(file == "less") {
                             var fileNameWithoutType = file.title.substr(0, file.title.lastIndexOf('.'));
                             jambi.compileLess(file.fileLocation + fileNameWithoutType + ".css");
                         }
+                        // compile template if needed
                         if(jModel.getActiveProject()) {
                             if(jModel.getActiveProject().jTemplate){
                                 jambi.jambiTemplate(jambiEditor.getValue());
                             }
+                            // save with ssh if needed
                             if(jModel.getActiveDocument().ssh) {
                                 if(jModel.getActiveDocument().ssh.enabled) {
                                     jambi.showNotification('Jambi', 'Successfully uploaded to server');
@@ -901,31 +962,42 @@ var Jambi = function () {
                     }
                 });
             } else {
+                // else save file as
                 jambi.saveFileAs();
             }
         }
     };
 
+    /*
+        Method: saveFileAs
+        Purpose: Saves the current file with a dialog to specifiy a location
+    */
     Jambi.prototype.saveFileAs = function () {
+        // check if on the correct page
         if(jModel.onEditorPage()){
+            // load the save dialog
             $('#saveDialog').click();
             $('#saveDialog').on('change', function (event) {
+                // get the file location
                 var fileLocation = $(this).val();
+                // write the file
                 fs.writeFile(fileLocation, jambiEditor.doc.getValue(), function (err) {
                     if (err) {
                         alert(err);
                     } else {
 
+                        // If windows, do double back slash
                         var sysString = "/";
                         if(process.platform == "win32" || process.platform == "win64" ) {
                     		sysString = "\\";
                     	}
 
 
-
+                        // get options
                         var filename = fileLocation.replace(/^.*[\\\/]/, '');
                         fileLocation = fileLocation.substring(0,fileLocation.lastIndexOf(sysString)+1);
                         $('#saveDialog').attr('nwworkingdir', fileLocation);
+                        // set options
                         jModel.setDocLocation(fileLocation);
                         jModel.setDocName(filename);
 
@@ -939,6 +1011,8 @@ var Jambi = function () {
                         var activeProject = jModel.getActiveProject();
                         if(activeProject) {
                     		var activeIndex = -1;
+
+                    		// set active index
                     		for(var i = 0; i < activeProject.openfiles.length; i++){
                     		    activeProject.openfiles[i].active = false;
                     		    if(jModel.getActiveDocument().fileLocation === activeProject.openfiles[i].root &&
@@ -957,22 +1031,35 @@ var Jambi = function () {
         }
     };
 
+    /*
+        Method: compileLess
+        Purpose: compiles a less file
+    */
     Jambi.prototype.compileLess = function (fileLocationWithName) {
+        // import less
         var less = require('less');
+        // compile file and save
         less.render(jambi.getJambiEditor().getValue(), {
               paths: ['.', './lib'],  // Specify search paths for @import directives
               filename: fileLocationWithName, // Specify a filename, for better error messages
               compress: false          // Minify CSS output
             }, function (e, output) {
                 if(!e) {
+                    // save file and show notification
                     jambifs.writeJSON(fileLocationWithName, output.css);
                     jambi.showNotification('Jambi LESS', 'Successfully compiled to css');
                 }
             });
     };
 
+    /*
+        Method: showNotification
+        Purpose: shows a MacOSX style notification at the top right hand of the computer
+    */
     Jambi.prototype.showNotification = function(ttl, msg, resp) {
+        // import modules
         var notifier = require('node-notifier');
+        // send notification
         notifier.notify({
             title: ttl,
             message: msg,
@@ -992,31 +1079,39 @@ var Jambi = function () {
     };
 
 
-
-    /*
-		Function to handle the web (stackoverflow.com) search box
-	*/
+	/*
+        Method: searchWeb
+        Purpose: Function to handle the web (stackoverflow.com) search box
+    */
     Jambi.prototype.searchWeb = function () {
+        // if the key = enter, search the web
         $("#stackoverflow_search").keyup(function(event){
             if(event.keyCode === 13){
                 var searchTerm = $("#stackoverflow_search").val().split(' ').join('+');
                 var searchURL = 'https://www.google.co.uk/webhp?sourceid=chrome-instant&rlz=1C5CHFA_enGB558GB558&ion=1&espv=2&ie=UTF-8#q=' +
                     searchTerm +
                     '%20site%3Astackoverflow.com';
+                // open the url
                 jSetup.gui.Shell.openExternal(searchURL);
+                // set the value to empty again
                 $(this).val("");
             }
         });
     };
 
+    /*
+        Method: openServer
+        Purpose: starts a python simple server
+    */
     Jambi.prototype.openServer = function () {
        jModel.execServer();
     };
 
-    /*
-		Function made to populate the modal in Jambi
-		There is one modal markup that gets populated via this function
-	*/
+	/*
+        Method: createModel
+        Purpose: Function made to populate the modal in Jambi
+		            There is one modal markup that gets populated via this function
+    */
     Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc, modalWidth, extraButton) {
         // If there is no modal type defined then we set the default button name - 'Save'
         if (modalType === undefined || modalType === null) {
@@ -1056,13 +1151,18 @@ var Jambi = function () {
     };
 
     /*
-		Function used to open modal
-	*/
+        Method: openModal
+        Purpose: function to open the modal
+    */
     Jambi.prototype.openModal = function () {
         // Open the modal using a 'href' javascript emulator
         location.href = "#jambiModal";
     };
 
+    /*
+        Method: addSideMenu
+        Purpose: appends a side menu to the side bar
+    */
     Jambi.prototype.addSideMenu = function (title, content) {
         $('#sidebar-content').append('<div class="sidebar-heading">' + title + '</div>')
         .append('<div class="sidebar-content">' + content + '</div>');
@@ -1070,9 +1170,11 @@ var Jambi = function () {
 
     // Jambi Animations
     /*
-        Function that toggles the sideMenu in Jambi
+        Method: toggleSidebar
+        Purpose: function that toggles the sidebar in Jambi
     */
     Jambi.prototype.toggleSideMenu = function () {
+        // if toggled, show/ hide
         if($('.sidebar').hasClass("inView")) {
             $('.sidebar').animate({"margin-right": '-=300px'}, 200);
             $('.editor-container').animate({ "width": "+=300px" }, 200);
@@ -1090,8 +1192,13 @@ var Jambi = function () {
     };
 
 
+    /*
+        Method: runCommand
+        Purpose: runs a command using the shell process (terminal)
+    */
     Jambi.prototype.runCommand = function(command, div) {
         try{
+            // execute the command given in the argument
             shell.exec(command, function(code, output) {
                 if(code !== 0) {
                     //console.log('Exit code:', code);
@@ -1101,11 +1208,15 @@ var Jambi = function () {
                 }
             });
         } catch(e) {
-            jambi.showNotification("Jambi VC", "Error Running Command");
+            // Show notification if error
+            jambi.showNotification("Jambi", "Error Running Command");
         }
     };
 
-
+    /*
+        Method: initFlow
+        Purpose: Starts a flow server given the project
+    */
     Jambi.prototype.initFlow = function (projectLocation) {
         if(!(jModel.getActiveProject().flowInitialised)) {
             jambi.runCommand('cd ' + '"' + projectLocation + '"' +
@@ -1116,90 +1227,93 @@ var Jambi = function () {
 
     };
 
-
-
-
+    /*
+        Method: flowCode
+        Purpose: Method used for static type checking of JavaScript Files
+                 Written by facebook but only as a terminal command line system, integrated here with I/O of Terminal
+    */
     Jambi.prototype.flowCode = function(fileLocation, filename) {
+        // Wrap in try to avoid terminal errors
         try{
-        if(fileLocation && filename) {
+            if(fileLocation && filename) {
 
-            $('#jambi-body').off('mouseover', '.test');
-            $('#flowErrorMessage').hide();
-            var errorCount = 0;
-            var oldText = jambi.getJambiEditor().getValue();
-            if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
-                jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
-            }
-            jambi.saveFile();
+                $('#jambi-body').off('mouseover', '.test');
+                $('#flowErrorMessage').hide();
+                var errorCount = 0;
+                var oldText = jambi.getJambiEditor().getValue();
+                if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
+                    jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
+                }
+                jambi.saveFile();
 
-            var fullPath = fileLocation + filename;
-            if(fullPath.indexOf("./") === 1) {
-                fullPath = fullPath.substr(2, fullPath.length);
-            }
+                var fullPath = fileLocation + filename;
+                if(fullPath.indexOf("./") === 1) {
+                    fullPath = fullPath.substr(2, fullPath.length);
+                }
 
-            var listOfJSON = "";
-            var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation]);
+                var listOfJSON = "";
+                var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation]);
 
-            flowResults.stdout.on('data', function (data) {
-                return listOfJSON += data.toString();
-            });
-            flowResults.on('close', function (code) {
-                setTimeout(function() {
-                     try{
-                        jambiEditor.clearGutter('test1');
-                        var results = JSON.parse(listOfJSON.toString()).errors;
-                        for(var i = 0; i<results.length; i++) {
-                            if(results[i].message[0].path === fullPath) {
-                                errorCount += 1;
-                                var result = results[i];
-                                var desc = result.message[0].descr;
-                                if(result.message[1]) {
-                                    desc = result.message[0].descr + " " + result.message[1].descr;
+                flowResults.stdout.on('data', function (data) {
+                    return listOfJSON += data.toString();
+                });
+                flowResults.on('close', function (code) {
+                    setTimeout(function() {
+                         try{
+                            jambiEditor.clearGutter('test1');
+                            var results = JSON.parse(listOfJSON.toString()).errors;
+                            for(var i = 0; i<results.length; i++) {
+                                if(results[i].message[0].path === fullPath) {
+                                    errorCount += 1;
+                                    var result = results[i];
+                                    var desc = result.message[0].descr;
+                                    if(result.message[1]) {
+                                        desc = result.message[0].descr + " " + result.message[1].descr;
+                                    }
+                                    var start = {"line": result.message[0].line, "ch": result.message[0].start};
+                                    var end = {"line": result.message[0].endline, "ch": result.message[0].end};
+
+                                    jambiEditor.setGutterMarker(result.message[0].line-1, "test1", makeMarker(desc));
+
+                                    function makeMarker(error) {
+                                      var marker = document.createElement("div");
+                                      marker.className = "test";
+                                      marker.setAttribute('data-error', error);
+                                      marker.style.color = "#ff0000";
+                                      marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                                      return marker;
+                                    }
+
                                 }
-                                var start = {"line": result.message[0].line, "ch": result.message[0].start};
-                                var end = {"line": result.message[0].endline, "ch": result.message[0].end};
-
-                                jambiEditor.setGutterMarker(result.message[0].line-1, "test1", makeMarker(desc));
-
-                                function makeMarker(error) {
-                                  var marker = document.createElement("div");
-                                  marker.className = "test";
-                                  marker.setAttribute('data-error', error);
-                                  marker.style.color = "#ff0000";
-                                  marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                                  return marker;
-                                }
-
                             }
+
+                        } catch(err) {
+                            //console.log(err);
+                            jambi.showNotification("Jambi Error", "Flow Error");
                         }
 
-                    } catch(err) {
-                        //console.log(err);
-                        jambi.showNotification("Jambi Error", "Flow Error");
-                    }
+                        var $errorMessageDiv = $('#flowErrorMessage');
+                        $('#jambi-body').off('mouseover', '.test');
+                        $('#jambi-body').on('mouseover', '.test', function(){
+                            var $that = $(this);
+                            var message = $that.data('error');
+                            var offTop = $that.offset().top;
+                            var offLeft = $that.offset().left;
+                            $errorMessageDiv.fadeIn();
+                            $errorMessageDiv.offset({top: offTop, left: offLeft+20});
+                            $errorMessageDiv.html(message);
+                        });
+                        $('#jambi-body').on('mouseleave', '.test', function(){
+                            $errorMessageDiv.fadeOut();
+                        });
 
-                    var $errorMessageDiv = $('#flowErrorMessage');
-                    $('#jambi-body').off('mouseover', '.test');
-                    $('#jambi-body').on('mouseover', '.test', function(){
-                        var $that = $(this);
-                        var message = $that.data('error');
-                        var offTop = $that.offset().top;
-                        var offLeft = $that.offset().left;
-                        $errorMessageDiv.fadeIn();
-                        $errorMessageDiv.offset({top: offTop, left: offLeft+20});
-                        $errorMessageDiv.html(message);
-                    });
-                    $('#jambi-body').on('mouseleave', '.test', function(){
-                        $errorMessageDiv.fadeOut();
-                    });
+                        $('#flowcontent').html("Found " + errorCount + " errors");
 
-                    $('#flowcontent').html("Found " + errorCount + " errors");
+                    }, 400);
+                });
 
-                }, 400);
-            });
-
-            jambiEditor.refresh();
-        }
+                jambiEditor.refresh();
+            }
         } catch(e) {
             jambi.showNotification("Error", "Flow error");
         }
@@ -1472,4 +1586,6 @@ var Jambi = function () {
 };
 
 var jambi = new Jambi();
+// Update jambi from the server
+jambi.updateJambi();
 jambi.menuSetup();

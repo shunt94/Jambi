@@ -1040,7 +1040,10 @@ var jambiModel = function() {
 				}
 			}
 
-			getFiles(currentDirectory);
+            setTimeout(function(){
+    			getFiles(currentDirectory);
+            }, 400);
+
 
 			$('#previousDir').on('dblclick', function(){
 				var newPath = currentDirectory.substr(0, currentDirectory.lastIndexOf('/'));
@@ -1308,11 +1311,11 @@ var jambiModel = function() {
 		execServer: function () {
     		openServer();
 		},
-		setCDNS: function () {
-            bootstrapCSS = '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">';
-            bootstrapJS = '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>';
-            jqueryJS = '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>';
-            angularJS = '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>';
+		setCDNS: function (data) {
+            bootstrapCSS = '<link rel="stylesheet" href="' + data.bootstrap_css + '">';
+            bootstrapJS = '<script src="' + data.bootstrap_js + '"></script>';
+            jqueryJS = '<script src="' + data.jquery + '"></script>';
+            angularJS = '<script src="' + data.angular + '"></script>';
 		}
 	};
 };

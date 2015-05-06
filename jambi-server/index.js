@@ -19,7 +19,8 @@ app.get('/api', function(req,res) {
 			"bootstrap_css": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css",
 			"bootstrap_js": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js",
 			"bootstrap_theme": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css",
-			"jquery": "https://code.jquery.com/jquery-2.1.1.min.js"
+			"jquery": "https://code.jquery.com/jquery-2.1.1.min.js",
+			"angluar": "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"
 		}
 	});
 });
