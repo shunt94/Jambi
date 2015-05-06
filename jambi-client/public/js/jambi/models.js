@@ -247,9 +247,10 @@ var jambiModel = function() {
 			// save projects.json
 			saveProjectsJSON();
 		}
-
+        // remove document from open documents
 		openDocuments.remove(openDocuments.get(docID));
 		if(openDocuments.length >= 1) {
+    		// populate top bar with doc ids - used for Jambi to know which doc to change to
 			if(activeDocument === docID) {
 				if(index < 1) {
 					populateTopBar(openDocuments.at(index).id);
@@ -269,34 +270,62 @@ var jambiModel = function() {
 			setDocOptions(openDocuments.get(activeDocument));
 		}
 		else {
+    		// if no documents open, go to projects page
 			populateTopBar();
 			goToProjects();
 		}
 	}
 
+    /*
+        Method: removeAllDocuments
+        Purpose: removes all open documents
+    */
 	function removeAllDocuments () {
+    	// remove all the documents
 		openDocuments.reset();
+		// re populate the top bar
 		populateTopBar();
+		// go to project page
 		goToProjects();
 	}
 
+    /*
+        Method: goToProjects
+        Purpose: navigate the browser to the projects page
+    */
 	function goToProjects() {
 		window.location.replace('#/project');
 	}
 
+    /*
+        Method: goToEditor
+        Purpose: navigate to the editor page
+    */
 	function goToEditor() {
 		window.location.replace('#/home');
 	}
 
+    /*
+        Method: closeCurrentDocument
+        Purpose: closes the active Document
+    */
 	function closeCurrentDocument() {
 		closeDocument(activeDocument);
 	}
 
+    /*
+        Method: setActiveDocument
+        Purpose: sets the global active document
+    */
 	function setActiveDocument() {
+    	// get the active document from the top bar
 		activeDocument = $('.file.active').parents('.file-container').data("modelid");
+		// if there is an active project with an active document
 		if(activeProject && activeDocument) {
+    		// and the active project has open files
 			if(activeProject.openfiles.length > 0) {
 				var activeIndex = -1;
+				// set the projects active documents attributes
 				for(var i = 0; i < activeProject.openfiles.length; i++){
 					activeProject.openfiles[i].active = false;
 					if(openDocuments.get(activeDocument).fileLocation === activeProject.openfiles[i].root &&
@@ -306,12 +335,17 @@ var jambiModel = function() {
 				}
 				if(activeIndex >= 0) {
 					activeProject.openfiles[activeIndex].active = true;
+					// save project.json
 					saveProjectsJSON();
 				}
 			}
 		}
 	}
 
+    /*
+        Method: changeFile
+        Purpose: change the active file to show another file
+    */
 	function changeFile(fileToChange) {
     	try{
 		    saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
