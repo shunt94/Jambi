@@ -1236,14 +1236,19 @@ var Jambi = function () {
         // Wrap in try to avoid terminal errors
         try{
             if(fileLocation && filename) {
-
+                // Remove all the old messages and mouseover event listener
                 $('#jambi-body').off('mouseover', '.test');
                 $('#flowErrorMessage').hide();
+
+                // Counter for errors
                 var errorCount = 0;
+                // Old text of Jambi
                 var oldText = jambi.getJambiEditor().getValue();
+                // if flow message is not at the top, add it
                 if(!oldText.match(/(\/)(\*)(\s)(@flow)(\s)(\*)(\/)/)) {
                     jambi.getJambiEditor().setValue("/* @flow */\n" + oldText);
                 }
+                // save the file for changes
                 jambi.saveFile();
 
                 var fullPath = fileLocation + filename;
@@ -1251,17 +1256,27 @@ var Jambi = function () {
                     fullPath = fullPath.substr(2, fullPath.length);
                 }
 
+                // variable for the results
                 var listOfJSON = "";
+
+                // spawn the command
                 var flowResults = terminal.spawn('/usr/local/bin/flow', ['check', '--json', fileLocation]);
 
+                // when the command returns data, append it to the results string
                 flowResults.stdout.on('data', function (data) {
                     return listOfJSON += data.toString();
                 });
+
+                // when the spawn command closes, wait, then use that data to populate the side bar messages
                 flowResults.on('close', function (code) {
                     setTimeout(function() {
                          try{
+                            // clear the gutter of all messages
                             jambiEditor.clearGutter('test1');
+                            // parse input from terminal
                             var results = JSON.parse(listOfJSON.toString()).errors;
+
+                            // loop through all errors and append
                             for(var i = 0; i<results.length; i++) {
                                 if(results[i].message[0].path === fullPath) {
                                     errorCount += 1;
@@ -1273,27 +1288,32 @@ var Jambi = function () {
                                     var start = {"line": result.message[0].line, "ch": result.message[0].start};
                                     var end = {"line": result.message[0].endline, "ch": result.message[0].end};
 
+                                    // Set gutter marker
                                     jambiEditor.setGutterMarker(result.message[0].line-1, "test1", makeMarker(desc));
 
+                                    // Create markers
                                     function makeMarker(error) {
-                                      var marker = document.createElement("div");
-                                      marker.className = "test";
-                                      marker.setAttribute('data-error', error);
-                                      marker.style.color = "#ff0000";
-                                      marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                                      return marker;
+                                        var marker = document.createElement("div");
+                                        marker.className = "test";
+                                        marker.setAttribute('data-error', error);
+                                        marker.style.color = "#ff0000";
+                                        marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                                        return marker;
                                     }
 
                                 }
                             }
 
                         } catch(err) {
-                            //console.log(err);
+                            // show error if error has occured
                             jambi.showNotification("Jambi Error", "Flow Error");
                         }
 
+                        // be sure again to remove all old messages, then populate new ones
                         var $errorMessageDiv = $('#flowErrorMessage');
                         $('#jambi-body').off('mouseover', '.test');
+                        // when the user hovers over the gutter marker, change a divs location to the cursor and show that div with
+                        // information on the errors at that line
                         $('#jambi-body').on('mouseover', '.test', function(){
                             var $that = $(this);
                             var message = $that.data('error');
@@ -1303,22 +1323,30 @@ var Jambi = function () {
                             $errorMessageDiv.offset({top: offTop, left: offLeft+20});
                             $errorMessageDiv.html(message);
                         });
+                        // hide the div when the mouse leaves
                         $('#jambi-body').on('mouseleave', '.test', function(){
                             $errorMessageDiv.fadeOut();
                         });
 
+                        // update the flow module
                         $('#flowcontent').html("Found " + errorCount + " errors");
 
                     }, 400);
                 });
 
+                // refresh the editor
                 jambiEditor.refresh();
             }
         } catch(e) {
+            // if error, show notification error
             jambi.showNotification("Error", "Flow error");
         }
     };
 
+    /*
+        Method: vcStatus
+        Purpose: Version Control status
+    */
     Jambi.prototype.vcStatus = function(div, vcType) {
         try{
             var command;
@@ -1335,7 +1363,10 @@ var Jambi = function () {
         }
     };
 
-
+    /*
+        Method: vcPull
+        Purpose: Version Control pull from repo
+    */
     Jambi.prototype.vcPull = function (vcType) {
         try {
             var command;
@@ -1357,6 +1388,10 @@ var Jambi = function () {
         }
     };
 
+    /*
+        Method: vcPush
+        Purpose: Version Control push to repo
+    */
     Jambi.prototype.vcPush = function (vcType) {
         try{
             var command;
@@ -1373,7 +1408,10 @@ var Jambi = function () {
         }
     };
 
-
+    /*
+        Method: vcCommit
+        Purpose: Version Control commit changes
+    */
     Jambi.prototype.vcCommit = function (vcType, commitMsg) {
         try{
             var command;
@@ -1397,6 +1435,10 @@ var Jambi = function () {
         }
     };
 
+    /*
+        Method: vcClone
+        Purpose: Version Control clone repo
+    */
     Jambi.prototype.vcClone = function (url, vcType) {
         try{
             var command;
@@ -1411,49 +1453,62 @@ var Jambi = function () {
         }
     };
 
-
+    /*
+        Method: jambiTemplate
+        Purpose: compiles the jambi template pages into a folder
+    */
 	Jambi.prototype.jambiTemplate = function (input) {
+    	// get document attributes
     	var currentHistory = jambiEditor.doc.getHistory();
         var activeDoc = jModel.getActiveDocument();
         var activeProject = jModel.getActiveProject();
 
+        // function to check if directory exists
         function doesDirectoryExist (tempfileLoc) {
             try { fs.statSync(tempfileLoc); return true }
             catch (er) { return false }
         }
 
+        // if active document has a file location and project
         if(activeDoc.fileLocation && activeProject) {
             var oldHTML = jambiEditor.getValue();
+            // regex for template tags
             var templateTags = /(\(%)(\s)?(')?(include|if)?(\s)(')?(.)*(')?(%)(\))/g;
 
             var tags = input.match(templateTags);
+            // if there are any template tags in the document
             if(tags) {
-
-
                 var counter = 0;
                 var searchCursor = jambiEditor.getSearchCursor(templateTags,0,true);
+                // while there is another template tag, compile more!
                 while(searchCursor.findNext()) {
                     var tag = tags[counter];
                     counter++;
+                    // You run out of regex variable names soon enough....
                     var asd = /(\')(.)*(\')/;
                     var filename = tag.match(asd)[0];
 
                     filename = filename.substr(1, filename.length-2);
 
-
+                    // find tag and replace with content
             		var row = searchCursor.from().line;
                     var col = searchCursor.from().ch;
                     jambiEditor.setCursor(row,col);
                     var cursor = jambi.getJambiEditor().getCursor();
                     cursor.ch = 100;
+                    // Set the selection ready to insert the new html
                     jambiEditor.setSelection(searchCursor.from(), cursor);
+                    // create the templates folder if it doesn't exist
                     if(!doesDirectoryExist (activeProject.root + "/templates")) {
                         fs.mkdirSync(activeProject.root + "/templates");
                     }
 
                     try{
+                        // read in the html
                         var newHtml = jambifs.readHTML(activeDoc.fileLocation + filename);
+                        // set the value
                         jambi.getJambiEditor().replaceSelection(newHtml);
+                        // export the template
                         jambifs.writeJSON(activeProject.root + "/" + activeDoc.title, jambiEditor.getValue());
 
                     } catch(err) {
@@ -1461,9 +1516,10 @@ var Jambi = function () {
                     }
                 }
             }
+            // change back to the old html file
             jambiEditor.setValue(oldHTML);
         }
-
+        // reset the history
         jambiEditor.doc.setHistory(currentHistory);
 	};
 
@@ -1475,23 +1531,35 @@ var Jambi = function () {
     	// get the active document
         var activeDoc = jModel.getActiveDocument();
         $('#flowErrorMessage').hide();
+
+        // if active document
         if(activeDoc) {
+
+            // get the file location
             var fileLocation = activeDoc.fileLocation;
+            // if file location
             if(fileLocation) {
+                // save the file
                 jambi.saveFile();
+                // get the file name and type
                 var filename = fileLocation + activeDoc.title;
                 var fileType = filename.substr((filename.lastIndexOf(".")+1), filename.length);
+                // check that the file type is a java file
                 if(fileType === "java") {
+                    // run JavaC with the file
                     var command = "javac " + filename;
                     shell.exec(command, function(code, output) {
                         if(code === 0) {
+                            // if no errors, then show a success notification
                             jambi.showNotification("Jambi Java Compiler", "Successfully Compiled");
                             $('#javaReporter').html("No errors");
                         } else {
                             // Error reporting
                             $('#javaReporter').empty();
+                            // get error lines
                             var errors = output.match(/error:(\s)(.)*/g);
                             var errorLines = output.match(/(:)\d(:)/g);
+                            // go through and create markers for all the errors
                             for(var i = 0; i < errors.length; i++){
                                 if(errorLines[i] !== undefined || errorLines[i] !== null ) {
                                     var errorLine = errorLines[i].match(/\d/);
@@ -1501,9 +1569,6 @@ var Jambi = function () {
                                     $('#javaReporter').append(errors[i] + "<br>");
                                 }
                             }
-
-
-
 
                             function makeMarker(error) {
                               var marker = document.createElement("div");
@@ -1517,6 +1582,7 @@ var Jambi = function () {
                             // add the errors to the line numbers
                             var $errorMessageDiv = $('#flowErrorMessage');
                             $('#jambi-body').off('mouseover', '.test');
+                            // same as flow, mouse over to show the errors
                             $('#jambi-body').on('mouseover', '.test', function(){
                                 var $that = $(this);
                                 var message = $that.data('error');
@@ -1526,25 +1592,28 @@ var Jambi = function () {
                                 $errorMessageDiv.offset({top: offTop, left: offLeft+20});
                                 $errorMessageDiv.html(message);
                             });
+                            // hide the box on
                             $('#jambi-body').on('mouseleave', '.test', function(){
                                 $errorMessageDiv.fadeOut();
                             });
-
-
-
-
                         }
                     });
                 }
             } else {
+                // save the file first if not saved already
                 alert("Please save your current file");
             }
         }
 	};
 
-
+    /*
+        Method: findVariables
+        Purpose: method to find all variable tags in the active document, used for variable analysis
+    */
 	Jambi.prototype.findVariables = function () {
+    	// cache the js variables div
         var $jsVars = $('#jsVariables');
+        // empty it of all previous results
         $jsVars.empty();
 
         var tags = [];
@@ -1552,40 +1621,37 @@ var Jambi = function () {
         var vRegEx = /var(\s)[^(\s)]*(\s?)(;?)[^\s]*/g;
         var listOfTags = jambi.getJambiEditor().getValue().match(vRegEx);
 
-
+        // if list of tags is not null
         if(listOfTags !== null) {
                 for(var k = 0; k<listOfTags.length; k++) {
-                    //console.log(listOfTags[k]);
+                    // get tag name
                     var tagName = listOfTags[k].substr(4, listOfTags[k].length);
                     tagName = tagName.match(/[^\s=;]*/g)[0];
-                    //console.log(tagName);
 
-
+                    // create tag object
                     var tagObject = {
                         "name" : tagName
                     }
+                    // push to array
                     tags.push(tagObject);
                 }
                 // print that array to the sidebar
-
                 if(tags.length === 1) {
                     $jsVars.prepend(tags.length + " variable found <br><hr>");
                 } else {
                     $jsVars.prepend(tags.length + " variables found <br><hr>");
                 }
-
+                // append vars to div
                 for(var i = 0; i<tags.length; i++) {
                     $jsVars.append(tags[i].name + "<br>");
                 }
                 return tags;
         }
-        //return null;
 	};
 
 
 };
 
 var jambi = new Jambi();
-// Update jambi from the server
 jambi.updateJambi();
 jambi.menuSetup();

@@ -1,15 +1,25 @@
 /* @flow */
+/*
+    Class: JambiModel
+    Purpose: contains all of the methods needed to store documents, projects and has methods used for general model editing
+*/
 var jambiModel = function() {
+    // set up variables
+
+    // timers
 	var jTimer = new jambiTimer('#jambi_timer_secs', '#jambi_timer_mins', '#jambi_timer_hours');
 	var programTimer = new jambiTimer('#global_timer_secs', '#global_timer_mins', '#global_timer_hours');
+
+	// set up global document vars
 	var currentDocid;
 	var globalCounter = 1;
 	var activeDocument;
 	var activeProject;
 
+    // set editor open to false
 	var isEditorOpen = false;
 
-
+    // backbone base project model
 	var Project = Backbone.Model.extend({
 		"project": {
 			"name": "",
@@ -34,6 +44,7 @@ var jambiModel = function() {
 		}
 	});
 
+    // backbone base document model
 	var JambiDocument = Backbone.Model.extend({
 		id: 1,
 		text: "",
@@ -51,31 +62,29 @@ var jambiModel = function() {
 		}
 	});
 
-
+    // set up a collection of all open documents
 	var AllDocuments = Backbone.Collection.extend({
 		model: JambiDocument
 	});
-
+    // set up a collection of projects from a json file
 	var ProjectsCollection = Backbone.Collection.extend({
 		model: Project,
 		url: "projects.json"
 	});
-
+    // make new instance of projects
 	var Projects = new ProjectsCollection();
 
 
 	// Check to see if projects json exists
-
 	$.ajaxSetup({
 		async: false
 	});
 	Projects.fetch({
 		success: function() {
-			//			console.log("JSON file load was successful", Projects);
+
 		},
 		error: function(){
 			jambi.showNotification('Jambi - Error', 'Could not fetch projects');
-			// TO DO: make project json if file does not exist!
 		}
 	});
 	$.ajaxSetup({
@@ -84,9 +93,10 @@ var jambiModel = function() {
 
 
 
-
+    // start the Jambi timer
 	programTimer.startTimer();
 
+	// new instance of open documents
 	var openDocuments = new AllDocuments();
 
 
@@ -119,6 +129,10 @@ var jambiModel = function() {
 		return render.tmpl_cache[tmpl_name](tmpl_data);
 	}
 
+    /*
+        Method: saveCurrentDocument
+        Purpose: saves the current document state
+    */
 	function saveCurrentDocument(documentModel) {
 		documentModel.history_object = $.extend({}, document.hisotry_object, jambi.getJambiEditor().getHistory());
 		documentModel.text = jambi.getJambiEditor().getValue();
@@ -127,6 +141,11 @@ var jambiModel = function() {
 		documentModel.mode = jambi.getJambiEditor().getOption('mode');
 	}
 
+
+    /*
+        Method: newDocument
+        Purpose: creates a new document and opens it
+    */
 	function newDocument (filename, filecontents, filemode, fileLocation) {
 		goToEditor();
 
@@ -139,13 +158,15 @@ var jambiModel = function() {
 				openFile = openDocuments.at(i);
 			}
 		}
-
+        // if not open
 		if(!isDocOpen) {
 			if(openDocuments.length !== 0) {
 				currentDocid = $('.file.active').parents('.file-container').data("modelid");
 				saveCurrentDocument(openDocuments.get(openDocuments.get(currentDocid)));
 			}
+			// new Jambi Document
 			var jDoc = new JambiDocument();
+			// add document to open documents
 			openDocuments.add(jDoc);
 
 
@@ -165,12 +186,11 @@ var jambiModel = function() {
 
 
 			populateTopBar(jDoc.id);
-
-
 			setDocOptions(jDoc);
 			setActiveDocument();
 			fileEventHandlers();
 
+            // append to project if open
 			if(activeProject) {
 				var isFileInProject = false;
 				for(var k = 0; k < activeProject.openfiles.length; k++) {
@@ -179,10 +199,12 @@ var jambiModel = function() {
 					}
 				}
 				if(!(isFileInProject)) {
+    				// add project to projects.json
 					addFileToProjectJSON(filename, fileLocation, filemode);
 				}
 			}
 		} else {
+            // else go to that file
 			changeFileById(openFile);
 		}
 
@@ -191,25 +213,38 @@ var jambiModel = function() {
 		}
 	}
 
+    /*
+        Method: addFileToProjectJSON
+        Purpose: adds a file to projects.json
+    */
 	function addFileToProjectJSON(filename, fileLocation, filemode) {
 		activeProject.openfiles.push(
 			{"name": filename,"root":fileLocation,"mode":filemode,"col":0,"line":0,"active":true}
 		);
+		// save the json object
 		saveProjectsJSON();
 	}
 
+    /*
+        Method: closeDocument
+        Purpose: closes the document given a document ID
+    */
 	function closeDocument(docID) {
+    	// set active doc
 		setActiveDocument();
+		// save doc state
 		saveCurrentDocument(openDocuments.get(activeDocument));
+		// get index
 		var index = openDocuments.indexOf(openDocuments.get(docID));
-
 		if(activeProject) {
+    		// remove doc from open docs in project.json
 			for(var i = 0; i < activeProject.openfiles.length; i++) {
 				if(activeProject.openfiles[i].root === openDocuments.get(docID).fileLocation &&
 					activeProject.openfiles[i].name === openDocuments.get(docID).title) {
 					activeProject.openfiles.splice(i, 1);
 				}
 			}
+			// save projects.json
 			saveProjectsJSON();
 		}
 
