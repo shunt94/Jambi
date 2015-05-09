@@ -1442,23 +1442,26 @@ var jambiModel = function() {
 
         if(activeProject) {
             if(activeProject.vc.vcInitialised) {
-                // click functions for
+                // click functions for vc commit
                 $('#commitAll').on('click', function(){
                     if(activeProject.vc.vcInitialised) {
                         jambi.vcCommit(activeProject.vc.vcType);
                     }
                 });
+                // click function for vc pull
                 $('#vcPull').on('click', function(){
                     if(activeProject.vc.vcInitialised) {
                         jambi.vcPull(activeProject.vc.vcType);
                     }
                 });
+                // click function for vc push
                 $('#vcPush').on('click', function(){
                     if(activeProject.vc.vcInitialised) {
                         jambi.vcPush(activeProject.vc.vcType);
                     }
                 });
             } else {
+                // disable buttons
                 $('#vcPush').attr('disabled','disabled');
                 $('#vcPull').attr('disabled','disabled');
                 $('#commitAll').attr('disabled','disabled');
@@ -1466,14 +1469,16 @@ var jambiModel = function() {
         }
     }
 
-
+    /*
+        Method: openServer
+        Purpose: start a simple python server
+    */
     function openServer() {
         jSetup.jambiMenu.tools.toolsStartServer.click();
     }
 
 
 	// Routers
-
 	var Router = Backbone.Router.extend({
 		routes: {
 			'home': 'home',
@@ -1481,52 +1486,61 @@ var jambiModel = function() {
 		}
 	});
 
-
+    // create new instances of views
 	var editorView = new EditorView();
 	var projectView = new ProjectView();
-
+    // create new insatnce of router
 	var router = new Router();
 	var firstLoad = true;
 
+
+    // Router on HOME (editor) - when the view is on editor, execute this code
 	router.on('route:home', function() {
     	$("#showcaseLink").off('click');
+    	// render editor view
 		editorView.render();
+		// init search functions
 		jambi.searchWeb();
+		// render editor
 		jambi.renderEditor();
 		setActiveDocument();
 		populateTopBar(activeDocument);
 		setDocOptions(openDocuments.get(activeDocument));
 		isEditorOpen = true;
-
+        // add sidebar content
 		var $el = $('#sidebarcontent');
 		$el.append(render('sidebar/file', {}));
 		$el.append(render('sidebar/list', {}));
 		$el.append(render('sidebar/connection', {}));
 		sideBarMenus();
-
-		generateFilSystem();
+        // generate the file system
+        setTimeout(function(){
+    		generateFilSystem();
+        }, 300);
+        // show sidebar toggle button
 		showSidebarToggle();
 		$('#jambi-body').css('background-color', '#444');
 
 		vcMenuSetup();
 		listFunctions();
+        // show links
         $('#showcaseLink').show();
-
+        // add listener to link
         setTimeout(function() {
             $("#showcaseLink").on('click', function() {
                 openServer();
             });
         }, 500);
-
-
 	});
 
-
+    // router on projects - execute this code when on projects page
 	router.on('route:projects', function() {
+    	// set active doc and save
 		setActiveDocument();
 		if(activeDocument !== undefined) {
 			saveCurrentDocument(openDocuments.get(activeDocument));
 		}
+		// render the projects page
 		projectView.render();
 		populateProjects();
 		isEditorOpen = false;
@@ -1538,18 +1552,14 @@ var jambiModel = function() {
 	});
 
 
-
+    // start history
 	Backbone.history.start();
-
 	jambi.initCodeMirror();
 
 	// if in project then start home else start project
 	window.location.replace("#/project");
 
-
-
-
-
+    // return the list of functions that other modules use
 	return {
 		newFile: function() { newDocument (); return true;},
 		openFile: function(filename, filecontents, filemode, fileLocation) {
@@ -1582,5 +1592,5 @@ var jambiModel = function() {
 		}
 	};
 };
-
+// create a new instance of this class
 var jModel = new jambiModel();
