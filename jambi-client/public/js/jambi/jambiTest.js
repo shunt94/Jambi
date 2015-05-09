@@ -1,3 +1,7 @@
+/*
+    Class: jambiTest
+    Purpose: testing framework for Jambi
+*/
 var JambiTest = function (htmlDoc) {
     var that = this;
     var fs = require('fs');
@@ -5,14 +9,18 @@ var JambiTest = function (htmlDoc) {
     var testCounter = 0;
     var results = [];
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.describe = function(label, tests){
-        //var output = "";
-        //output = "<br>" + label + "<br>";
-        //htmlDoc.append(output);
-
         tests();
     };
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.should = function(label, test) {
         testCounter++;
         var done = function(err) {
@@ -28,14 +36,26 @@ var JambiTest = function (htmlDoc) {
         test(done);
     };
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.pass = function(label) {
         that.printResults(label, true);
     };
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.fail = function(label) {
         that.printResults(label, false);
     };
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.printResults = function(label, passed) {
         var print;
         if(passed) {
@@ -46,6 +66,10 @@ var JambiTest = function (htmlDoc) {
         htmlDoc.append(print);
     };
 
+    /*
+        Method:
+        Purpose:
+    */
     JambiTest.prototype.end = function (){
         setTimeout(function(){
             htmlDoc.append('<br><br> Ran ' + testCounter + ' tests with ' + errorCounter + ' errors.');

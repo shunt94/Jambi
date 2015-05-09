@@ -198,7 +198,7 @@ var jambiSetup = function() {
     }
 
 
-
+    // return all objects
 	return {
 		gui: gui,
 		jambiMenu: jambiMenu,
