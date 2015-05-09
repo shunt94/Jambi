@@ -1607,7 +1607,7 @@ var Jambi = function () {
                     alert("Please save your current file");
                 }
             }
-        } catch() {
+        } catch(e) {
 
         }
 	};
@@ -1654,7 +1654,7 @@ var Jambi = function () {
                     }
                     return tags;
             }
-        } catch() {
+        } catch(e) {
 
         }
 	};

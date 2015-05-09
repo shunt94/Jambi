@@ -1568,7 +1568,7 @@ var jambiModel = function() {
 		closeCurrentDoc: function() { return closeCurrentDocument(); },
 		closeAllDocs: function() { return removeAllDocuments (); },
 		getActiveDocument: function() { return openDocuments.get(activeDocument); },
-		setDocLocation: function(loc) { return openDocuments.get(activeDocument).fileLocation = loc; },
+		setDocLocation: function(loc) { openDocuments.get(activeDocument).fileLocation = loc; },
 		setDocName: function(name) { openDocuments.get(activeDocument).title = name; populateTopBar(activeDocument); },
 		onEditorPage: function() { return isEditorOpen; },
 		getActiveProject: function() { return activeProject; },
