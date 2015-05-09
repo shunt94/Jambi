@@ -358,15 +358,26 @@ var jambiModel = function() {
 		}
 	}
 
+    /*
+        Method: changeFileById
+        Purpose: change the active file by the ID number
+    */
 	function changeFileById(file) {
+    	// save current active document
 		if(activeDocument || openDocuments.length > 1) {
 			saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
 		}
+
+		// set document options and populate top bar
 		setDocOptions(file);
 		populateTopBar(file.id);
 		setActiveDocument();
 	}
 
+    /*
+        Method: connectToServer()
+        Purpose: connects to the jambi server and finds the version numbers
+    */
 	function connectToServer() {
 		$('#jambiStatus').html('Connecting <i class="fa fa fa-spinner fa-spin"></i>');
 		$.ajax({
@@ -376,6 +387,7 @@ var jambiModel = function() {
 			contentType: "application/json",
 			dataType: 'json',
 			success: function(data) {
+    			// show connected
 				$('#jambiStatus').html(data.jambi.status);
 				if(data.jambi.version !== jambi.getVersion()) {
 					alert("Your version of Jambi is Out of Date");
@@ -385,21 +397,34 @@ var jambiModel = function() {
 				$('#jambiStatus').html("Failed to connect to Jambi Server - " + e.statusText);
 			}
 		});
+		// connect every hour
 		setTimeout(function(){connectToServer();},3600000);
 	}
 
+    /*
+        Method: populateTopBar()
+        Purpose: redraw the open files top bar
+    */
 	function populateTopBar(activeDocID) {
+    	// get the model count
 		var modelCount = openDocuments.length;
 		var first;
 		if (!activeDocID) {
 			first = true;
 		}
+		// remove all open file divs
 		$('.file-container').remove();
-		for(var i = 0; i < modelCount; i++) {
 
-			var jDoc = openDocuments.at(i);
-			var active = "";
-			var savedIcon = '<i class="fa fa-circle"></i>';
+		// all information outside of the for loop
+		var jDoc;
+		var active = "";
+        var savedIcon = '<i class="fa fa-circle"></i>';
+        var fileName
+        var appendedHTML;
+        // loop through and re populate the top bar
+		for(var i = 0; i < modelCount; i++) {
+            // repopulate the top bar using all of the models
+			jDoc = openDocuments.at(i);
 			if(jDoc.id === activeDocID || modelCount <= 1 || first) {
 				active = "active";
 				first = false;
@@ -407,8 +432,9 @@ var jambiModel = function() {
 			if(jDoc.isSaved) {
 				savedIcon = '<i class="fa fa-circle-o"></i>';
 			}
-			var fileName = jDoc.title;
-			var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
+            fileName = jDoc.title;
+            // append the html
+			appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
 				'<div class="file ' + active + '">' +
 				'<span class="filename">' + fileName + '</span>' +
 				'<span class="filesaved">' + savedIcon +'</span>' +
@@ -417,37 +443,50 @@ var jambiModel = function() {
 				'</li>';
 			$('#file_ul').append(appendedHTML);
 		}
+		// add the file event handlers back
 		fileEventHandlers();
 	}
 
+    /*
+        Method: fileEventHandlers()
+        Purpose: removes and then readds the click events to certain elements
+    */
 	function fileEventHandlers() {
+    	// unbind events
 		$('#newfile_tab').unbind('click');
 		$('#sidebar_toggle').unbind('click');
 		$('.file-container').unbind('click');
 		$('.close').unbind('click');
 
+        // re-bind events
 		$('#sidebar_toggle').on('click', function() {
 			jambi.toggleSideMenu();
 		});
-
+        // new document event handler
 		$('#newfile_tab').on('click', function() {
 			window.location.replace('#/home');
 			newDocument();
 		});
-
+        // change file event handler
 		$('.file-container').on('click', function() {
 			window.location.replace('#/home');
 			changeFile($(this));
 		});
-
+        // close doc event listener
 		$('.close').on('click', function() {
 			closeDocument($(this).parents(".file-container").data('modelid'));
 		});
 	}
 
+    /*
+        Method: setDocOptions()
+        Purpose: Sets the editors options
+    */
 	function setDocOptions(model) {
     	try {
+        	// if a model has been passed in (just a check)
     		if(model) {
+        		// set options
         		var fileType = model.title;
         		fileType = fileType.substr((fileType.lastIndexOf(".")+1), fileType.length);
         		checkFileType(fileType);
@@ -456,6 +495,7 @@ var jambiModel = function() {
     			if(!($.isEmptyObject(model.history_object))) {
     				jambi.getJambiEditor().setHistory(model.history_object);
     			}
+    			// set editor options
     			jambi.getJambiEditor().focus();
     			jambi.getJambiEditor().setCursor(model.line, model.col);
     			jambi.getJambiEditor().setOption("mode", model.mode);
@@ -466,7 +506,10 @@ var jambiModel = function() {
 		}
 	}
 
-
+    /*
+        Method: openProject()
+        Purpose: opens a project...
+    */
 	function openProject(name, projectData, index) {
 		if(projectData) {
 			for(var i = 0; i<= openDocuments.length; i++) {
@@ -493,6 +536,7 @@ var jambiModel = function() {
 					//var directory = projectData.root + projectData.openfiles[k].root;
 
 					openDocuments.add(jDoc);
+					// set document options using jDocs
 					jDoc.text = filesContents;
 					jDoc.title = projectData.openfiles[k].name;
 					jDoc.mode = projectData.openfiles[k].mode;
@@ -504,7 +548,7 @@ var jambiModel = function() {
 						projectActiveDocument = k;
 					}
 				}
-
+                // if file contents doesn't exist, remove that file from project
 				if(filesContents === null && activeProject) {
 					for(var x = 0; x < activeProject.openfiles.length; x++) {
 						if(fileRoot === activeProject.openfiles[x].root && fileName === activeProject.openfiles[x].name) {
@@ -517,7 +561,6 @@ var jambiModel = function() {
 			}
 
 			// populate top bar
-
 			if(projectActiveDocument !== undefined) {
 				populateTopBar(openDocuments.at(projectActiveDocument).id);
 				setDocOptions(openDocuments.at(projectActiveDocument));
@@ -539,19 +582,24 @@ var jambiModel = function() {
 		}
 	}
 
+    /*
+        Method: onDropEvents()
+        Purpose: controls the drop event for the open files
+    */
 	function onDropEvents(){
+    	// prevent the file from opening inside the browser
 		window.ondragover = function(e) { e.preventDefault(); return false };
 		window.ondrop = function(e) { e.preventDefault(); return false };
-
 		var holder = document.getElementById('fileHoverBar');
 		holder.ondragover = function () { return false; };
 		holder.ondragleave = function () { return false; };
+		// set the new on drop method
 		holder.ondrop = function (e) {
 			e.preventDefault();
 
 			for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-
 				if(e.dataTransfer.files[i].name.indexOf('.') !== -1) {
+    				// get all the information of the file
 					var file            = e.dataTransfer.files[i].path;
 					var filecontents    = jambi.openFileByDir(file);
 					var filename        = e.dataTransfer.files[i].name;
@@ -559,8 +607,7 @@ var jambiModel = function() {
 					var fileLocation    = file.substring(0,file.lastIndexOf("/")+1);
 
 					filetype = filetype.substr(1);
-					//filename = filename.substring(filename.lastIndexOf('/')+1, filename.indexOf('.'));
-
+                    // create and open a new document
 					newDocument(filename,filecontents,checkFileType(filetype),fileLocation);
 
 				}
@@ -568,10 +615,13 @@ var jambiModel = function() {
 			return false;
 		};
 	}
-
+    // call the drop events method
 	onDropEvents();
 
-
+    /*
+        Method: checkFileType()
+        Purpose: returns the correct file type for CodeMirror given an extension
+    */
 	function checkFileType(fileTypeString) {
 		switch(fileTypeString) {
 			case "html":
@@ -616,7 +666,18 @@ var jambiModel = function() {
 		}
 	}
 
+    /*
 
+
+      Start of SFTP Integration - Not complete yet
+
+
+    */
+
+    /*
+        Method: saveSFTP()
+        Purpose: Saves a file over sftp - Not fully integrated
+    */
 	function saveSFTP() {
     	if(activeProject && activeDocument) {
         	if(activeProject.ssh.enabled){
@@ -640,7 +701,10 @@ var jambiModel = function() {
         }
 	}
 
-
+    /*
+        Method: sshShowFile()
+        Purpose: shows a list of files over sftp - not fully integrated yet
+    */
     function sshShowFiles() {
         var host, port, username, password;
         if(activeProject.ssh.enabled) {
@@ -699,26 +763,42 @@ var jambiModel = function() {
 	}
 
 
+    /*
 
 
+      End of SFTP Integration
+
+
+    */
+
+
+    /*
+        Method: populateProject()
+        Purpose: loads the projects.json file and populates the projects
+    */
 	function populateProjects() {
 		$('#projectsTable > tbody').empty();
+		// load in the fs module
 		var fs = require('fs');
 		 function doesDirectoryExist (tempfileLoc) {
             try { fs.statSync(tempfileLoc); return true; }
             catch (er) { return false; }
         }
 
+        // check if there are projets
 		if(Projects.length > 0) {
+    		// get the active project index
 			var activeProjectIndex = Projects.at(0).attributes.active;
 
 			// Render Projects into page
 			for(var i = 1; i < Projects.length; i++) {
+    			// if the project dir does not exist, delete the project
                 if(!doesDirectoryExist (Projects.at(i).attributes.project.root + "/")) {
     			   Projects.remove(Projects.at(i));
     			   saveProjectsJSON();
     			}
     			else {
+        			// append projects to tables
     				$('#projectsTable > tbody:last').append('<tr class="project" data-name="' + Projects.at(i).attributes.project.name +
     					'" data-projectindex="' + i + '">' +
     					'<td>' + Projects.at(i).attributes.project.name + '</td>' +
@@ -728,7 +808,7 @@ var jambiModel = function() {
     			}
 			}
 
-
+            // populate the rest of the page with tables
 			for(var k = 0; k < 40-Projects.length; k++) {
 				$('#projectsTable > tbody:last').append('<tr class="project-empty">' +
 														'<td>&nbsp;</td>' +
@@ -737,9 +817,11 @@ var jambiModel = function() {
 														'</tr>');
 			}
 
+
+            // append the add project box
 			$('.projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
 
-
+            // sort event listeners
             $('.project').off('dblclick');
             $('.project').off('click');
             $('.project-empty').off('click');
@@ -747,28 +829,34 @@ var jambiModel = function() {
             $('#closeAddProject').off('click');
             $('#addProject_selectLocation').off('change');
 
+            // open project click
 			$('.project').on('dblclick', function() {
 				var projectIndex = $(this).data("projectindex");
 				activeProject = Projects.at(projectIndex).attributes.project;
 				openProject($(this).data("name"), activeProject, $(this).data("projectindex"));
 			});
 
+            // select project click
 			$('.project').on('click', function() {
 				$('.project').removeClass('active');
 				$(this).addClass('active');
 			});
 
+            // off active project
 			$('.project-empty').on('click', function() {
 				$('.project').removeClass('active');
 			});
 
+            // fade out project card
 			$(document).on('click', function(event){
 				if(!$(event.target).closest('#addprojectcard').length) {
 					$('#addprojectcard').fadeOut();
 				}
 			});
 
+            // add a project click
 			$('#addProject').on('click', function() {
+    			// if a name and location has been specified
 				if($('#addProjectName').val() && $('#addProjectLocation').val()) {
     				var options = {
         				grunt: false,
@@ -786,7 +874,7 @@ var jambiModel = function() {
             		    "username": "",
             		    "password": ""
     				}
-
+                    // check for checkboxes
     				if($('#newproject_jquery').prop('checked')) options.jquery = true;
     				if($('#newproject_backbone').prop('checked')) options.backbone = true;
     				if($('#newproject_angular').prop('checked')) options.angular = true;
@@ -801,19 +889,21 @@ var jambiModel = function() {
     				if($('#addProject_ssh_user').val()) sshOptions.username = $('#addProject_ssh_user').val();
     				if($('#addProject_ssh_pass').val()) sshOptions.password = $('#addProject_ssh_pass').val();
 
-
+                    // add a project
 					addProject($('#addProjectName').val(), $('#addProjectLocation').val(), options, sshOptions);
 					$('#addprojectcard').fadeOut();
 				}
 			});
 
+            // fade out add project box
 			$('#closeAddProject').on('click', function() {
 				$('#addprojectcard').fadeOut();
 			});
 
+            // initally hide the box
 			$('#addprojectcard').hide();
 
-
+            // update the file location
 			$('#addProject_selectLocation').on('change', function (event) {
 				var fileLocation = $(this).val();
 				$('#addProjectLocation').val(fileLocation);
@@ -822,20 +912,33 @@ var jambiModel = function() {
 		}
 
 	}
-
+    /*
+        Method: saveProjectsJSON()
+        Purpose: Saves the projects collection to projects.json
+    */
 	function saveProjectsJSON(){
+    	// write json
 		jambifs.writeJSON("projects.json", JSON.stringify(Projects.models));
 	}
 
+    /*
+        Method: npmInstall()
+        Purpose: install and npm module
+    */
 	function npmInstall(app, root, callback) {
+    	// execute the command to install a module
         var exec = require('child_process').exec;
-    	console.log("cd " + root + " && /usr/local/bin/npm install -g " + app);
     	exec("cd " + root + " && /usr/local/bin/npm install -g " + app, function(code, output, err) {
                 callback();
         });
 	}
 
+    /*
+        Method: addProject()
+        Purpose: adds a project
+    */
 	function addProject(name, root, options, sshOptions) {
+    	// create a new instance of the project model
     	var newProject = new Project({
 			"project": {
     			"name": name,
@@ -859,12 +962,14 @@ var jambiModel = function() {
                 }
     		}
 		});
+		// add the project to the collection
 		Projects.add(newProject);
 
         if(options) {
         	var fs = require('fs');
         	var exec = require('child_process').exec;
             if(options.grunt) {
+                // install the grunt module
                 npmInstall("grunt-cli", root, function(){
                     exec("cd " + root + " && /usr/local/bin/npm install grunt --save-dev", function(code, output, err) {
                         jambifs.writeHTML(root + "/Gruntfile.js", jambifs.readHTML('files/gruntfile.js'));
@@ -876,23 +981,28 @@ var jambiModel = function() {
             }
 
             if(options.jquery) {
+                // write the jquery file to project root
                 jambifs.writeHTML(root + "/jquery.js", jambifs.readHTML('files/jquery.js'));
             }
 
             if(options.bootstrap) {
+                // write the bootstrap files to the project root
                 jambifs.writeHTML(root + "/bootstrap.css", jambifs.readHTML('files/bootstrap/bootstrap.css'));
                 jambifs.writeHTML(root + "/bootstrap.js", jambifs.readHTML('files/bootstrap/bootstrap.js'));
             }
 
             if(options.angular) {
+                // write the angular files to the project root
                 jambifs.writeHTML(root + "/angular.js", jambifs.readHTML('files/angular/angular.js'));
             }
 
             if(options.backbone) {
+                // write the backbone files to the project root
                 jambifs.writeHTML(root + "/backbone.js", jambifs.readHTML('files/backbone/backbone.js'));
             }
 
             if(options.jambitemplate) {
+                // create templating for the project
                 newProject.project.jTemplate = true;
                 var fs = require('fs');
         		 function doesDirectoryExist (templateFolder) {
@@ -904,7 +1014,7 @@ var jambiModel = function() {
                 }
             }
     	}
-
+        // sort out ssh stuff
     	if(sshOptions.enabled) {
             newProject.ssh.enabled = true;
 
@@ -916,25 +1026,29 @@ var jambiModel = function() {
 
         // Project addons
         var projectsJSON;
-
+        // save the projects JSON
 		jambifs.readJSON('projects.json', function(err, data){
 			projectsJSON = data;
 			projectsJSON[Projects.length-1] = newProject.attributes;
 			jambifs.writeJSON('projects.json', JSON.stringify(projectsJSON));
 		});
-
+        // open the project
         openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
 
 	}
 
 
-
+    /*
+        Method: generateProjectsContextMenu()
+        Purpose: generates the project context menu on the projects page
+    */
 	function generateProjectsContextMenu() {
+    	// set up vars
 		var gui = jSetup.gui;
 		var card_menu = new gui.Menu();
 		var project_menu = new gui.Menu();
 		var clickedCard;
-
+        // append menuitems to the menu
 		card_menu.append(new gui.MenuItem({ label: 'Open' }));
 		card_menu.append(new gui.MenuItem({ label: 'Edit...' }));
 		card_menu.append(new gui.MenuItem({ label: 'Duplicate' }));
@@ -942,12 +1056,13 @@ var jambiModel = function() {
 		card_menu.append(new gui.MenuItem({ type: 'separator' }));
 		card_menu.append(new gui.MenuItem({ label: 'Change Image...' }));
 
+        // setup the click functions
 		card_menu.items[0].click = function(e) {
 			var projectIndex = clickedCard.data("projectindex");
 			activeProject = Projects.at(projectIndex).attributes.project;
 			openProject(clickedCard.data("name"), activeProject, projectIndex);
 		};
-
+        // delete click function
 		card_menu.items[3].click = function(e) {
 			var projectIndex = clickedCard.data("projectindex");
 			if(projectIndex >= 0) {
@@ -960,19 +1075,22 @@ var jambiModel = function() {
 			}
 		};
 
+        // show context menu where the mouse was clicked
 		$('#jambi-body').on("contextmenu", '.project' ,function(e){
 			card_menu.popup(e.pageX, e.pageY);
 			clickedCard = $(this);
 			return false;
 		});
 
-
+        // append the add a project context menu
 		project_menu.append(new gui.MenuItem({ label: 'Add Project...' }));
 
+        // show the add project card
 		project_menu.items[0].click = function(e) {
 			$('#addprojectcard').fadeIn();
 		};
 
+        // show menu at mouse cursor
 		$('#jambi-body').on("contextmenu", function(e){
 			project_menu.popup(e.pageX, e.pageY);
 			return false;

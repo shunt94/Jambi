@@ -1528,83 +1528,87 @@ var Jambi = function () {
     * Compiles Java files when clicked on the item in the menu bar
     */
 	Jambi.prototype.compieleJava = function () {
-    	// get the active document
-        var activeDoc = jModel.getActiveDocument();
-        $('#flowErrorMessage').hide();
+    	try{
+        	// get the active document
+            var activeDoc = jModel.getActiveDocument();
+            $('#flowErrorMessage').hide();
 
-        // if active document
-        if(activeDoc) {
+            // if active document
+            if(activeDoc) {
 
-            // get the file location
-            var fileLocation = activeDoc.fileLocation;
-            // if file location
-            if(fileLocation) {
-                // save the file
-                jambi.saveFile();
-                // get the file name and type
-                var filename = fileLocation + activeDoc.title;
-                var fileType = filename.substr((filename.lastIndexOf(".")+1), filename.length);
-                // check that the file type is a java file
-                if(fileType === "java") {
-                    // run JavaC with the file
-                    var command = "javac " + filename;
-                    shell.exec(command, function(code, output) {
-                        if(code === 0) {
-                            // if no errors, then show a success notification
-                            jambi.showNotification("Jambi Java Compiler", "Successfully Compiled");
-                            $('#javaReporter').html("No errors");
-                        } else {
-                            // Error reporting
-                            $('#javaReporter').empty();
-                            // get error lines
-                            var errors = output.match(/error:(\s)(.)*/g);
-                            var errorLines = output.match(/(:)\d(:)/g);
-                            // go through and create markers for all the errors
-                            for(var i = 0; i < errors.length; i++){
-                                if(errorLines !== null) {
-                                    if(errorLines[i] !== undefined || errorLines[i] !== null ) {
-                                        var errorLine = errorLines[i].match(/\d/);
-                                        $('#javaReporter').append(errors[i] + " at line " + errorLine + "<br>");
-                                        jambiEditor.setGutterMarker(parseInt((errorLine)-1), "test1", makeMarker(errors[i]));
-                                    } else {
-                                        $('#javaReporter').append(errors[i] + "<br>");
+                // get the file location
+                var fileLocation = activeDoc.fileLocation;
+                // if file location
+                if(fileLocation) {
+                    // save the file
+                    jambi.saveFile();
+                    // get the file name and type
+                    var filename = fileLocation + activeDoc.title;
+                    var fileType = filename.substr((filename.lastIndexOf(".")+1), filename.length);
+                    // check that the file type is a java file
+                    if(fileType === "java") {
+                        // run JavaC with the file
+                        var command = "javac " + filename;
+                        shell.exec(command, function(code, output) {
+                            if(code === 0) {
+                                // if no errors, then show a success notification
+                                jambi.showNotification("Jambi Java Compiler", "Successfully Compiled");
+                                $('#javaReporter').html("No errors");
+                            } else {
+                                // Error reporting
+                                $('#javaReporter').empty();
+                                // get error lines
+                                var errors = output.match(/error:(\s)(.)*/g);
+                                var errorLines = output.match(/(:)\d(:)/g);
+                                // go through and create markers for all the errors
+                                for(var i = 0; i < errors.length; i++){
+                                    if(errorLines !== null) {
+                                        if(errorLines[i] !== undefined || errorLines[i] !== null ) {
+                                            var errorLine = errorLines[i].match(/\d/);
+                                            $('#javaReporter').append(errors[i] + " at line " + errorLine + "<br>");
+                                            jambiEditor.setGutterMarker(parseInt((errorLine)-1), "test1", makeMarker(errors[i]));
+                                        } else {
+                                            $('#javaReporter').append(errors[i] + "<br>");
+                                        }
                                     }
                                 }
-                            }
 
-                            function makeMarker(error) {
-                              var marker = document.createElement("div");
-                              marker.className = "test";
-                              marker.setAttribute('data-error', error);
-                              marker.style.color = "#ff0000";
-                              marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
-                              return marker;
-                            }
+                                function makeMarker(error) {
+                                  var marker = document.createElement("div");
+                                  marker.className = "test";
+                                  marker.setAttribute('data-error', error);
+                                  marker.style.color = "#ff0000";
+                                  marker.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                                  return marker;
+                                }
 
-                            // add the errors to the line numbers
-                            var $errorMessageDiv = $('#flowErrorMessage');
-                            $('#jambi-body').off('mouseover', '.test');
-                            // same as flow, mouse over to show the errors
-                            $('#jambi-body').on('mouseover', '.test', function(){
-                                var $that = $(this);
-                                var message = $that.data('error');
-                                var offTop = $that.offset().top;
-                                var offLeft = $that.offset().left;
-                                $errorMessageDiv.fadeIn();
-                                $errorMessageDiv.offset({top: offTop, left: offLeft+20});
-                                $errorMessageDiv.html(message);
-                            });
-                            // hide the box on
-                            $('#jambi-body').on('mouseleave', '.test', function(){
-                                $errorMessageDiv.fadeOut();
-                            });
-                        }
-                    });
+                                // add the errors to the line numbers
+                                var $errorMessageDiv = $('#flowErrorMessage');
+                                $('#jambi-body').off('mouseover', '.test');
+                                // same as flow, mouse over to show the errors
+                                $('#jambi-body').on('mouseover', '.test', function(){
+                                    var $that = $(this);
+                                    var message = $that.data('error');
+                                    var offTop = $that.offset().top;
+                                    var offLeft = $that.offset().left;
+                                    $errorMessageDiv.fadeIn();
+                                    $errorMessageDiv.offset({top: offTop, left: offLeft+20});
+                                    $errorMessageDiv.html(message);
+                                });
+                                // hide the box on
+                                $('#jambi-body').on('mouseleave', '.test', function(){
+                                    $errorMessageDiv.fadeOut();
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    // save the file first if not saved already
+                    alert("Please save your current file");
                 }
-            } else {
-                // save the file first if not saved already
-                alert("Please save your current file");
             }
+        } catch() {
+
         }
 	};
 
@@ -1613,41 +1617,45 @@ var Jambi = function () {
         Purpose: method to find all variable tags in the active document, used for variable analysis
     */
 	Jambi.prototype.findVariables = function () {
-    	// cache the js variables div
-        var $jsVars = $('#jsVariables');
-        // empty it of all previous results
-        $jsVars.empty();
+    	try{
+        	// cache the js variables div
+            var $jsVars = $('#jsVariables');
+            // empty it of all previous results
+            $jsVars.empty();
 
-        var tags = [];
-        // find all var tags and their names
-        var vRegEx = /var(\s)[^(\s)]*(\s?)(;?)[^\s]*/g;
-        var listOfTags = jambi.getJambiEditor().getValue().match(vRegEx);
+            var tags = [];
+            // find all var tags and their names
+            var vRegEx = /var(\s)[^(\s)]*(\s?)(;?)[^\s]*/g;
+            var listOfTags = jambi.getJambiEditor().getValue().match(vRegEx);
 
-        // if list of tags is not null
-        if(listOfTags !== null) {
-                for(var k = 0; k<listOfTags.length; k++) {
-                    // get tag name
-                    var tagName = listOfTags[k].substr(4, listOfTags[k].length);
-                    tagName = tagName.match(/[^\s=;]*/g)[0];
+            // if list of tags is not null
+            if(listOfTags !== null) {
+                    for(var k = 0; k<listOfTags.length; k++) {
+                        // get tag name
+                        var tagName = listOfTags[k].substr(4, listOfTags[k].length);
+                        tagName = tagName.match(/[^\s=;]*/g)[0];
 
-                    // create tag object
-                    var tagObject = {
-                        "name" : tagName
+                        // create tag object
+                        var tagObject = {
+                            "name" : tagName
+                        }
+                        // push to array
+                        tags.push(tagObject);
                     }
-                    // push to array
-                    tags.push(tagObject);
-                }
-                // print that array to the sidebar
-                if(tags.length === 1) {
-                    $jsVars.prepend(tags.length + " variable found <br><hr>");
-                } else {
-                    $jsVars.prepend(tags.length + " variables found <br><hr>");
-                }
-                // append vars to div
-                for(var i = 0; i<tags.length; i++) {
-                    $jsVars.append(tags[i].name + "<br>");
-                }
-                return tags;
+                    // print that array to the sidebar
+                    if(tags.length === 1) {
+                        $jsVars.prepend(tags.length + " variable found <br><hr>");
+                    } else {
+                        $jsVars.prepend(tags.length + " variables found <br><hr>");
+                    }
+                    // append vars to div
+                    for(var i = 0; i<tags.length; i++) {
+                        $jsVars.append(tags[i].name + "<br>");
+                    }
+                    return tags;
+            }
+        } catch() {
+
         }
 	};
 

@@ -30,8 +30,6 @@ function runTests() {
         });
     });
 
-
-
     jTest.describe("Read in Local settings files", function(){
         jTest.should("Get settings file jambi.json", function(done){
             jambifs.readJSON('jambi.json', function(err, data) {
