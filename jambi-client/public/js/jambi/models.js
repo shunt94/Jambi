@@ -1097,14 +1097,18 @@ var jambiModel = function() {
 		});
 	}
 
-
-
+    /*
+        View: EditorView
+        Purpose: Provides the view functions for the editor page
+    */
 	var EditorView = Backbone.View.extend({
 		el: '#jambi-body',
 		render: function(){
+    		// render the page from editor.html (external file) into the page
 			this.$el.html(render('editor', {}));
 			$('#jambi-body').off("contextmenu");
 
+            // event listeners
 			$('#jambiStartTimer').on('click', function(){
 				jTimer.startTimer();
 			});
@@ -1116,44 +1120,62 @@ var jambiModel = function() {
 			$('#jshintcode').on('click', function() {
 				jambi.jsHint();
 			});
+			// update Jambi
 			connectToServer();
 			$('#jambi-editor').css('font-size', jambi.getFontSize());
 
 		}
 	});
 
+    /*
+        View: ProjectView
+        Purpose: Provides the view functions for the projects page
+    */
 	var ProjectView = Backbone.View.extend({
 		el: '#jambi-body',
 
 		render: function(){
+    		// render the projects page
 			this.$el.html(render('projects', {}));
 		}
 	});
 
+    /*
+        Method: hideSidebarToggle
+        Purpose: Hides the sidebar
+    */
 	function hideSidebarToggle() {
 		$('#sidebar_toggle').hide();
 	}
 
+    /*
+        Method: showSidebarToggle
+        Purpose: shows the sidebar toggle
+    */
 	function showSidebarToggle() {
 		$('#sidebar_toggle').show();
 	}
 
-
-	// Sidebar menus
+	/*
+        Method: sideBarMenus
+        Purpose: Controls the menus on the sidebar
+    */
 	function sideBarMenus() {
 		var $el = $('#sidebarcontent');
 		var sidebarContent = $('.sidebarMenuItem');
 
+        // make sure listeners are reset
 		$('#sidebar_home').off('click');
 		$('#sidebar_list').off('click');
 		$('#sidebar_file').off('click');
 		$('#sidebar_connection').off('click');
 
-
+        // hide content
 		sidebarContent.hide();
+		// show home
 		$('#sidebarHome').show();
 
-
+        // init the click functions for the views
 		$('#sidebar_home').on('click', function(){
 			sidebarContent.hide();
 			$('#sidebarHome').show();
@@ -1173,9 +1195,14 @@ var jambiModel = function() {
 	}
 
 
+    /*
+        Method: vcMenuSetup
+        Purpose: setups version control for a project
+    */
 	function vcMenuSetup() {
 		var jMenu = jSetup.jambiMenu;
 		if(activeProject) {
+    		// enable the menu items
 			if(activeProject.vc.vcInitialised) {
 				jMenu.vc.vc.enabled = true;
 				jMenu.vc.vcPull.enabled = true;
@@ -1183,6 +1210,7 @@ var jambiModel = function() {
 				jMenu.vc.vcCommit.enabled = true;
 			}
 			else {
+    			// disable the menu items
 				jMenu.vc.vc.enabled = true;
 				jMenu.vc.vcPull.enabled = false;
 				jMenu.vc.vcPush.enabled = false;
@@ -1190,6 +1218,7 @@ var jambiModel = function() {
 			}
 		}
 		else {
+    		// disable the menu items
 			jMenu.vc.vc.enabled = false;
 			jMenu.vc.vcPull.enabled = false;
 			jMenu.vc.vcPush.enabled = false;
@@ -1197,41 +1226,52 @@ var jambiModel = function() {
 		}
 	}
 
-	var currentDirectory;
+    /*
+        Method: generateFileSystem
+        Purpose: populates the sidebar file system so the user can open new files
+    */
+	var currentDirectory = ".";
 	function generateFilSystem() {
 		if(activeProject) {
 			currentDirectory = activeProject.root;
+			// getFiles
+			// Gets the files of a specific file path
 			function getFiles(filespath) {
 				currentDirectory = filespath;
+				// delete all files inside the div (avoids repopulation)
 				$('#fb_files').empty();
 				var files = jambifs.readDir(filespath);
+				// populate each file
+				var path;
+				var type;
+				var fileIcon;
 				for(var i = 0; i <files.length; i++) {
-
-					var path = filespath + "/" + files[i];
-					var type = "";
-					var fileIcon = '<i class="fa fa-file file-list-file"></i>';
-
+					path = filespath + "/" + files[i];
+					type = "";
+					fileIcon = '<i class="fa fa-file file-list-file"></i>';
+                    // if a file, add the file icon
 					if(jambifs.stat(path).isFile()) {
 						type = "file";
 						fileIcon = '<i class="fa fa-file file-list-file"></i>';
 					}
+					// if a folder, add the folder icon
 					if(jambifs.stat(path).isDirectory()) {
 						type = "directory";
 						fileIcon = '<i class="fa fa-folder file-list-folder"></i>';
 					}
 
-
+                    // append the files to the sidebar
 					$('#fb_files').append('<div class="file-list" data-type="' + type +'" data-path="' + filespath +'" data-filename="'+
 										  files[i] +'">' + fileIcon + files[i] +'</div>');
 
 				}
 			}
-
+            // get the files
             setTimeout(function(){
     			getFiles(currentDirectory);
             }, 400);
 
-
+            // open the previous dir on dblclick
 			$('#previousDir').on('dblclick', function(){
 				var newPath = currentDirectory.substr(0, currentDirectory.lastIndexOf('/'));
 				try{
@@ -1243,26 +1283,31 @@ var jambiModel = function() {
 				}
 			});
 
+            // set active on click
 			$('#fb_files').on('click', '.file-list', function() {
 				$('.file-list').removeClass('active');
 				$(this).addClass('active');
 			});
 
+            // on double click, open the file
 			$('#fb_files').on('dblclick', '.file-list', function() {
+    				// file metadata
     				var $this = $(this);
     				var path = $this.data('path') + "/";
     				var filename = $this.data('filename');
     				var filetype = "html";
+    				// get the file type
     				if(filename.match(/\.[^.]+$/)) {
     					filetype = filename.match(/\.[^.]+$/).toString();
     					filetype = filetype.substr(1, filetype.length);
     				}
     				var type = $this.data('type');
-
+                    // if a file, open the file in the editor
     				if(type === "file") {
         				var content = jambifs.readHTML(path + filename);
     					newDocument(filename, content, checkFileType(filetype), path);
     				}
+    				// if a directory, call getFiles with that directory's path
     				if(type === "directory") {
     					getFiles(path + "/" + filename);
     				}
@@ -1270,32 +1315,46 @@ var jambiModel = function() {
 		}
 	}
 
+    /*
+        Method: vcClick
+        Purpose: Setup version control on the menu item
+    */
 	function vcClick() {
+    	// setup the click function on the version control setup menu item
 		jSetup.jambiMenu.vc.vc.click = function () {
 			function modalFunction() {
 				if(activeProject) {
+    				// init VC
 					activeProject.vc.vcInitialised = true;
+					// set VC attributes
 					activeProject.vc.vcType = $('.radioButtonType[name=group1]:checked').data('type');
 					activeProject.vc.vcURL = $('#repo-url').val();
 					activeProject.vc.vcUser = $('#repo-user').val();
+					// save projects.json
 					vcMenuSetup();
 					saveProjectsJSON();
 				}
 			}
+			// populate the modal with external file
 			var modalhtml = jambifs.readHTML('public/views/vcsetup.html');
+			// create modal
 			jambi.createModal("Setup Version Control", "", modalhtml, "Init Empty Repo", modalFunction, null, "Clone");
 			if(activeProject.vc.vcInitialised) {
 				$('#repo-url').val(activeProject.vc.vcURL);
 				$('#repo-user').val(activeProject.vc.vcUser);
 			}
 			$('#modalButtonExtra').off('click');
+			// add the extra button to the modal
 			$('#modalButtonExtra').on('click',function(){
+    			// set projects attributes
 				activeProject.vc.vcInitialised = true;
 				activeProject.vc.vcType = $('.radioButtonType[name=group1]:checked').data('type');
 				activeProject.vc.vcURL = $('#repo-url').val();
 				activeProject.vc.vcUser = $('#repo-user').val();
 				vcMenuSetup();
+				// save project.json
 				saveProjectsJSON();
+				// clone repo
 				jambi.vcClone(activeProject.vc.vcURL, activeProject.vc.vcType);
 				$('#vcPush').attr('disabled','false');
                 $('#vcPull').attr('disabled','false');
@@ -1303,35 +1362,39 @@ var jambiModel = function() {
 			});
 
 		};
-
+        // click function for commit
 		jSetup.jambiMenu.vc.vcCommit.click = function () {
 			jambi.vcCommit(activeProject.vc.vcType);
 		};
-
+        // click function for pull
 		jSetup.jambiMenu.vc.vcPull.click = function () {
 			jambi.vcPull(activeProject.vc.vcType);
 		};
-
+        // click function for push
 		jSetup.jambiMenu.vc.vcPush.click = function () {
 			jambi.vcPush(activeProject.vc.vcType);
 		};
 	}
 	vcClick();
 
-
+    // all CDN inital values
     var bootstrapCSS = '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">';
     var bootstrapJS = '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>';
     var jqueryJS = '<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>';
     var angularJS = '<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>';
 
+    /*
+        Method: listFunctions
+        Purpose: setup the functions that the quick menu has
+    */
     function listFunctions() {
-
         var jambiVariableListFunction = "";
-
         var tags = jambi.findVariables();
 
+        // genearte jambiVariableListFunction
         jambiVariableListFunction = '(function(){ /* make it safe to use console log - taken from (http://www.sitepoint.com/safe-console-log/) */ (function(a){function b(){}for(var c="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),d;!!(d=c.pop());){a[d]=a[d]||b;}}) (function(){try{console.log();return window.console;}catch(a){return (window.console={});}}()); var vars = ' + JSON.stringify(tags, 4, null) + '; for(var i = 0; i<vars.length; i++) { console.log("var: " + vars[i].name + " = " + window[vars[i].name]); } })();';
 
+        // generate options
         var options = {
             "bootstrap_css": bootstrapCSS,
             "bootstrap_js": bootstrapJS,
@@ -1342,31 +1405,44 @@ var jambiModel = function() {
             "var_list" : jambiVariableListFunction
         };
 
+        // remove all listeners
         $('#sideListForLoop').off('dblclick');
         $('.cdn-list').off('click');
+        $('#sideListForLoop').off('dblclick');
+
+        // add active listener
         $('.cdn-list').on('click', function(){
             $('.cdn-list').removeClass('active');
             $(this).addClass('active');
         });
 
+        // add click function to items
         $('.cdn-list').on('dblclick', function(){
+            // get what the item is meant to do
             var x = $(this).data('option');
+            // insert the option at cursor
             jambi.insertAtCursor(options[x]);
         });
 
+        // for loop dbl click function
         $('#sideListForLoop').on('dblclick', function(){
+            // prompt the user for the loop count
             var loopCount = prompt("Loop up to:", "10");
             if(loopCount != null) {
+                // insert at cursor
                 jambi.insertAtCursor("for(var i = 0; i <= " + loopCount + "; i++) {\n\n}");
             }
         });
 
+        // commit menu items
+        // click off
         $('#commitAll').off('click');
         $('#vcPull').off('click');
         $('#vcPush').off('click');
 
         if(activeProject) {
             if(activeProject.vc.vcInitialised) {
+                // click functions for
                 $('#commitAll').on('click', function(){
                     if(activeProject.vc.vcInitialised) {
                         jambi.vcCommit(activeProject.vc.vcType);
