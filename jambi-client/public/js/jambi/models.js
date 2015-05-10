@@ -51,7 +51,7 @@ var jambiModel = function() {
 		line: 1,
 		col: 1,
 		mode: "htmlmixed",
-		title: "untitlted.html",
+		title: "untitled.html",
 		fileLocation: "",
 		history_object: {},
 		flowInitialised: false,
