@@ -1028,7 +1028,8 @@ var jambiModel = function() {
 		});
         // open the project
         openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
-
+        vcMenuSetup();
+        generateFilSystem();
 	}
 
 
