@@ -13,7 +13,7 @@
     "height": 600,
     "min_width": 400,
     "min_height": 350,
-    "show": false
+    "show": true
   },
   "licenses": [
     {

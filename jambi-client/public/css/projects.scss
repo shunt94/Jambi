@@ -160,7 +160,10 @@
 
 
 
-
+.col-lg-3 {
+        width: 25%;
+        float: left;
+    }
 
 
 
@@ -185,10 +188,3 @@
     }
 }
 
-
-@media (min-width: 1200px) {
-    .col-lg-3 {
-        width: 25%;
-        float: left;
-    }
-}

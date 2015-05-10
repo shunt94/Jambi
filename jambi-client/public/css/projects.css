@@ -111,6 +111,10 @@
   margin-top: 12.5%;
   margin-left: 5%; }
 
+.col-lg-3 {
+  width: 25%;
+  float: left; }
+
 @media (min-width: 768px) {
   .col-sm-6 {
     width: 50%;
@@ -120,11 +124,5 @@
 @media (min-width: 992px) {
   .col-md-4 {
     width: 33.33333%;
-    float: left; }
- }
-
-@media (min-width: 1200px) {
-  .col-lg-3 {
-    width: 25%;
     float: left; }
  }

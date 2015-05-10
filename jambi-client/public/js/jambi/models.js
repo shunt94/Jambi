@@ -1588,3 +1588,4 @@ var jambiModel = function() {
 };
 // create a new instance of this class
 var jModel = new jambiModel();
+jambi.updateJambi();

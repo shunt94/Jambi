@@ -28,6 +28,8 @@ var Jambi = function () {
     // Define the editor font size - default to 14px
     var editorFontSize = 14;
 
+    var gui = require('nw.gui');
+
 
     // Read in the Jambi settings
     readJambiSettings();
@@ -271,9 +273,10 @@ var Jambi = function () {
             }
 
             var that = this;
-            jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){that.close(true);});
-            jambi.openModal();
-            return false;
+            //jambi.createModal("Are you sure you want to quit", "You have unsaved files", "Unsaved files", "Quit", function(){that.close(true);});
+            //jambi.openModal();
+            //return false;
+            that.close(true);
         });
     };
 
@@ -1663,5 +1666,4 @@ var Jambi = function () {
 };
 
 var jambi = new Jambi();
-jambi.updateJambi();
 jambi.menuSetup();
