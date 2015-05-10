@@ -813,7 +813,10 @@ var jambiModel = function() {
 
 
             // append the add project box
+            $('#addprojectcard').remove();
 			$('.projects').append(jambifs.readHTML('public/views/addProjectTemplate.html'));
+
+
 
             // sort event listeners
             $('.project').off('dblclick');
@@ -886,6 +889,7 @@ var jambiModel = function() {
                     // add a project
 					addProject($('#addProjectName').val(), $('#addProjectLocation').val(), options, sshOptions);
 					$('#addprojectcard').fadeOut();
+					populateProjects();
 				}
 			});
 
@@ -1029,7 +1033,7 @@ var jambiModel = function() {
 			jambifs.writeJSON('projects.json', JSON.stringify(projectsJSON));
 		});
         // open the project
-        openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
+        //openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
         setTimeout(function(){
             vcMenuSetup();
             generateFilSystem();
@@ -1200,7 +1204,6 @@ var jambiModel = function() {
     */
 	function vcMenuSetup() {
 		var jMenu = jSetup.jambiMenu;
-		console.log(activeProject);
 		if(activeProject) {
     		// enable the menu items
 			if(activeProject.vc.vcInitialised) {
@@ -1242,13 +1245,13 @@ var jambiModel = function() {
 				$('#fb_files').empty();
 				var files = jambifs.readDir(filespath);
 				// populate each file
-				var path;
-				var type;
-				var fileIcon;
+
+
+
 				for(var i = 0; i <files.length; i++) {
-					path = filespath + "/" + files[i];
-					type = "";
-					fileIcon = '<i class="fa fa-file file-list-file"></i>';
+					var path = filespath + "/" + files[i];
+					var type = "";
+					var fileIcon = '<i class="fa fa-file file-list-file"></i>';
                     // if a file, add the file icon
 					if(jambifs.stat(path).isFile()) {
 						type = "file";

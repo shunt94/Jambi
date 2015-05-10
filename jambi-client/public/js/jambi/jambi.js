@@ -1116,6 +1116,7 @@ var Jambi = function () {
 		            There is one modal markup that gets populated via this function
     */
     Jambi.prototype.createModal = function (modalTitle, modalSubtitle, modalContent, modalType, modalFunc, modalWidth, extraButton) {
+        $('#modalButtonExtra').remove();
         // If there is no modal type defined then we set the default button name - 'Save'
         if (modalType === undefined || modalType === null) {
             modalType = "Save";
@@ -1138,6 +1139,7 @@ var Jambi = function () {
         $('#modalTitle').html(modalTitle);
         $('#modalSubtitle').html(modalSubtitle);
         $('#modalContent').html(modalContent);
+
 
         if(extraButton) {
             $('.jambiModal-buttons').append('<a href="#" class="btn btn-blue" id="modalButtonExtra">' + extraButton + '</a>');
