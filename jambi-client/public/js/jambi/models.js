@@ -959,6 +959,8 @@ var jambiModel = function() {
 		// add the project to the collection
 		Projects.add(newProject);
 
+		activeProject = newProject.project;
+
         if(options) {
         	var fs = require('fs');
         	var exec = require('child_process').exec;
@@ -1028,8 +1030,10 @@ var jambiModel = function() {
 		});
         // open the project
         openProject(name, newProject.attributes.project, Projects.indexOf(newProject));
-        vcMenuSetup();
-        generateFilSystem();
+        setTimeout(function(){
+            vcMenuSetup();
+            generateFilSystem();
+        }, 100);
 	}
 
 
@@ -1196,6 +1200,7 @@ var jambiModel = function() {
     */
 	function vcMenuSetup() {
 		var jMenu = jSetup.jambiMenu;
+		console.log(activeProject);
 		if(activeProject) {
     		// enable the menu items
 			if(activeProject.vc.vcInitialised) {
