@@ -134,11 +134,15 @@ var jambiModel = function() {
         Purpose: saves the current document state
     */
 	function saveCurrentDocument(documentModel) {
-		documentModel.history_object = $.extend({}, document.hisotry_object, jambi.getJambiEditor().getHistory());
-		documentModel.text = jambi.getJambiEditor().getValue();
-		documentModel.line = jambi.getJambiEditor().getCursor().line;
-		documentModel.col = jambi.getJambiEditor().getCursor().ch;
-		documentModel.mode = jambi.getJambiEditor().getOption('mode');
+    	try{
+    		documentModel.history_object = $.extend({}, document.hisotry_object, jambi.getJambiEditor().getHistory());
+    		documentModel.text = jambi.getJambiEditor().getValue();
+    		documentModel.line = jambi.getJambiEditor().getCursor().line;
+    		documentModel.col = jambi.getJambiEditor().getCursor().ch;
+    		documentModel.mode = jambi.getJambiEditor().getOption('mode');
+		} catch(e) {
+
+		}
 	}
 
 
