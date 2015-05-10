@@ -1565,8 +1565,8 @@ var Jambi = function () {
                                 var errorLines = output.match(/(:)\d(:)/g);
                                 // go through and create markers for all the errors
                                 for(var i = 0; i < errors.length; i++){
-                                    if(errorLines !== null || errorLines !== undefined) {
-                                        if(errorLines[i] !== undefined || errorLines[i] !== null ) {
+                                    if(errorLines != null || errorLines != undefined) {
+                                        if(errorLines[i] != undefined || errorLines[i] != null ) {
                                             var errorLine = errorLines[i].match(/\d/);
                                             $('#javaReporter').append(errors[i] + " at line " + errorLine + "<br>");
                                             jambiEditor.setGutterMarker(parseInt((errorLine)-1), "test1", makeMarker(errors[i]));
