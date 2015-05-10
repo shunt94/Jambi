@@ -367,7 +367,6 @@ var jambiModel = function() {
 		if(activeDocument || openDocuments.length > 1) {
 			saveCurrentDocument(openDocuments.get(openDocuments.get(activeDocument)));
 		}
-
 		// set document options and populate top bar
 		setDocOptions(file);
 		populateTopBar(file.id);
@@ -397,7 +396,7 @@ var jambiModel = function() {
 				$('#jambiStatus').html("Failed to connect to Jambi Server - " + e.statusText);
 			}
 		});
-		// connect every hour
+		// connect ever hour
 		setTimeout(function(){connectToServer();},3600000);
 	}
 
@@ -406,7 +405,7 @@ var jambiModel = function() {
         Purpose: redraw the open files top bar
     */
 	function populateTopBar(activeDocID) {
-    	// get the model count
+    	// get model count
 		var modelCount = openDocuments.length;
 		var first;
 		if (!activeDocID) {
@@ -414,17 +413,11 @@ var jambiModel = function() {
 		}
 		// remove all open file divs
 		$('.file-container').remove();
-
-		// all information outside of the for loop
-		var jDoc;
-		var active = "";
-        var savedIcon = '<i class="fa fa-circle"></i>';
-        var fileName
-        var appendedHTML;
-        // loop through and re populate the top bar
 		for(var i = 0; i < modelCount; i++) {
-            // repopulate the top bar using all of the models
-			jDoc = openDocuments.at(i);
+
+			var jDoc = openDocuments.at(i);
+			var active = "";
+			var savedIcon = '<i class="fa fa-circle"></i>';
 			if(jDoc.id === activeDocID || modelCount <= 1 || first) {
 				active = "active";
 				first = false;
@@ -432,9 +425,8 @@ var jambiModel = function() {
 			if(jDoc.isSaved) {
 				savedIcon = '<i class="fa fa-circle-o"></i>';
 			}
-            fileName = jDoc.title;
-            // append the html
-			appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
+			var fileName = jDoc.title;
+			var appendedHTML =  '<li class="file-container" data-modelid=' + jDoc.id + '>' +
 				'<div class="file ' + active + '">' +
 				'<span class="filename">' + fileName + '</span>' +
 				'<span class="filesaved">' + savedIcon +'</span>' +
@@ -443,11 +435,9 @@ var jambiModel = function() {
 				'</li>';
 			$('#file_ul').append(appendedHTML);
 		}
-		// add the file event handlers back
 		fileEventHandlers();
 	}
-
-    /*
+/*
         Method: fileEventHandlers()
         Purpose: removes and then readds the click events to certain elements
     */
