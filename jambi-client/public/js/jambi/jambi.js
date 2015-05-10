@@ -1140,7 +1140,6 @@ var Jambi = function () {
         $('#modalSubtitle').html(modalSubtitle);
         $('#modalContent').html(modalContent);
 
-
         if(extraButton) {
             $('.jambiModal-buttons').append('<a href="#" class="btn btn-blue" id="modalButtonExtra">' + extraButton + '</a>');
         }
@@ -1422,11 +1421,13 @@ var Jambi = function () {
             var command;
             jambi.saveFile();
             var root = jModel.getActiveDocument().fileLocation;
+            var filename = jModel.getActiveDocument().title;
+            var fullName = root + filename;
             if(commitMsg) {
-                command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m ' + '"' + commitMsg + '"';
+                command = 'cd ' + root + ' && ' + vcType + ' add  -A' + ' && ' + vcType + ' commit -m ' + '"' + commitMsg + '"';
             }
             else {
-                command = 'cd ' + root + ' && ' + vcType + ' add ' + root + ' && ' + vcType + ' commit -m "Commiting changes to ' +
+                command = 'cd ' + root + ' && ' + vcType + ' add  -A' + ' && ' + vcType + ' commit -m "Commiting changes to ' +
                 jModel.getActiveDocument().title + '"';
             }
 
@@ -1437,6 +1438,24 @@ var Jambi = function () {
             });
         } catch(e) {
             jambi.showNotification("Jambi VC", "Error Commiting changes");
+        }
+    };
+
+    Jambi.prototype.vcInit = function (url, vcType) {
+        try{
+            var firstCommand;
+            var secondCommand;
+            var root = jModel.getActiveProject().root;
+            if(url) {
+                firstCommand = 'cd ' + root + ' && ' +  vcType + ' init';
+                secondCommand = 'cd ' + root + ' && ' +  vcType + ' remote add origin https: ' + url;
+            }
+
+            shell.exec(firstCommand, function(code, output) {
+                shell.exec(secondCommand, function(code, output) {});
+            });
+        } catch(e) {
+            jambi.showNotification("Jambi VC", "Error Initialising Repo");
         }
     };
 

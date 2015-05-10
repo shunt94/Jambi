@@ -1336,6 +1336,7 @@ var jambiModel = function() {
 					// save projects.json
 					vcMenuSetup();
 					saveProjectsJSON();
+                    jambi.vcInit(activeProject.vc.vcURL, activeProject.vc.vcType);
 				}
 			}
 			// populate the modal with external file
